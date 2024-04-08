@@ -17,4 +17,4 @@ A weather station with ESP32
 
 ## Hosting
 - `GitHub` (Repository and CI/CD)
-- `Vercel` (Server hosting)
+- `Render` (Server hosting)
