@@ -1,14 +1,16 @@
+import dotenv from "dotenv";
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+dotenv.config(); // Load the .env file
 
 // Initialize Firebase
 const firebaseApp = initializeApp({
-    apiKey: 'AIzaSyAyyFY1B0fmXDR3s-TJjzd3JebmwxYw-nY',
-    authDomain: 'weather-station-eba51.firebaseapp.com',
-    projectId: 'weather-station-eba51',
-    storageBucket: 'weather-station-eba51.appspot.com',
-    messagingSenderId: '670794897945',
-    appId: '1:670794897945:web:a99ccdfed0ba5ef82ba888'
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID
 });
 const db = getFirestore(firebaseApp); // Firestore DB
 
@@ -24,4 +26,16 @@ export const getMeasurements = async () => {
 export const addMeasurement = async measurement => {
     const measurementRef = collection(db, 'measurements');
     await addDoc(measurementRef, measurement);
+}
+
+// Delete a measurement from Firestore
+export const deleteMeasurement = async id => {
+    const measurementRef = doc(db, 'measurements', id);
+    await deleteDoc(measurementRef);
+}
+
+// Update a measurement in Firestore
+export const updateMeasurement = async (id, newData) => {
+    const measurementRef = doc(db, 'measurements', id);
+    await updateDoc(measurementRef, newData);
 }
