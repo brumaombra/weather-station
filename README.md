@@ -8,6 +8,7 @@ A weather station with ESP32
 
 ## Backend
 - `Node.js` (Server)
+- `Express` (Web server)
 - `Firebase` (Database)
 
 ## Station
