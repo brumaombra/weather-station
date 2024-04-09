@@ -54,7 +54,4 @@ const deleteMeasurements = () => {
     });
 };
 
-// getMeasurements();
-// updateMeasurements();
-// deleteMeasurements();
 addMeasurement();
