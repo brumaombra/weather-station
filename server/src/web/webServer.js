@@ -20,7 +20,7 @@ app.get('/api/measurements', (req, res) => {
 app.post('/api/measurements', (req, res) => {
     const measurement = req.body;
     if (!checkData(measurement)) { // Check if the data is valid
-        res.status(400).send('Invalid data');
+        res.status(400).send({ message: 'Invalid data' });
         return;
     }
 
@@ -28,7 +28,7 @@ app.post('/api/measurements', (req, res) => {
     addMeasurement(measurement).then(() => {
         res.send(measurement);
     }).catch(error => {
-        res.status(400).send(error.message)
+        res.status(400).send({ message: error.message })
     });
 });
 
@@ -37,7 +37,7 @@ app.put('/api/measurements/:id', (req, res) => {
     const { id } = req.params;
     const newData = req.body;
     if (!checkData(newData) || !id) { // Check if the data is valid
-        res.status(400).send('Invalid data');
+        res.status(400).send({ message: 'Invalid data' });
         return;
     }
 
@@ -45,7 +45,7 @@ app.put('/api/measurements/:id', (req, res) => {
     updateMeasurement(id, newData).then(() => {
         res.send({ id, ...newData })
     }).catch(error => {
-        res.status(400).send(error.message)
+        res.status(400).send({ message: error.message })
     });
 });
 
@@ -53,7 +53,7 @@ app.put('/api/measurements/:id', (req, res) => {
 app.delete('/api/measurements/:id', (req, res) => {
     const { id } = req.params;
     if (!id) { // Check if the data is valid
-        res.status(400).send('Invalid data');
+        res.status(400).send({ message: 'Invalid data' });
         return;
     }
 
@@ -61,7 +61,7 @@ app.delete('/api/measurements/:id', (req, res) => {
     deleteMeasurement(id).then(() => {
         res.send({ id })
     }).catch(error => {
-        res.status(400).send(error.message)
+        res.status(400).send({ message: error.message })
     });
 });
 
