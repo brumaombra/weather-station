@@ -1,0 +1,39 @@
+name: Deploy on Render
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                persist-credentials: true # Enable commit and push to repository
+            
+            - name: Use Node.JS
+              uses: actions/setup-node@v3
+              with:
+                node-version: '21'
+            
+            - name: Install dependencies
+              run: npm install
+              working-directory: client
+            
+            - name: Build Vue.js project
+              run: npm run build
+              working-directory: client
+            
+            - name: Move dist folder to public
+              run: mv client/dist/* server/public
+
+            - name: Commit and push Vue.js build
+              run: |
+                git config user.name github-actions
+                git config user.email github-actions@github.com
+                git add server/public -f
+                git commit -m "Commit Vue.js build" -a || echo "No changes to commit"
+                git push
