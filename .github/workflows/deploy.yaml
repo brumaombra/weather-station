@@ -39,4 +39,4 @@ jobs:
                 git config user.email github-actions@github.com
                 git add server/public -f
                 git commit -m "Commit Vue.js build" -a || echo "No changes to commit"
-                git push
+                git push https://${{ secrets.MY_PAT }}@github.com/${{ github.repository }}.git
