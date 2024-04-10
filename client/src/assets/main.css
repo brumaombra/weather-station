@@ -1,0 +1,40 @@
+/* Modal */
+.modal-content {
+    border: none;
+    border-radius: 10px;
+}
+.modal-body {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+.modal-backdrop {
+    --bs-backdrop-opacity: 0.35;
+}
+
+/* navbar */
+.navbar {
+    border-bottom: 2px solid #dfe4ea;
+}
+
+/* Form */
+.form-label {
+    font-weight: 600;
+}
+.form-select,
+.form-control {
+    border-radius: 12px;
+    height: 48px;
+    padding-left: 1rem;
+}
+
+/* Pulsanti */
+.btn {
+    font-weight: 700;
+    padding: 8px 15px;
+    border-radius: 8px;
+}
+
+/* Cursor pointer */
+.cursor-pointer:hover {
+    cursor: pointer;
+}
