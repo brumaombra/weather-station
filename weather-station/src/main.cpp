@@ -10,9 +10,9 @@
 
 float humidity = 0; // Humidity
 float temperature = 0; // Temperature
-const char ssid[] = "EOLO-Bettola";
-const char password[] = "jfJ8c24LM";
-const char mqttServer[] = "192.168.21.10";
+const char ssid[] = "";
+const char password[] = "";
+const char mqttServer[] = "";
 const int mqttPort = 1883;
 
 DHT dht(DHTPIN, DHTTYPE); // DHT object
