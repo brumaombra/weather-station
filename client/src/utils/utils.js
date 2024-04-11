@@ -4,6 +4,7 @@ const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' 
 
 // Set the busy state of the app
 export const setBusy = busy => {
+    if (GlobalStore.busy === busy) return; // Exit if it's already equal
     GlobalStore.busy = busy;
 };
 

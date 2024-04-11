@@ -1,6 +1,7 @@
 import { reactive } from 'vue';
 
 export default reactive({
-    measurementsList: [],
-    busy: false
+    measurementsList: [], // List of measurements
+    busy: false, // Global busy state
+    firstMeasurementsViewInit: false // First time init for view measurements
 });

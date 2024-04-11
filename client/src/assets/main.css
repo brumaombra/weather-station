@@ -11,9 +11,13 @@
     --bs-backdrop-opacity: 0.35;
 }
 
-/* navbar */
+/* Navbar */
 .navbar {
     border-bottom: 2px solid #dfe4ea;
+}
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link.show {
+    font-weight: 500;
 }
 
 /* Form */
@@ -27,7 +31,7 @@
     padding-left: 1rem;
 }
 
-/* Pulsanti */
+/* Buttons */
 .btn {
     font-weight: 700;
     padding: 8px 15px;
@@ -37,4 +41,9 @@
 /* Cursor pointer */
 .cursor-pointer:hover {
     cursor: pointer;
+}
+
+/* Custom margin bottom */
+.mb-4-5 {
+    margin-bottom: 2rem !important;
 }

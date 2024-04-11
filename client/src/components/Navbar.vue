@@ -9,13 +9,13 @@
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item">
-						<a class="nav-link active" href="#">Measurements</a>
+						<router-link to="/" class="nav-link" active-class="active">Measurements</router-link>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Charts</a>
+						<router-link to="/charts" class="nav-link" active-class="active">Charts</router-link>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Forecasts</a>
+						<router-link to="/forecasts" class="nav-link" active-class="active">Forecasts</router-link>
 					</li>
 				</ul>
 			</div>
