@@ -1,40 +1,51 @@
 name: Deploy on Render
 
 on:
-    push:
-        branches: [main]
+  push:
+    branches: [main]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-            
-            - name: Use Node.JS
-              uses: actions/setup-node@v3
-              with:
-                node-version: '21'
-            
-            - name: Install dependencies
-              run: npm install
-              working-directory: client
-            
-            - name: Build Vue.js project
-              run: npm run build
-              working-directory: client
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Use Node.JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21'
+      
+      - name: Install dependencies
+        run: npm install
+        working-directory: client
+      
+      - name: Build Vue.js project
+        run: npm run build
+        working-directory: client
 
-            - name: Remove current content of public folder
-              run: rm -r server/public/*
-            
-            - name: Move dist folder to public
-              run: mv client/dist/* server/public
+      - name: Remove current content of public folder
+        run: rm -r server/public/*
+      
+      - name: Move dist folder to public
+        run: mv client/dist/* server/public
 
-            - name: Commit and push Vue.js build
-              uses: EndBug/add-and-commit@v9
-              with:
-                add: 'server/public'
-                message: 'Commit Vue.js build'
-                push: true
-                default_author: github_actions
+      - name: Commit and push Vue.js build
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'server/public'
+          message: 'Commit Vue.js build'
+          push: true
+          default_author: github_actions
+  
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API }}
