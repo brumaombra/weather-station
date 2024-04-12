@@ -15,7 +15,8 @@ app.use(express.static(path.join(__dirname, '../../public')));
 
 // Get all the measurements
 app.get('/api/measurements', (req, res) => {
-    getMeasurements().then(misure => res.json(misure));
+    const params = req.query; // Query parameters
+    getMeasurements(params).then(measures => res.json(measures));
 });
 
 // Add a new measurement
@@ -71,8 +72,7 @@ app.delete('/api/measurements/:id', (req, res) => {
 const checkData = data => {
     const temperatureValid = data.temperature && Number.isFinite(data.temperature); // Check if the temperature is a number
     const humidityValid = data.humidity && Number.isFinite(data.humidity); // Check if the humidity is a number
-    const timestampValid = data.timestamp && !isNaN(Date.parse(data.timestamp)); // Check if the timestamp is a valid date
-    return temperatureValid && humidityValid && timestampValid;
+    return temperatureValid && humidityValid;
 };
 
 // Initialize the web server

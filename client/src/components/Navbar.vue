@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary">
 		<div class="container">
 			<i class="fa-solid fa-cloud-sun-rain me-2 fs-4 text-primary"></i>
 			<a class="navbar-brand fw-bold" href="#">Weather Station</a>

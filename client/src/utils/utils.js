@@ -9,8 +9,9 @@ export const setBusy = busy => {
 };
 
 // Get all the measurements
-export const getMeasurements = (success, error) => {
-    fetch(`${devUrl}/api/measurements`).then(response => {
+export const getMeasurements = (success, error, params) => {
+    const query = params ? `?${new URLSearchParams(params)}` : '';
+    fetch(`${devUrl}/api/measurements${query}`).then(response => {
         return response.json();
     }).then(data => {
         if (success) success(data);

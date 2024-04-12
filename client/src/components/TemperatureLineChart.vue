@@ -1,38 +1,51 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
 import GlobalStore from '@/stores/store';
 import { timestampFormatter } from '@/utils/formatter.js';
 
-// Chart parameters
-const label = GlobalStore.measurementsList.map(item => timestampFormatter(item.timestamp));
-const data = GlobalStore.measurementsList.map(item => item.temperature);
-const parameters = {
-    type: 'line',
-    data: {
-        labels: label,
-        datasets: [{
-            label: 'Temperature',
-            data: data,
-            fill: true,
-            backgroundColor: 'rgb(220, 53, 69, 0.05)',
-            borderColor: 'rgb(220, 53, 69)',
-            tension: 0.5
-        }]
-    },
-    options: {
-        plugins: {
-            legend: {
-                display: false
+let chart = null; // The chart element
+
+// Create the chart
+const createChart = () => {
+    const label = GlobalStore.measurementsListChart.map(item => timestampFormatter(item.timestamp));
+    const data = GlobalStore.measurementsListChart.map(item => item.temperature);
+    const parameters = { // Chart parameters
+        type: 'line',
+        data: {
+            labels: label,
+            datasets: [{
+                label: 'Temperature',
+                data: data,
+                fill: true,
+                backgroundColor: 'rgb(220, 53, 69, 0.05)',
+                borderColor: 'rgb(220, 53, 69)',
+                tension: 0.5
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
             }
         }
-    }
+    };
+
+    // Create chart
+    const chartDom = document.getElementById('temperatureLineChart'); // Get the DOM element
+    if (chart) chart.destroy(); // Destroy the current chart
+    chart = new Chart(chartDom, parameters); // Create the chart
 };
 
 // On mounted event
 onMounted(() => {
-    const chartDom = document.getElementById('temperatureLineChart'); // Get the DOM element
-    new Chart(chartDom, parameters); // Create the chart
+    createChart(); // Create the chart
+});
+
+// Watch the property for changes
+watch(() => GlobalStore.measurementsListChart, () => {
+    createChart(); // Create the chart5
 });
 </script>
 

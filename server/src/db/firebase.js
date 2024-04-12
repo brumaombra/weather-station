@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, doc, addDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, doc, addDoc, getDocs, getDoc, updateDoc, deleteDoc, Timestamp, orderBy, limit, startAfter } from 'firebase/firestore';
 dotenv.config(); // Load the .env file
 
 // Initialize Firebase
@@ -15,28 +15,74 @@ const firebaseApp = initializeApp({
 const db = getFirestore(firebaseApp); // Firestore DB
 const collectionName = 'measurements'; // Collection name
 
+// Convert days to milliseconds
+const daysToMilliseconds = days => {
+    return days * 24 * 60 * 60 * 1000;
+};
+
+// Add period filter to the query
+const addPeriodFilter = (conditions, params) => {
+    let days = 1; // Number of days to filter
+    switch (params.period) {
+        case 'D':
+            days = 1;
+            break;
+        case 'W':
+            days = 7;
+            break;
+        case 'M':
+            days = 30;
+            break;
+        case 'Y':
+            days = 365;
+            break;
+    }
+
+    // Create the start and end dates
+    const today = new Date();
+    const start = new Date(today.getTime() - daysToMilliseconds(days));
+    const end = new Date(today.getTime() + daysToMilliseconds(1));
+    const firestoreStart = Timestamp.fromDate(start);
+    const firestoreEnd = Timestamp.fromDate(end);
+    conditions.push(where('timestamp', '>=', firestoreStart)); // Add the filter
+    conditions.push(where('timestamp', '<', firestoreEnd)); // Add the filter
+};
+
+// Add last document for pagination
+const addLastDocumentId = async (conditions, params) => {
+    const lastDocRef = doc(db, collectionName, params.lastDocumentId);
+    const lastDocSnapshot = await getDoc(lastDocRef);
+    if (lastDocSnapshot.exists()) conditions.push(startAfter(lastDocSnapshot)); // Add the doc if exist
+};
+
 // Get measurements from Firestore
-export const getMeasurements = async () => {
+export const getMeasurements = async params => {
     const measurementsCol = collection(db, collectionName);
-    const snapshot = await getDocs(measurementsCol);
+    let conditions = []; // List of conditions to filter the query
+    conditions.push(orderBy('timestamp', 'asc')); // Add sorting
+    if (params.period) addPeriodFilter(conditions, params); // Add period filter (Last day, week, month or year)
+    if (params.lastDocumentId) await addLastDocumentId(conditions, params); // Add last document for pagination
+    const firebaseQuery = query(measurementsCol, ...conditions, limit(10)); // Create the query
+    const snapshot = await getDocs(firebaseQuery);
     const measurementsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Add the ID to the data
     return measurementsList;
-}
+};
 
 // Add a new measurement to Firestore
 export const addMeasurement = async measurement => {
+    measurement.timestamp = Timestamp.fromDate(new Date()); // Add the timestamp
     const measurementRef = collection(db, collectionName);
     await addDoc(measurementRef, measurement);
-}
+};
 
 // Delete a measurement from Firestore
 export const deleteMeasurement = async id => {
     const measurementRef = doc(db, collectionName, id);
     await deleteDoc(measurementRef);
-}
+};
 
 // Update a measurement in Firestore
 export const updateMeasurement = async (id, newData) => {
     const measurementRef = doc(db, collectionName, id);
     await updateDoc(measurementRef, newData);
-}
+};

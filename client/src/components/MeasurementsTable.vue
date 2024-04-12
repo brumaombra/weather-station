@@ -7,14 +7,21 @@ import { timestampFormatter } from '@/utils/formatter.js';
 let tempMeasurement = reactive({}); // Temp value
 
 // Load the measurements
-const loadMeasurements = () => {
+const loadMeasurements = loadNewPage => {
     setBusy(true); // Busy on
+    let params = {}; // Query parameters
+	if (loadNewPage) params.lastDocumentId = GlobalStore.measurementsList[GlobalStore.measurementsList.length - 1]?.id; // Add last item for pagination
+
+    // Get the measurements
     getMeasurements(results => {
-        GlobalStore.measurementsList = results; // Update the data
+        if (loadNewPage) // If pagination
+            GlobalStore.measurementsList = [ ...GlobalStore.measurementsList, ...results]; // Concatenate the new data
+        else
+            GlobalStore.measurementsList = results; // Update the data
         setBusy(false); // Busy off
     }, error => {
         setBusy(false); // Busy off
-    });
+    }, params);
 }
 
 // Open a dialog
@@ -29,6 +36,7 @@ const openDialog = (dialog, measurement) => {
 const handleSaveEditPress = () => {
     setBusy(true); // Busy on
     const newData = { ...tempMeasurement }; // Clone and clean object
+    delete newData.timestamp; // Remove timestamp
     updateMeasurement(newData, response => { // Update the measurement on the DB
         loadMeasurements(); // Load the measurements
     }, error => {
@@ -49,6 +57,11 @@ const handleDeleteItemPress = () => {
 // Reset icon pressed
 const handleResetIconPress = () => {
     loadMeasurements(); // Load the measurements
+};
+
+// Load more button pressed
+const handleLoadMorePress = () => {
+    loadMeasurements(true); // Load more measurements
 };
 </script>
 
@@ -82,6 +95,11 @@ const handleResetIconPress = () => {
             </tr>
         </tbody>
     </table>
+
+    <!-- Pagination -->
+    <div class="d-flex mb-4 justify-content-center">
+        <button type="button" class="btn btn-secondary" @click="handleLoadMorePress()"><i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE</button>
+    </div>
 
     <!-- Confirm delete modal -->
     <div id="confirmDeleteModal" class="modal fade" tabindex="-1">

@@ -16,8 +16,7 @@ const loadMeasurements = () => {
 
 // Init function
 const init = () => {
-	if (GlobalStore.firstMeasurementsViewInit) return; // If already done, exit
-	GlobalStore.firstMeasurementsViewInit = true; // Mark as done
+	if (GlobalStore.measurementsList.length > 0) return; // If already done, exit
 	loadMeasurements(); // Load the measurements
 };
 
