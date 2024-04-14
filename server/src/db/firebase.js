@@ -59,7 +59,7 @@ const addLastDocumentId = async (conditions, params) => {
 export const getMeasurements = async params => {
     const measurementsCol = collection(db, collectionName);
     let conditions = []; // List of conditions to filter the query
-    conditions.push(orderBy('timestamp', 'asc')); // Add sorting
+    conditions.push(orderBy('timestamp', 'desc')); // Add sorting
     if (params.period) addPeriodFilter(conditions, params); // Add period filter (Last day, week, month or year)
     if (params.lastDocumentId) await addLastDocumentId(conditions, params); // Add last document for pagination
     const firebaseQuery = query(measurementsCol, ...conditions, limit(10)); // Create the query
