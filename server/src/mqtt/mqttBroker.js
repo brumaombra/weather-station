@@ -26,7 +26,15 @@ aedesInstance.on('clientDisconnect', client => {
 aedesInstance.on('publish', (packet, client) => {
     if (!client) return; // Ignore messages from unknown clients
     console.log('Message from ', client.id);
-    addMeasurement(packet.payload.toString()); // Add the measurement to Firebase
+    console.log('Topic: ', packet.topic);
+    console.log('Payload: ', packet.payload.toString());
+    if (packet.topic !== 'station/newReading') return; // Ignore non-reading messages
+    try { // Try to parse the JSON message
+        const jsonData = JSON.parse(packet.payload.toString()); // Parse the JSON data
+        addMeasurement(jsonData); // Add the measurement to Firebase
+    } catch (error) {
+        console.error('Error while parsing the JSON message: ', error);
+    }
 });
 
 // Start the MQTT broker

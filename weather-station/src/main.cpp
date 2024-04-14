@@ -4,28 +4,35 @@
 #include <DHT.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 
 #define DHTPIN 16 // DHT22 pin
 #define DHTTYPE DHT22 // Specify DHT type (DHT11, DHT22, DHT21, AM2301)
 
-float humidity = 0; // Humidity
-float temperature = 0; // Temperature
 const char ssid[] = "";
 const char password[] = "";
 const char mqttServer[] = "";
 const int mqttPort = 1883;
+unsigned long lastPublishTime = millis(); // Last publish time
+unsigned long publishInterval = 30 * 1000; // Publish interval in milliseconds
 
 DHT dht(DHTPIN, DHTTYPE); // DHT object
 WiFiClient espClient; // WiFi client object
 PubSubClient client(espClient); // MQTT client object
 
-// Publish the temperature and humidity readings to the MQTT broker
-bool publishReadings() {
-	char tempString[10];
-	sprintf(tempString, "%.1f", temperature);
-	client.publish("station/temperature", tempString);
-	sprintf(tempString, "%.1f", humidity);
-	client.publish("station/humidity", tempString);
+// Read and publish the temperature and humidity readings to the MQTT broker
+bool readAndPublishReadings() {
+	const float humidity = dht.readHumidity(); // Read the humidity from the DHT sensor
+	const float temperature = dht.readTemperature(); // Read the temperature from the DHT sensor
+
+	// Create a JSON document with the readings
+	JsonDocument doc;
+    doc["temperature"] = temperature;
+	doc["humidity"] = humidity;
+    size_t jsonLength = measureJson(doc) + 1; // Size of the JSON document
+    char json[jsonLength];
+    serializeJson(doc, json, sizeof(json));
+	client.publish("station/newReading", json);
 	return true;
 }
 
@@ -54,7 +61,7 @@ bool connectToMQTT() {
 	client.setServer(mqttServer, mqttPort);
 	while (!client.connected()) {
 		Serial.println("Connecting to MQTT...");
-		if (client.connect("ESP32Client")) {
+		if (client.connect("esp_station")) {
 			Serial.println("Connected");
 		} else {
 			Serial.print("Failed with state ");
@@ -65,18 +72,35 @@ bool connectToMQTT() {
 	return true;
 }
 
+// Check if the WiFi is still connected
+void checkWiFiConnection() {
+	if (WiFi.status() == WL_CONNECTED) return; // Exit if Wi-Fi is connected
+	Serial.println("WiFi disconnected, reconnecting...");
+	connectToWifi(); // Reconnect to Wi-Fi
+}
+
+// Check if the MQTT is still connected
+void checkMQTTConnection() {
+	if (client.connected()) return; // Exit if MQTT is connected
+	Serial.println("MQTT disconnected, reconnecting...");
+	connectToMQTT(); // Reconnect to MQTT
+}
+
 // Setup
 void setup() {
 	Serial.begin(115200); // Start the serial
 	setupDHT(); // Initialize the DHT sensor
 	connectToWifi(); // Connect to Wi-Fi
 	connectToMQTT(); // Connect to MQTT broker
+	readAndPublishReadings(); // Publish the temperature and humidity readings to the MQTT broker
+	lastPublishTime = millis(); // Update the last publish time
 }
 
 // Loop
 void loop() {
-	humidity = dht.readHumidity(); // Read the humidity from the DHT sensor
-	temperature = dht.readTemperature(); // Read the temperature from the DHT
-	publishReadings(); // Publish the temperature and humidity readings to the MQTT broker
-	delay(5000); // Wait for 5 seconds
+	if (millis() - lastPublishTime < publishInterval) return; // Exit if the publish frequency is not met
+	lastPublishTime = millis(); // Update the last publish time
+	checkWiFiConnection(); // Check if the Wi-Fi is still connected
+	checkMQTTConnection(); // Check if the MQTT is still connected
+	readAndPublishReadings(); // Publish the temperature and humidity readings to the MQTT broker
 }

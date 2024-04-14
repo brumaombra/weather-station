@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
 import Busy from '@/components/Busy.vue'
+import MessageToast from '@/components/MessageToast.vue'
 </script>
 
 <template>
@@ -12,6 +13,9 @@ import Busy from '@/components/Busy.vue'
 	<div class="container mt-5">
 		<RouterView />
 	</div>
+
+	<!-- Message toast -->
+	<MessageToast />
 
 	<!-- Busy -->
 	<Busy />

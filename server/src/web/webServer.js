@@ -1,4 +1,4 @@
-import { getMeasurements, updateMeasurement, deleteMeasurement, addMeasurement } from '../db/firebase.js';
+import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement } from '../db/firebase.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -15,7 +15,8 @@ app.use(express.static(path.join(__dirname, '../../public')));
 
 // Get all the measurements
 app.get('/api/measurements', (req, res) => {
-    getMeasurements().then(misure => res.json(misure));
+    const params = req.query; // Query parameters
+    getMeasurements(params).then(measures => res.json(measures));
 });
 
 // Add a new measurement
@@ -51,17 +52,17 @@ app.put('/api/measurements/:id', (req, res) => {
     });
 });
 
-// Delete a measurement
-app.delete('/api/measurements/:id', (req, res) => {
-    const { id } = req.params;
-    if (!id) { // Check if the data is valid
-        res.status(400).send({ message: 'Invalid data' });
+// Delete one or multiple measurements
+app.delete('/api/measurements', (req, res) => {
+    const { idList } = req.body;
+    if (!idList || !Array.isArray(idList) || idList.length === 0) {
+        res.status(400).send({ message: 'Invalid data, expected an array of ids' });
         return;
     }
 
     // Delete the measurement from Firestore
-    deleteMeasurement(id).then(() => {
-        res.send({ id })
+    deleteMeasurements(idList).then(() => {
+        res.send(idList) // Send the ID list
     }).catch(error => {
         res.status(400).send({ message: error.message })
     });
@@ -71,8 +72,7 @@ app.delete('/api/measurements/:id', (req, res) => {
 const checkData = data => {
     const temperatureValid = data.temperature && Number.isFinite(data.temperature); // Check if the temperature is a number
     const humidityValid = data.humidity && Number.isFinite(data.humidity); // Check if the humidity is a number
-    const timestampValid = data.timestamp && !isNaN(Date.parse(data.timestamp)); // Check if the timestamp is a valid date
-    return temperatureValid && humidityValid && timestampValid;
+    return temperatureValid && humidityValid;
 };
 
 // Initialize the web server
