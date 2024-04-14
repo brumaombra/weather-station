@@ -1,4 +1,4 @@
-import { getMeasurements, updateMeasurement, deleteMeasurement, addMeasurement } from '../db/firebase.js';
+import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement } from '../db/firebase.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -52,17 +52,17 @@ app.put('/api/measurements/:id', (req, res) => {
     });
 });
 
-// Delete a measurement
-app.delete('/api/measurements/:id', (req, res) => {
-    const { id } = req.params;
-    if (!id) { // Check if the data is valid
-        res.status(400).send({ message: 'Invalid data' });
+// Delete one or multiple measurements
+app.delete('/api/measurements', (req, res) => {
+    const { idList } = req.body;
+    if (!idList || !Array.isArray(idList) || idList.length === 0) {
+        res.status(400).send({ message: 'Invalid data, expected an array of ids' });
         return;
     }
 
     // Delete the measurement from Firestore
-    deleteMeasurement(id).then(() => {
-        res.send({ id })
+    deleteMeasurements(idList).then(() => {
+        res.send(idList) // Send the ID list
     }).catch(error => {
         res.status(400).send({ message: error.message })
     });

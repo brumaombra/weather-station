@@ -7,6 +7,11 @@ body,
     color: #262626 !important;
 }
 
+/* Remove outline accessibility */
+*:focus {
+    box-shadow: none !important;
+}
+
 /* Modal */
 .modal-content {
     border: none;
@@ -55,4 +60,12 @@ body,
 /* Custom margin bottom */
 .mb-4-5 {
     margin-bottom: 2rem !important;
+}
+
+/* Table */
+.table>:not(caption)>*>* {
+    padding: .8rem .5rem;
+}
+.table-checkbox {
+    transform: scale(1.3);
 }

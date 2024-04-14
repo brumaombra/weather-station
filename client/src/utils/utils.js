@@ -8,6 +8,16 @@ export const setBusy = busy => {
     GlobalStore.busy = busy;
 };
 
+// Show the message toast
+export const showToast = (message, type, time) => {
+    GlobalStore.toast.message = message;
+    GlobalStore.toast.type = type;
+    GlobalStore.toast.visible = true;
+    setTimeout(() => { // Hide the toast after 5 seconds
+        GlobalStore.toast.visible = false; // Hide the toast
+    }, time || 3000);
+};
+
 // Get all the measurements
 export const getMeasurements = (success, error, params) => {
     const query = params ? `?${new URLSearchParams(params)}` : '';
@@ -50,10 +60,12 @@ export const addMeasurement = (measurement, success, error) => {
     });
 };
 
-// Delete a measurement
-export const deleteMeasurement = (id, success, error) => {
-    fetch(`${devUrl}/api/measurements/${id}`, {
-        method: 'DELETE'
+// Delete multiple measurements
+export const deleteMeasurements = (idList, success, error) => {
+    fetch(`${devUrl}/api/measurements`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idList: idList })
     }).then(response => {
         return response.json();
     }).then(data => {

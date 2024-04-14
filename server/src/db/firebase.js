@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, query, where, doc, addDoc, getDocs, getDoc, updateDoc, deleteDoc, Timestamp, orderBy, limit, startAfter } from 'firebase/firestore';
+import { getFirestore, collection, query, where, doc, addDoc, getDocs, getDoc, updateDoc, Timestamp, orderBy, limit, startAfter, writeBatch } from 'firebase/firestore';
 dotenv.config(); // Load the .env file
 
 // Initialize Firebase
@@ -75,10 +75,14 @@ export const addMeasurement = async measurement => {
     await addDoc(measurementRef, measurement);
 };
 
-// Delete a measurement from Firestore
-export const deleteMeasurement = async id => {
-    const measurementRef = doc(db, collectionName, id);
-    await deleteDoc(measurementRef);
+// Delete one or multiple measurements from Firestore
+export const deleteMeasurements = async idList => {
+    const batch = writeBatch(db);
+    idList.forEach(id => { // Loop through the IDs
+        const measurementRef = doc(db, collectionName, id);
+        batch.delete(measurementRef);
+    });
+    await batch.commit();
 };
 
 // Update a measurement in Firestore

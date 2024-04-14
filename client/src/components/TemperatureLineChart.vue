@@ -2,13 +2,13 @@
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
 import GlobalStore from '@/stores/store';
-import { timestampFormatter } from '@/utils/formatter.js';
+import { formatTimestamp } from '@/utils/formatter.js';
 
 let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
-    const label = GlobalStore.measurementsListChart.map(item => timestampFormatter(item.timestamp));
+    const label = GlobalStore.measurementsListChart.map(item => formatTimestamp(item.timestamp));
     const data = GlobalStore.measurementsListChart.map(item => item.temperature);
     const parameters = { // Chart parameters
         type: 'line',
