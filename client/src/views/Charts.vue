@@ -7,9 +7,9 @@ import { getMeasurements, setBusy } from '@/utils/utils';
 // Load the measurements
 const loadMeasurements = params => {
     setBusy(true); // Busy on
-    params = params || { // Set default filters
-        period: "D"
-    };
+    let parameters = params || {};
+    parameters.period = parameters.period || 'D'; // Set default period
+    parameters.orderDirection = parameters.orderDirection || 'asc'; // Set default order
 
     // Get the measurements
     getMeasurements(data => {
@@ -17,7 +17,7 @@ const loadMeasurements = params => {
         setBusy(false); // Busy off
     }, error => {
         setBusy(false); // Busy off
-    }, params);
+    }, parameters);
 };
 
 // Init function
