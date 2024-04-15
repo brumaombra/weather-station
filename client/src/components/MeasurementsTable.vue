@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
 import GlobalStore from '@/stores/store';
-import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements } from '@/utils/utils.js';
+import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements, addMeasurement } from '@/utils/utils.js';
 import { formatHumidity, formatTemperature, formatTimestamp } from '@/utils/formatter.js';
 
 // View model

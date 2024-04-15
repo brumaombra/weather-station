@@ -30,6 +30,18 @@ export const getMeasurements = (success, error, params) => {
     });
 };
 
+// Get all the aggregated measurements
+export const getAggregatedMeasurements = (success, error, params) => {
+    const query = params ? `?${new URLSearchParams(params)}` : '';
+    fetch(`${devUrl}/api/aggregatedMeasurements${query}`).then(response => {
+        return response.json();
+    }).then(data => {
+        if (success) success(data);
+    }).catch(errorResponse => {
+        if (error) error(errorResponse);
+    });
+};
+
 // Update a measurement
 export const updateMeasurement = (measurement, success, error) => {
     fetch(`${devUrl}/api/measurements/${measurement.id}`, {

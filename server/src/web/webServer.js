@@ -1,4 +1,4 @@
-import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement } from '../db/firebase.js';
+import { getMeasurements, getAggregatedDailyMeasurements, updateMeasurement, deleteMeasurements, addMeasurement } from '../db/firebase.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -17,6 +17,12 @@ app.use(express.static(path.join(__dirname, '../../public')));
 app.get('/api/measurements', (req, res) => {
     const params = req.query; // Query parameters
     getMeasurements(params).then(measures => res.json(measures));
+});
+
+// Get the aggregated measurements
+app.get('/api/aggregatedMeasurements', (req, res) => {
+    const params = req.query; // Query parameters
+    getAggregatedDailyMeasurements(params).then(measures => res.json(measures));
 });
 
 // Add a new measurement

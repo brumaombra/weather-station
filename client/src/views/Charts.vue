@@ -2,7 +2,7 @@
 import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/HumidityLineChart.vue';
 import GlobalStore from '@/stores/store.js';
-import { getMeasurements, setBusy } from '@/utils/utils';
+import { getAggregatedMeasurements, setBusy } from '@/utils/utils';
 
 // Load the measurements
 const loadMeasurements = params => {
@@ -12,7 +12,7 @@ const loadMeasurements = params => {
     parameters.orderDirection = parameters.orderDirection || 'asc'; // Set default order
 
     // Get the measurements
-    getMeasurements(data => {
+    getAggregatedMeasurements(data => {
         GlobalStore.measurementsListChart = data; // Save the loaded measurements
         setBusy(false); // Busy off
     }, error => {
@@ -45,8 +45,8 @@ init(); // Call init function
 
         <!-- Periods select -->
         <select class="form-select w-auto" @change="handlePeriodChange">
-            <option value="D" selected>Last day</option>
-            <option value="W">Last week</option>
+            <!-- <option value="D" selected>Last day</option> -->
+            <option value="W" selected>Last week</option>
             <option value="M">Last month</option>
             <option value="Y">Last year</option>
         </select>
