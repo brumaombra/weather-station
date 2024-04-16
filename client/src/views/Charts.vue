@@ -1,15 +1,21 @@
 <script setup>
+import { reactive } from 'vue';
 import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/HumidityLineChart.vue';
 import GlobalStore from '@/stores/store.js';
 import { getAggregatedMeasurements, setBusy } from '@/utils/utils';
 
+// View model
+const viewModel = reactive({
+    periodSelect: 'W'
+});
+
 // Load the measurements
-const loadMeasurements = params => {
+const loadMeasurements = () => {
     setBusy(true); // Busy on
-    let parameters = params || {};
-    parameters.period = parameters.period || 'D'; // Set default period
-    parameters.orderDirection = parameters.orderDirection || 'asc'; // Set default order
+    const params = {
+        period: viewModel.periodSelect
+    };
 
     // Get the measurements
     getAggregatedMeasurements(data => {
@@ -17,7 +23,7 @@ const loadMeasurements = params => {
         setBusy(false); // Busy off
     }, error => {
         setBusy(false); // Busy off
-    }, parameters);
+    }, params);
 };
 
 // Init function
@@ -28,10 +34,7 @@ const init = () => {
 
 // When period select changed
 const handlePeriodChange = event => {
-    const selectedValue = event.target?.value || null;
-    loadMeasurements({ // Load the measurements
-        period: selectedValue
-    });
+    loadMeasurements(); // Load the measurements
 };
 
 init(); // Call init function
@@ -44,9 +47,8 @@ init(); // Call init function
         <h3 class="mb-0"><i class="fa-solid fa-chart-line me-3"></i>Charts</h3>
 
         <!-- Periods select -->
-        <select class="form-select w-auto" @change="handlePeriodChange">
-            <!-- <option value="D" selected>Last day</option> -->
-            <option value="W" selected>Last week</option>
+        <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange">
+            <option value="W">Last week</option>
             <option value="M">Last month</option>
             <option value="Y">Last year</option>
         </select>

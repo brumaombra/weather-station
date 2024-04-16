@@ -2,33 +2,37 @@
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
 import GlobalStore from '@/stores/store';
-import { formatTimestamp } from '@/utils/formatter.js';
+import { formatDate } from '@/utils/formatter.js';
 
 let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
-    const label = GlobalStore.measurementsListChart.map(item => formatTimestamp(item.timestamp));
-    const data = GlobalStore.measurementsListChart.map(item => item.temperature);
+    if (GlobalStore.measurementsListChart.length === 0) return; // If empty, exit
+    const label = GlobalStore.measurementsListChart.map(item => formatDate(item.date));
+    const average = GlobalStore.measurementsListChart.map(item => item.temperature.avg); // Average
+    const max = GlobalStore.measurementsListChart.map(item => item.temperature.max); // Max
+    const min = GlobalStore.measurementsListChart.map(item => item.temperature.min); // Mix
     const parameters = { // Chart parameters
         type: 'line',
         data: {
             labels: label,
             datasets: [{
-                label: 'Temperature',
-                data: data,
-                fill: true,
-                backgroundColor: 'rgb(220, 53, 69, 0.05)',
-                borderColor: 'rgb(220, 53, 69)',
+                label: 'Average',
+                data: average,
+                borderColor: 'rgb(32, 191, 107)',
+                tension: 0.5
+            }, {
+                label: 'Max',
+                data: max,
+                borderColor: 'rgb(220, 53, 69, 0.2)',
+                tension: 0.5
+            }, {
+                label: 'Min',
+                data: min,
+                borderColor: 'rgb(13, 110, 253, 0.2)',
                 tension: 0.5
             }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
         }
     };
 
@@ -45,7 +49,7 @@ onMounted(() => {
 
 // Watch the property for changes
 watch(() => GlobalStore.measurementsListChart, () => {
-    createChart(); // Create the chart5
+    createChart(); // Create the chart
 });
 </script>
 
