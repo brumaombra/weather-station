@@ -18,6 +18,12 @@ export const formatDate = timestamp => {
     return date.toLocaleDateString(); // Format date as a string
 };
 
+// Format from JS date to YYYY-MM-DD
+export const formatJsDateToIsoStringDate = date => {
+    if (!date) return; // Return an empty string if not valid
+    return date.toISOString().split('T')[0]; // Format date as a string
+};
+
 // Temperature formatter
 export const formatTemperature = temperature => {
     return temperature.toFixed(2); // Round to 2 decimal places

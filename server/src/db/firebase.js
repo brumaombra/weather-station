@@ -16,16 +16,23 @@ const db = getFirestore(firebaseApp); // Firestore DB
 const collectionName = 'measurements'; // Collection name
 const aggregatedDailyCollectionName = 'aggregatedDailyMeasurements'; // Aggregated daily data
 
-// Convert days to milliseconds
-const daysToMilliseconds = days => {
-    return days * 24 * 60 * 60 * 1000;
-};
-
 // Add last document for pagination
 const addLastDocumentId = async (conditions, params) => {
     const lastDocRef = doc(db, collectionName, params.lastDocumentId);
     const lastDocSnapshot = await getDoc(lastDocRef);
     if (lastDocSnapshot.exists()) conditions.push(startAfter(lastDocSnapshot)); // Add the doc if exist
+};
+
+// Add start date and end date filters
+const addDatesFilter = (conditions, params) => {
+    if (params.startDate) { // Add start date
+        const startDate = getMaxAndMinFromDate(new Date(params.startDate)).minDate;
+        conditions.push(where('timestamp', '>=', Timestamp.fromDate(startDate)));
+    }
+    if (params.endDate) { // Add end date
+        const endDate = getMaxAndMinFromDate(new Date(params.endDate)).maxDate;
+        conditions.push(where('timestamp', '<=', Timestamp.fromDate(endDate)));
+    }
 };
 
 // Get measurements from Firestore
@@ -34,6 +41,7 @@ export const getMeasurements = async params => {
     let conditions = []; // List of conditions to filter the query
     conditions.push(orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc')); // Add order filter
     conditions.push(limit(params.limit || 25)); // Add limit filter
+    if (params.startDate || params.endDate) addDatesFilter(conditions, params); // Add start and end date filters
     if (params.lastDocumentId) await addLastDocumentId(conditions, params); // Add last document for pagination
     const firebaseQuery = query(measurementsCol, ...conditions); // Create the query
     const snapshot = await getDocs(firebaseQuery);
@@ -41,32 +49,16 @@ export const getMeasurements = async params => {
     return measurementsList;
 };
 
-// Add period filter to the query
-const addPeriodFilter = (conditions, params) => {
-    let days = 1; // Number of days to filter
-    switch (params.period) {
-        case 'D':
-            days = 1;
-            break;
-        case 'W':
-            days = 7;
-            break;
-        case 'M':
-            days = 30;
-            break;
-        case 'Y':
-            days = 365;
-            break;
+// Add start date and end date filters to aggregated data
+const addDatesFilterAggregatedData = (conditions, params) => {
+    if (params.startDate) { // Add start date
+        const startDate = getMaxAndMinFromDate(new Date(params.startDate)).minDate;
+        conditions.push(where('date', '>=', Timestamp.fromDate(startDate)));
     }
-
-    // Create the start and end dates
-    const today = new Date();
-    let start = new Date(today.getTime() - daysToMilliseconds(days));
-    let end = new Date(today.getTime());
-    start = getMaxAndMixFromDate(start).minDate; // Get the min date from the start date
-    end = getMaxAndMixFromDate(end).maxDate; // Get the max date from the end date
-    conditions.push(where('date', '>=', Timestamp.fromDate(start))); // Add the filter
-    conditions.push(where('date', '<=', Timestamp.fromDate(end))); // Add the filter
+    if (params.endDate) { // Add end date
+        const endDate = getMaxAndMinFromDate(new Date(params.endDate)).maxDate;
+        conditions.push(where('date', '<=', Timestamp.fromDate(endDate)));
+    }
 };
 
 // Get aggregated daily measurements from Firestore
@@ -75,7 +67,7 @@ export const getAggregatedDailyMeasurements = async params => {
     let conditions = []; // List of conditions to filter the query
     conditions.push(orderBy(params.orderField || 'date', params.orderDirection || 'asc')); // Add order filter
     conditions.push(limit(params.limit || 365)); // Add limit filter
-    if (params.period) addPeriodFilter(conditions, params); // Add period filter (Last day, week, month or year)
+    if (params.startDate || params.endDate) addDatesFilterAggregatedData(conditions, params); // Add start and end date filters
     const firebaseQuery = query(aggregatedDailyDataCol, ...conditions); // Create the query
     const snapshot = await getDocs(firebaseQuery);
     const measurementsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Add the ID to the data
@@ -115,7 +107,7 @@ const getYesterdayAtNoon = () => {
 };
 
 // Get min and max date from a date
-const getMaxAndMixFromDate = date => {
+const getMaxAndMinFromDate = date => {
     let minDate = new Date(date);
     minDate.setUTCHours(0, 0, 0, 0);
     let maxDate = new Date(date);
@@ -126,7 +118,7 @@ const getMaxAndMixFromDate = date => {
 // Check if there is already the data for a date
 const checkIfAggregatedDataExist = async date => {
     const aggregatedDailyDataCol = collection(db, aggregatedDailyCollectionName);
-    const { minDate, maxDate } = getMaxAndMixFromDate(date);
+    const { minDate, maxDate } = getMaxAndMinFromDate(date);
     let conditions = []; // List of conditions to filter the query
     conditions.push(where('date', '>=', Timestamp.fromDate(minDate))); // Add the filter for the min date
     conditions.push(where('date', '<=', Timestamp.fromDate(maxDate))); // Add the filter for the max date
@@ -139,7 +131,7 @@ const checkIfAggregatedDataExist = async date => {
 // Get data from a date
 const getDataFromDate = async date => {
     const measurementsCol = collection(db, collectionName);
-    const { minDate, maxDate } = getMaxAndMixFromDate(date);
+    const { minDate, maxDate } = getMaxAndMinFromDate(date);
     let conditions = []; // List of conditions to filter the query
     conditions.push(where('timestamp', '>=', Timestamp.fromDate(minDate))); // Add the filter for the min date
     conditions.push(where('timestamp', '<=', Timestamp.fromDate(maxDate))); // Add the filter for the max date

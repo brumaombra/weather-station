@@ -22,6 +22,10 @@ Here's a short list of some of the technologies utilized in this project:
 - `Express` (Web server)
 - `Firebase` (Database)
 
+(Next iteration)
+- `MySQL` (Database)
+- `Knex.js` (Query creation)
+
 ## Station
 - `ESP32` (Microcontroller)
 - `DHT22` (Temperature/humidity sensor)

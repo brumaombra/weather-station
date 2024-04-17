@@ -18,6 +18,11 @@ export const showToast = (message, type, time) => {
     }, time || 3000);
 };
 
+// Convert days in milliseconds
+export const fromDaysToMilliseconds = days => {
+    return days * 24 * 60 * 60 * 1000;
+};
+
 // Get all the measurements
 export const getMeasurements = (success, error, params) => {
     const query = params ? `?${new URLSearchParams(params)}` : '';

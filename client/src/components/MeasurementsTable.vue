@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
 import GlobalStore from '@/stores/store';
-import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements, addMeasurement } from '@/utils/utils.js';
+import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements } from '@/utils/utils.js';
 import { formatHumidity, formatTemperature, formatTimestamp } from '@/utils/formatter.js';
 
 // View model
@@ -11,9 +11,13 @@ const viewModel = reactive({
     selectedAll: false, // Select all checkbox value
     orderBy: 'timestamp', // The order field
     orderDirection: 'desc', // The order direction
-    dialogSort: { // Filter dialog properties
+    startDate: '', // Start date
+    endDate: '', // End date
+    dialogFilter: { // Filter dialog properties
         orderBy: 'timestamp', // The order field
-        orderDirection: 'desc' // The order direction
+        orderDirection: 'desc', // The order direction
+        startDate: '', // Start date
+        endDate: '' // End date
     }
 });
 
@@ -25,6 +29,8 @@ const loadMeasurements = (successCallback, errorCallback, loadNewPage) => {
         orderDirection: viewModel.orderDirection || 'desc'
     };
 	if (loadNewPage) params.lastDocumentId = GlobalStore.measurementsList[GlobalStore.measurementsList.length - 1]?.id; // Add last item for pagination
+    if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
+    if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
 
     // Get the measurements
     getMeasurements(results => {
@@ -44,8 +50,10 @@ const loadMeasurements = (successCallback, errorCallback, loadNewPage) => {
 
 // The filter dialog button "apply"
 const handleApplyFilterPress = () => {
-    viewModel.orderBy = viewModel.dialogSort.orderBy; // Apply order by
-    viewModel.orderDirection = viewModel.dialogSort.orderDirection; // Apply order direction
+    viewModel.orderBy = viewModel.dialogFilter.orderBy; // Apply order by
+    viewModel.orderDirection = viewModel.dialogFilter.orderDirection; // Apply order direction
+    viewModel.startDate = viewModel.dialogFilter.startDate; // Apply start date
+    viewModel.endDate = viewModel.dialogFilter.endDate; // Apply end date
     loadMeasurements(); // Load measurements
 };
 
@@ -63,11 +71,8 @@ const handleTableSelectionChange = () => {
 };
 
 // Open a dialog
-const openDialog = (dialog, measurement) => {
+const saveItemReference = measurement => {
     if (measurement) Object.assign(viewModel.tempMeasurement, { ...measurement }); // Save the element
-    const modalDom = document.getElementById(dialog);
-    const modal = new bootstrap.Modal(modalDom);
-    modal.show();
 };
 
 // Edit the measurement
@@ -139,8 +144,8 @@ init(); // Call init function
         
         <!-- Buttons -->
         <div>
-            <button type="button" class="btn btn-danger me-2" @click="openDialog('confirmMassDeleteModal')" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
-            <button type="button" class="btn btn-secondary me-2" @click="openDialog('sortModal')"><i class="fa-solid fa-arrow-down-a-z fs-5 me-2"></i>SORT</button>
+            <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
+            <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
             <button type="button" class="btn btn-secondary" @click="handleResetIconPress()"><i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH</button>
         </div>
     </div>
@@ -165,8 +170,8 @@ init(); // Call init function
                 <td>{{ formatTemperature(item.temperature) }} °C</td>
                 <td>{{ formatHumidity(item.humidity) }} %</td>
                 <td class="column-icons">
-                    <i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" @click="openDialog('editModal', item)"></i>
-                    <i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer ms-4" @click="openDialog('confirmDeleteModal', item)"></i>
+                    <i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i>
+                    <i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer ms-4" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i>
                 </td>
             </tr>
         </tbody>
@@ -177,18 +182,32 @@ init(); // Call init function
         <button type="button" class="btn btn-secondary" @click="handleLoadMorePress()"><i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE</button>
     </div>
 
-    <!-- Sort modal -->
-    <div id="sortModal" class="modal fade" tabindex="-1">
+    <!-- Filter modal -->
+    <div id="filterModal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5"><i class="fa-solid fa-arrow-down-a-z me-2"></i>Sort</h1>
+                    <h1 class="modal-title fs-5"><i class="fa-solid fa-filter me-2"></i>Filter</h1>
                 </div>
                 <div class="modal-body">
+                    <!-- Start date -->
+                    <div class="mb-3">
+                        <label class="form-label">Start date</label>
+                        <input type="date" class="form-control" v-model="viewModel.dialogFilter.startDate" />
+                        <div class="form-text">Extract data starting from this date</div>
+                    </div>
+
+                    <!-- End date -->
+                    <div class="mb-3">
+                        <label class="form-label">End date</label>
+                        <input type="date" class="form-control" v-model="viewModel.dialogFilter.endDate" />
+                        <div class="form-text">Extract data up to this date</div>
+                    </div>
+
                     <!-- Order by -->
                     <div class="mb-3">
                         <label class="form-label">Order by</label>
-                        <select class="form-select" v-model="viewModel.dialogSort.orderBy">
+                        <select class="form-select" v-model="viewModel.dialogFilter.orderBy">
                             <option value="timestamp">Timestamp</option>
                             <option value="temperature">Temperature</option>
                             <option value="humidity">Humidity</option>
@@ -199,7 +218,7 @@ init(); // Call init function
                     <!-- Order direction -->
                     <div class="mb-3">
                         <label class="form-label">Direction</label>
-                        <select class="form-select" v-model="viewModel.dialogSort.orderDirection">
+                        <select class="form-select" v-model="viewModel.dialogFilter.orderDirection">
                             <option value="asc">Ascending</option>
                             <option value="desc">Descending</option>
                         </select>
