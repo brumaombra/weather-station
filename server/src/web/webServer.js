@@ -1,4 +1,5 @@
-import { getMeasurements, getAggregatedDailyMeasurements, updateMeasurement, deleteMeasurements, addMeasurement } from '../db/firebase.js';
+import { getAggregatedDailyMeasurements } from '../db/firebase.js';
+import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement } from '../db/sql.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
