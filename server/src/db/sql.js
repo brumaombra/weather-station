@@ -17,13 +17,14 @@ export const initMySqlDatabase = async () => {
             database: 'weather-station'
         }
     });
-
-    // Test the connection
-    knex.raw('SELECT 1').then(() => {
+    
+    try { // Test the connection
+        const query = knex.raw('SELECT 1'); // Create the query
+        await query; // Execute the query
         console.log('Successfully connected to the database');
-    }).catch(err => {
-        console.error('Error while connecting to the database: ', err);
-    });
+    } catch (error) {
+        console.error('Error while connecting to the database:', error);
+    }
 };
 
 // Create the query to get the measurements from the database
@@ -43,7 +44,7 @@ export const getMeasurements = async params => {
         console.log(query.toString()); // Log the query
         return await query; // Execute the query
     } catch (error) {
-        console.error('Error while reading the measurements: ', error);
+        console.error('Error while reading the measurements:', error);
     }
 };
 
@@ -54,7 +55,7 @@ export const updateMeasurement = async (id, newData) => {
         console.log(query.toString()); // Log the query
         await query; // Execute the query
     } catch (error) {
-        console.error('Error while updating the measurement: ', error);
+        console.error('Error while updating the measurement:', error);
     }
 };
 
@@ -65,7 +66,7 @@ export const deleteMeasurements = async idList => {
         console.log(query.toString()); // Log the query
         await query; // Execute the query
     } catch (error) {
-        console.error('Error while deleting the measurements: ', error);
+        console.error('Error while deleting the measurements:', error);
     }
 };
 
@@ -77,6 +78,6 @@ export const addMeasurement = async measurement => {
         console.log(query.toString()); // Log the query
         await query; // Execute the query
     } catch (error) {
-        console.error('Error while adding the measurement: ', error);
+        console.error('Error while adding the measurement:', error);
     }
 };
