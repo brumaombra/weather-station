@@ -17,7 +17,7 @@ export const initMySqlDatabase = async () => {
             database: 'weather-station'
         }
     });
-    
+
     try { // Test the connection
         const query = knex.raw('SELECT 1'); // Create the query
         await query; // Execute the query
@@ -41,6 +41,29 @@ const createQueryGetMeasurements = params => {
 export const getMeasurements = async params => {
     try {
         const query = createQueryGetMeasurements(params); // Create the query
+        console.log(query.toString()); // Log the query
+        return await query; // Execute the query
+    } catch (error) {
+        console.error('Error while reading the measurements:', error);
+    }
+};
+
+// Create the query to get the aggregated measurements from the database
+const createQueryGetAggregatedDailyMeasurements = params => {
+    let query = knex('measurements').select(knex.raw('DATE(timestamp) as date'));
+    query = query.avg('temperature as temperatureAvg').min('temperature as temperatureMin').max('temperature as temperatureMax'); // Add temperature data
+    query = query.avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax'); // Add humidity data
+    query = query.groupByRaw('DATE(timestamp)'); // Group by 
+    if (params.startDate) query = query.whereRaw('DATE(timestamp) >= ?', [getMaxAndMinFromDate(new Date(params.startDate)).minDate]); // Add start date
+    if (params.endDate) query = query.whereRaw('DATE(timestamp) <= ?', [getMaxAndMinFromDate(new Date(params.endDate)).maxDate]); // Add end date
+    query = query.orderBy('date', 'asc'); // Add order filter
+    return query;
+};
+
+// Get the aggregated measurements from the database
+export const getAggregatedDailyMeasurements = async params => {
+    try {
+        const query = createQueryGetAggregatedDailyMeasurements(params); // Create the query
         console.log(query.toString()); // Log the query
         return await query; // Execute the query
     } catch (error) {

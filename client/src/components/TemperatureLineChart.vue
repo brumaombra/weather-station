@@ -8,11 +8,10 @@ let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
-    if (GlobalStore.measurementsListChart.length === 0) return; // If empty, exit
-    const label = GlobalStore.measurementsListChart.map(item => formatDate(item.date));
-    const average = GlobalStore.measurementsListChart.map(item => item.temperature.avg); // Average
-    const max = GlobalStore.measurementsListChart.map(item => item.temperature.max); // Max
-    const min = GlobalStore.measurementsListChart.map(item => item.temperature.min); // Mix
+    const label = GlobalStore.measurementsListChart.map(item => formatDate(item.date)); // Label
+    const average = GlobalStore.measurementsListChart.map(item => item.temperatureAvg); // Average
+    const max = GlobalStore.measurementsListChart.map(item => item.temperatureMax); // Max
+    const min = GlobalStore.measurementsListChart.map(item => item.temperatureMin); // Mix
     const parameters = { // Chart parameters
         type: 'line',
         data: {
