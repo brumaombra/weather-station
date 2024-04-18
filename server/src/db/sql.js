@@ -10,11 +10,11 @@ export const initMySqlDatabase = async () => {
     knex = knexLib({ // Initialize the Knex library
         client: 'mysql',
         connection: {
-            host: '127.0.0.1',
-            port: 3306,
+            host: process.env.MYSQL_IP,
+            port: process.env.MYSQL_PORT,
             user: process.env.MYSQL_USER,
             password: process.env.MYSQL_PASSWORD,
-            database: 'weather-station'
+            database: process.env.MYSQL_DATABASE_NAME
         }
     });
 
@@ -31,7 +31,6 @@ export const initMySqlDatabase = async () => {
 const createQueryGetMeasurements = params => {
     let query = knex('measurements').select('*'); // Select all columns from the measurements table
     query = query.orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc'); // Add order filter
-    // query = query.limit(params.limit || 25); // Limit the number of results
     query = query.limit(params.limit || 25).offset(params.offset || 0); // For pagination
     if (params.startDate) query = query.where('timestamp', '>=', getMaxAndMinFromDate(new Date(params.startDate)).minDate); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', getMaxAndMinFromDate(new Date(params.endDate)).maxDate); // Add end date
