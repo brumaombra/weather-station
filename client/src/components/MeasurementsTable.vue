@@ -26,18 +26,19 @@ const loadMeasurements = (successCallback, errorCallback, loadNewPage) => {
     setBusy(true); // Busy on
     let params = { // Query parameters
         orderField: viewModel.orderBy || 'timestamp',
-        orderDirection: viewModel.orderDirection || 'desc'
+        orderDirection: viewModel.orderDirection || 'desc',
+        limit: 25 // Default to 25
     };
-	if (loadNewPage) params.lastDocumentId = GlobalStore.measurementsList[GlobalStore.measurementsList.length - 1]?.id; // Add last item for pagination
     if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
+    if (loadNewPage) params.offset = GlobalStore.measurementsList.results.length; // Add offset for pagination
 
     // Get the measurements
-    getMeasurements(results => {
+    getMeasurements(response => {
         if (loadNewPage) // If pagination
-            GlobalStore.measurementsList = [ ...GlobalStore.measurementsList, ...results]; // Concatenate the new data
+            GlobalStore.measurementsList.results = [...GlobalStore.measurementsList.results, ...response.results]; // Concatenate the new data
         else
-            GlobalStore.measurementsList = results; // Update the data
+            GlobalStore.measurementsList = response; // Update the data
         handleTableSelectionChange(); // Check if selected
         setBusy(false); // Busy off
         if (successCallback) successCallback(); // Success callback
@@ -60,13 +61,13 @@ const handleApplyFilterPress = () => {
 // Select all table items
 const handleSelectDeselectAllPress = () => {
     viewModel.selectedAll = !viewModel.selectedAll; // Change true/false
-    GlobalStore.measurementsList.forEach(item => item.selected = viewModel.selectedAll);
+    GlobalStore.measurementsList.results.forEach(item => item.selected = viewModel.selectedAll);
     handleTableSelectionChange(); // Check if selected
 };
 
 // Table selection change event
 const handleTableSelectionChange = () => {
-    const selectedIds = GlobalStore.measurementsList.filter(item => item.selected); // Get the selected items
+    const selectedIds = GlobalStore.measurementsList.results.filter(item => item.selected); // Get the selected items
     viewModel.buttonMassDeleteVisible = selectedIds.length > 0; // If items selected, display mass delete button
 };
 
@@ -93,7 +94,7 @@ const handleSaveEditPress = () => {
 // Delete the measurement
 const handleDeleteItemPress = () => {
     setBusy(true); // Busy on
-    deleteMeasurements([ viewModel.tempMeasurement.id ], response => { // Delete the measurement from the DB
+    deleteMeasurements([viewModel.tempMeasurement.id], response => { // Delete the measurement from the DB
         loadMeasurements(); // Load the measurements
         showToast('Measurement deleted successfully!', 'success'); // Show toast
     }, error => {
@@ -110,7 +111,7 @@ const handleResetIconPress = () => {
 // Delete selected button pressed
 const handleMassDeletePress = () => {
     setBusy(true); // Busy on
-    const selectedIds = GlobalStore.measurementsList.filter(item => item.selected).map(item => item.id); // Get the selected IDs
+    const selectedIds = GlobalStore.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
     deleteMeasurements(selectedIds, response => { // Delete the measurement from the DB
         loadMeasurements(); // Load the measurements
         showToast('Measurements deleted successfully!', 'success'); // Show toast
@@ -127,8 +128,8 @@ const handleLoadMorePress = () => {
 
 // Init function
 const init = () => {
-	if (GlobalStore.measurementsList.length > 0) return; // If already done, exit
-	loadMeasurements(); // Load the measurements
+    if (GlobalStore.measurementsList.results.length > 0) return; // If already done, exit
+    loadMeasurements(); // Load the measurements
 };
 
 init(); // Call init function
@@ -139,9 +140,9 @@ init(); // Call init function
     <div class="d-flex mb-4 align-items-center justify-content-between">
         <!-- Title -->
         <div>
-            <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ GlobalStore.measurementsList.length }}</span></h3>
+            <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ GlobalStore.measurementsList.count }}</span></h3>
         </div>
-        
+
         <!-- Buttons -->
         <div>
             <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
@@ -163,7 +164,7 @@ init(); // Call init function
             </tr>
         </thead>
         <tbody class="text-center">
-            <tr v-for="item in GlobalStore.measurementsList">
+            <tr v-for="item in GlobalStore.measurementsList.results">
                 <td><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
                 <th class="column-id">{{ item.id }}</th>
                 <td>{{ formatTimestamp(item.timestamp) }}</td>
@@ -179,7 +180,7 @@ init(); // Call init function
 
     <!-- Pagination -->
     <div class="d-flex mb-4 justify-content-center">
-        <button type="button" class="btn btn-secondary" @click="handleLoadMorePress()"><i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE</button>
+        <button type="button" class="btn btn-secondary" @click="handleLoadMorePress()" v-if="GlobalStore.measurementsList.results.length < GlobalStore.measurementsList.count"><i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE</button>
     </div>
 
     <!-- Filter modal -->

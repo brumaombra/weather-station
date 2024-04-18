@@ -71,7 +71,7 @@ const handleApplyFilterPress = () => {
 
 // Init function
 const init = () => {
-    if (GlobalStore.measurementsListChart.length > 0) return; // If already done, exit
+    if (GlobalStore.measurementsListChart.results.length > 0) return; // If already done, exit
     addFilterDatesFromPeriod(); // Add the filter dates from the selected period
     loadMeasurements(); // Load the measurements
 };

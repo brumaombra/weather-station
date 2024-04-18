@@ -29,9 +29,18 @@ export const initMySqlDatabase = async () => {
 
 // Create the query to get the measurements from the database
 const createQueryGetMeasurements = params => {
-    let query = knex.select('*').from('measurements'); // Select all columns from the measurements table
+    let query = knex('measurements').select('*'); // Select all columns from the measurements table
     query = query.orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc'); // Add order filter
-    query = query.limit(params.limit || 25); // Limit the number of results
+    // query = query.limit(params.limit || 25); // Limit the number of results
+    query = query.limit(params.limit || 25).offset(params.offset || 0); // For pagination
+    if (params.startDate) query = query.where('timestamp', '>=', getMaxAndMinFromDate(new Date(params.startDate)).minDate); // Add start date
+    if (params.endDate) query = query.where('timestamp', '<=', getMaxAndMinFromDate(new Date(params.endDate)).maxDate); // Add end date
+    return query;
+};
+
+// Create the query to get the number of measurements from the database
+const createQueryGetMeasurementsCount = params => {
+    let query = knex('measurements').count('* as count'); // Count the number of rows in the measurements table
     if (params.startDate) query = query.where('timestamp', '>=', getMaxAndMinFromDate(new Date(params.startDate)).minDate); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', getMaxAndMinFromDate(new Date(params.endDate)).maxDate); // Add end date
     return query;
@@ -41,8 +50,11 @@ const createQueryGetMeasurements = params => {
 export const getMeasurements = async params => {
     try {
         const query = createQueryGetMeasurements(params); // Create the query
+        const queryCount = createQueryGetMeasurementsCount(params); // Create the query to get the number of results
         console.log(query.toString()); // Log the query
-        return await query; // Execute the query
+        const results = await query; // Execute the query
+        const count = await queryCount.first(); // Get the number of results
+        return { count: count.count, results: results }; // Return the results and the number of results
     } catch (error) {
         console.error('Error while reading the measurements:', error);
     }
@@ -50,13 +62,13 @@ export const getMeasurements = async params => {
 
 // Create the query to get the aggregated measurements from the database
 const createQueryGetAggregatedDailyMeasurements = params => {
-    let query = knex('measurements').select(knex.raw('DATE(timestamp) as date'));
+    let query = knex('measurements').select(knex.raw('DATE(timestamp) as date')); // Select the date column
     query = query.avg('temperature as temperatureAvg').min('temperature as temperatureMin').max('temperature as temperatureMax'); // Add temperature data
     query = query.avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax'); // Add humidity data
-    query = query.groupByRaw('DATE(timestamp)'); // Group by 
+    query = query.groupByRaw('DATE(timestamp)'); // Group by
+    query = query.orderBy('date', 'asc'); // Add order filter
     if (params.startDate) query = query.whereRaw('DATE(timestamp) >= ?', [getMaxAndMinFromDate(new Date(params.startDate)).minDate]); // Add start date
     if (params.endDate) query = query.whereRaw('DATE(timestamp) <= ?', [getMaxAndMinFromDate(new Date(params.endDate)).maxDate]); // Add end date
-    query = query.orderBy('date', 'asc'); // Add order filter
     return query;
 };
 
@@ -65,7 +77,10 @@ export const getAggregatedDailyMeasurements = async params => {
     try {
         const query = createQueryGetAggregatedDailyMeasurements(params); // Create the query
         console.log(query.toString()); // Log the query
-        return await query; // Execute the query
+        const results = await query; // Execute the query
+        // const subQueryCount = query.clone().as('sub'); // Create a subquery to get the number of results
+        // const count = await knex.count('* as count').from(subQueryCount).first(); // Get the number of results
+        return { count: results.length, results: results }; // Return the results and the number of results
     } catch (error) {
         console.error('Error while reading the measurements:', error);
     }
