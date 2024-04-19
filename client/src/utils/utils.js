@@ -23,10 +23,54 @@ export const fromDaysToMilliseconds = days => {
     return days * 24 * 60 * 60 * 1000;
 };
 
+// Login attempt
+export const loginAttempt = (username, password, success, error) => {
+    fetch(`${devUrl}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    }).then(response => {
+        if (!response.ok) throw new Error(response); // If not OK, throw an error
+        return response.json();
+    }).then(data => {
+        if (!data.token) throw new Error(data); // If no token, error
+        localStorage.setItem('adminToken', data.token); // Save the token to local storage
+        GlobalStore.adminToken = data.token; // Set the token in the global store
+        if (success) success(data);
+    }).catch(errorResponse => {
+        if (error) error(errorResponse);
+    });
+};
+
+// Logout the user
+export const logout = () => {
+    localStorage.removeItem('adminToken'); // Remove the token from local storage
+    GlobalStore.adminToken = null; // Clear the token
+};
+
+// Validate the token
+export const validateSession = (success, error) => {
+    const token = localStorage.getItem('adminToken'); // Get the token from local storage
+    fetch(`${devUrl}/api/validateToken`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+    }).then(response => {
+        if (!response.ok) throw new Error(response); // If not OK, throw an error
+        return response.json();
+    }).then(data => {
+        GlobalStore.adminToken = token; // Set the token in the global store
+        if (success) success(data);
+    }).catch(errorResponse => {
+        logout(); // Logout the user
+        if (error) error(errorResponse);
+    });
+};
+
 // Get all the measurements
 export const getMeasurements = (success, error, params) => {
     const query = params ? `?${new URLSearchParams(params)}` : '';
     fetch(`${devUrl}/api/measurements${query}`).then(response => {
+        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
         if (success) success(data);
@@ -39,6 +83,7 @@ export const getMeasurements = (success, error, params) => {
 export const getAggregatedMeasurements = (success, error, params) => {
     const query = params ? `?${new URLSearchParams(params)}` : '';
     fetch(`${devUrl}/api/aggregatedMeasurements${query}`).then(response => {
+        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
         if (success) success(data);
@@ -49,11 +94,13 @@ export const getAggregatedMeasurements = (success, error, params) => {
 
 // Update a measurement
 export const updateMeasurement = (measurement, success, error) => {
+    const token = GlobalStore.adminToken; // Get the token from the global store
     fetch(`${devUrl}/api/measurements/${measurement.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(measurement)
     }).then(response => {
+        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
         if (success) success(data);
@@ -69,6 +116,7 @@ export const addMeasurement = (measurement, success, error) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(measurement)
     }).then(response => {
+        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
         if (success) success(data);
@@ -79,11 +127,13 @@ export const addMeasurement = (measurement, success, error) => {
 
 // Delete multiple measurements
 export const deleteMeasurements = (idList, success, error) => {
+    const token = GlobalStore.adminToken; // Get the token from the global store
     fetch(`${devUrl}/api/measurements`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ idList: idList })
     }).then(response => {
+        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
         if (success) success(data);

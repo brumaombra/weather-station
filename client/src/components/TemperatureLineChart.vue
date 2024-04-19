@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
-import GlobalStore from '@/stores/store';
+import GlobalStore from '@/stores/store.js';
 import { formatDate } from '@/utils/formatter.js';
 
 let chart = null; // The chart element

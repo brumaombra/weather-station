@@ -27,6 +27,13 @@ export const initMySqlDatabase = async () => {
     }
 };
 
+// Get the user from the database
+export const getUser = async username => {
+    const query = knex('users').where({ username });
+    const result = await query.first();
+    return result;
+};
+
 // Create the query to get the measurements from the database
 const createQueryGetMeasurements = params => {
     let query = knex('measurements').select('*'); // Select all columns from the measurements table

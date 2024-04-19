@@ -1,6 +1,6 @@
 <script setup>
 import { reactive } from 'vue';
-import GlobalStore from '@/stores/store';
+import GlobalStore from '@/stores/store.js';
 import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements } from '@/utils/utils.js';
 import { formatHumidity, formatTemperature, formatTimestamp } from '@/utils/formatter.js';
 
@@ -137,7 +137,7 @@ init(); // Call init function
 
 <template>
     <!-- Toolbar -->
-    <div class="d-flex mb-4 align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between mb-4">
         <!-- Title -->
         <div>
             <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ GlobalStore.measurementsList.count }}</span></h3>
@@ -155,22 +155,22 @@ init(); // Call init function
     <table class="table table-striped mb-4">
         <thead class="text-center">
             <tr>
-                <th><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" @change="handleSelectDeselectAllPress()" /></th>
+                <th v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" @change="handleSelectDeselectAllPress()" /></th>
                 <th>ID</th>
                 <th>Timestamp</th>
                 <th>Temperature</th>
                 <th>Humidity</th>
-                <th></th>
+                <th v-if="GlobalStore.adminToken"></th>
             </tr>
         </thead>
         <tbody class="text-center">
             <tr v-for="item in GlobalStore.measurementsList.results">
-                <td><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
+                <td v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
                 <th class="column-id">{{ item.id }}</th>
                 <td>{{ formatTimestamp(item.timestamp) }}</td>
                 <td>{{ formatTemperature(item.temperature) }} °C</td>
                 <td>{{ formatHumidity(item.humidity) }} %</td>
-                <td class="column-icons">
+                <td class="column-icons" v-if="GlobalStore.adminToken">
                     <i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i>
                     <i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer ms-4" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i>
                 </td>
