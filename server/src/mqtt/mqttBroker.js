@@ -1,4 +1,4 @@
-import { addMeasurement } from '../db/firebase.js';
+import { addMeasurement } from '../db/sql.js';
 import aedes from 'aedes';
 import net from 'net';
 

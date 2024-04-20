@@ -1,11 +1,19 @@
 // Timestamp formatter
 export const formatTimestamp = timestamp => {
-    if (!timestamp || typeof timestamp.seconds !== 'number' || typeof timestamp.nanoseconds !== 'number') return; // Return an empty string if not valid
-    const millisecondsFromSeconds = timestamp.seconds * 1000; // Convert seconds to milliseconds
-    const millisecondsFromNanoseconds = timestamp.nanoseconds / 1000000; // Convert nanoseconds to milliseconds
-    const totalMilliseconds = millisecondsFromSeconds + millisecondsFromNanoseconds; // Add seconds and nanoseconds to get total milliseconds
-    const date = new Date(totalMilliseconds); // Create Date object from total milliseconds
+    const date = new Date(timestamp); // Create date object from timestamp
     return date.toLocaleString(); // Format date as a string
+};
+
+// Date formatter
+export const formatDate = timestamp => {
+    const date = new Date(timestamp); // Create date object from timestamp
+    return date.toLocaleDateString(); // Format date as a string
+};
+
+// Format from JS date to YYYY-MM-DD
+export const formatJsDateToIsoStringDate = date => {
+    if (!date) return; // Return an empty string if not valid
+    return date.toISOString().split('T')[0]; // Format date as a string
 };
 
 // Temperature formatter

@@ -20,7 +20,8 @@ Here's a short list of some of the technologies utilized in this project:
 ## Backend
 - `Node.js` (Server)
 - `Express` (Web server)
-- `Firebase` (Database)
+- `MySQL` (Database)
+- `Knex.js` (Query creation)
 
 ## Station
 - `ESP32` (Microcontroller)
@@ -29,4 +30,4 @@ Here's a short list of some of the technologies utilized in this project:
 
 ## Hosting
 - `GitHub` (Repository and CI/CD)
-- `Render` (Server hosting)
+- `Aruba Cloud VPS` (Server hosting)
