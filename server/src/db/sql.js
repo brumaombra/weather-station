@@ -19,8 +19,7 @@ export const initMySqlDatabase = async () => {
     });
 
     try { // Test the connection
-        const query = knex.raw('SELECT 1'); // Create the query
-        await query; // Execute the query
+        await knex.raw('SELECT 1'); // Execute the query correctly
         console.log('Successfully connected to the database');
     } catch (error) {
         console.error('Error while connecting to the database:', error);
@@ -29,9 +28,16 @@ export const initMySqlDatabase = async () => {
 
 // Get the user from the database
 export const getUser = async username => {
-    const query = knex('users').where({ username });
-    const result = await query.first();
-    return result;
+    try {
+        if (!username) throw new Error(); // Check if the username is provided
+        const query = knex('users').where({ username }); // Create the query to get the user
+        const result = await query.first(); // Execute the query and return the first result
+        return result; // Return the user
+    } catch (error) {
+        const errorMessage = 'Error while reading the user';
+        console.log(errorMessage, error); // Log the error
+        throw new Error(errorMessage); // Throw the error
+    }
 };
 
 // Create the query to get the measurements from the database
@@ -62,7 +68,9 @@ export const getMeasurements = async params => {
         const count = await queryCount.first(); // Get the number of results
         return { count: count.count, results: results }; // Return the results and the number of results
     } catch (error) {
-        console.error('Error while reading the measurements:', error);
+        const errorMessage = 'Error while reading the measurements';
+        console.log(errorMessage, error); // Log the error
+        throw new Error(errorMessage); // Throw the error
     }
 };
 
@@ -84,11 +92,11 @@ export const getAggregatedDailyMeasurements = async params => {
         const query = createQueryGetAggregatedDailyMeasurements(params); // Create the query
         console.log(query.toString()); // Log the query
         const results = await query; // Execute the query
-        // const subQueryCount = query.clone().as('sub'); // Create a subquery to get the number of results
-        // const count = await knex.count('* as count').from(subQueryCount).first(); // Get the number of results
         return { count: results.length, results: results }; // Return the results and the number of results
     } catch (error) {
-        console.error('Error while reading the measurements:', error);
+        const errorMessage = 'Error while reading the measurements';
+        console.log(errorMessage, error); // Log the error
+        throw new Error(errorMessage); // Throw the error
     }
 };
 
@@ -97,9 +105,12 @@ export const updateMeasurement = async (id, newData) => {
     try {
         const query = knex('measurements').where('id', id).update(newData); // Create the query
         console.log(query.toString()); // Log the query
-        await query; // Execute the query
+        const results = await query; // Execute the query
+        return results; // Return the results
     } catch (error) {
-        console.error('Error while updating the measurement:', error);
+        const errorMessage = 'Error while updating the measurement';
+        console.log(errorMessage, error); // Log the error
+        throw new Error(errorMessage); // Throw the error
     }
 };
 
@@ -108,9 +119,12 @@ export const deleteMeasurements = async idList => {
     try {
         const query = knex('measurements').whereIn('id', idList).delete(); // Create the query
         console.log(query.toString()); // Log the query
-        await query; // Execute the query
+        const results = await query; // Execute the query
+        return results; // Return the results
     } catch (error) {
-        console.error('Error while deleting the measurements:', error);
+        const errorMessage = 'Error while deleting the measurements';
+        console.log(errorMessage, error); // Log the error
+        throw new Error(errorMessage); // Throw the error
     }
 };
 
@@ -120,8 +134,11 @@ export const addMeasurement = async measurement => {
         measurement.timestamp = new Date(); // Set the timestamp
         const query = knex('measurements').insert(measurement); // Create the query
         console.log(query.toString()); // Log the query
-        await query; // Execute the query
+        const results = await query; // Execute the query
+        return results; // Return the results
     } catch (error) {
-        console.error('Error while adding the measurement:', error);
+        const errorMessage = 'Error while adding the measurement';
+        console.log(errorMessage, error); // Log the error
+        throw new Error(errorMessage); // Throw the error
     }
 };
