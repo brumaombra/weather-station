@@ -12,6 +12,7 @@ const viewModel = reactive({
 const handleLoginPress = () => {
     const username = viewModel.username;
     const password = viewModel.password;
+    if (!username || !password) return; // If no username or password, exit
 
     // Try to login
     setBusy(true); // Busy on
@@ -20,7 +21,7 @@ const handleLoginPress = () => {
         window.location.href = '/'; // Redirect
     }, error => {
         setBusy(false); // Busy off
-        showToast('message', 'error');
+        showToast(error.message || 'Error while logging in', 'error');
     });
 };
 </script>
@@ -32,14 +33,14 @@ const handleLoginPress = () => {
         </div>
         <div class="mb-3">
             <label class="form-label">Username</label>
-            <input type="text" class="form-control" v-model="viewModel.username" />
+            <input type="text" class="form-control" v-model="viewModel.username" @keyup.enter="handleLoginPress()" />
         </div>
         <div class="mb-3">
             <label class="form-label">Password</label>
-            <input type="password" class="form-control" v-model="viewModel.password" />
+            <input type="password" class="form-control" v-model="viewModel.password" @keyup.enter="handleLoginPress()" />
         </div>
         <div class="mb-3">
-            <button type="button" class="btn btn-primary" @click="handleLoginPress()">LOGIN</button>
+            <button type="button" class="btn btn-primary" :disabled="!viewModel.username || !viewModel.password" @click="handleLoginPress()"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button>
         </div>
     </div>
 </template>

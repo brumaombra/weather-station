@@ -30,13 +30,16 @@ export const loginAttempt = (username, password, success, error) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     }).then(response => {
-        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
-        if (!data.token) throw new Error(data); // If no token, error
-        localStorage.setItem('adminToken', data.token); // Save the token to local storage
-        GlobalStore.adminToken = data.token; // Set the token in the global store
-        if (success) success(data);
+        if (data.status === 'OK') { // Success
+            delete data.status; // Delete the status
+            localStorage.setItem('adminToken', data.token); // Save the token to local storage
+            GlobalStore.adminToken = data.token; // Set the token in the global store
+            if (success) success(data);
+        } else { // Error
+            if (error) error(data);
+        }
     }).catch(errorResponse => {
         if (error) error(errorResponse);
     });
@@ -55,13 +58,17 @@ export const validateSession = (success, error) => {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${token}` }
     }).then(response => {
-        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
-        GlobalStore.adminToken = token; // Set the token in the global store
-        if (success) success(data);
+        if (data.status === 'OK') { // Success
+            delete data.status; // Delete the status
+            GlobalStore.adminToken = token; // Set the token in the global store
+            if (success) success(data);
+        } else { // Error
+            logout(); // Logout the user
+            if (error) error(data);
+        }
     }).catch(errorResponse => {
-        logout(); // Logout the user
         if (error) error(errorResponse);
     });
 };
@@ -70,10 +77,14 @@ export const validateSession = (success, error) => {
 export const getMeasurements = (success, error, params) => {
     const query = params ? `?${new URLSearchParams(params)}` : '';
     fetch(`${devUrl}/api/measurements${query}`).then(response => {
-        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
-        if (success) success(data);
+        if (data.status === 'OK') { // Success
+            delete data.status; // Delete the status
+            if (success) success(data);
+        } else { // Error
+            if (error) error(data);
+        }
     }).catch(errorResponse => {
         if (error) error(errorResponse);
     });
@@ -83,10 +94,14 @@ export const getMeasurements = (success, error, params) => {
 export const getAggregatedMeasurements = (success, error, params) => {
     const query = params ? `?${new URLSearchParams(params)}` : '';
     fetch(`${devUrl}/api/aggregatedMeasurements${query}`).then(response => {
-        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
-        if (success) success(data);
+        if (data.status === 'OK') { // Success
+            delete data.status; // Delete the status
+            if (success) success(data);
+        } else { // Error
+            if (error) error(data);
+        }
     }).catch(errorResponse => {
         if (error) error(errorResponse);
     });
@@ -100,10 +115,14 @@ export const updateMeasurement = (measurement, success, error) => {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(measurement)
     }).then(response => {
-        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
-        if (success) success(data);
+        if (data.status === 'OK') { // Success
+            delete data.status; // Delete the status
+            if (success) success(data);
+        } else { // Error
+            if (error) error(data);
+        }
     }).catch(errorResponse => {
         if (error) error(errorResponse);
     });
@@ -116,10 +135,14 @@ export const addMeasurement = (measurement, success, error) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(measurement)
     }).then(response => {
-        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
-        if (success) success(data);
+        if (data.status === 'OK') { // Success
+            delete data.status; // Delete the status
+            if (success) success(data);
+        } else { // Error
+            if (error) error(data);
+        }
     }).catch(errorResponse => {
         if (error) error(errorResponse);
     });
@@ -133,10 +156,14 @@ export const deleteMeasurements = (idList, success, error) => {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ idList: idList })
     }).then(response => {
-        if (!response.ok) throw new Error(response); // If not OK, throw an error
         return response.json();
     }).then(data => {
-        if (success) success(data);
+        if (data.status === 'OK') { // Success
+            delete data.status; // Delete the status
+            if (success) success(data);
+        } else { // Error
+            if (error) error(data);
+        }
     }).catch(errorResponse => {
         if (error) error(errorResponse);
     });

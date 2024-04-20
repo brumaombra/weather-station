@@ -37,7 +37,7 @@ app.post('/api/login', async (req, res) => {
         if (user && await bcrypt.compare(password, user.password)) {
             const secret = process.env.TOKEN_SECRET; // Get the secret from the environment variable
             const token = jwt.sign({ userId: user.id }, secret, { expiresIn: '1h' }); // Create the token
-            res.json({ token: token }); // Send the token
+            res.json({ status: 'OK', token: token }); // Success, send the token
         } else {
             res.status(400).json({ message: "Wrong username or password" });
         }
@@ -48,36 +48,59 @@ app.post('/api/login', async (req, res) => {
 
 // Validate the token
 app.get('/api/validateToken', verifyToken, (req, res) => {
-    res.json({ message: 'Authorized' }); // Return the message
+    res.json({ status: 'OK', message: 'Authorized' }); // Return the message
 });
 
 // Get all the measurements
 app.get('/api/measurements', (req, res) => {
     const params = req.query; // Query parameters
-    getMeasurements(params).then(measures => res.json(measures));
+    getMeasurements(params).then(measurements => {
+        measurements.status = 'OK'; // Add the status
+        res.json(measurements); // Send the measurements
+    }).catch(error => {
+        res.status(400).json({ message: error.message })
+    });
 });
 
 // Get the aggregated measurements
 app.get('/api/aggregatedMeasurements', (req, res) => {
     const params = req.query; // Query parameters
-    getAggregatedDailyMeasurements(params).then(measures => res.json(measures));
-});
-
-// Add a new measurement
-app.post('/api/measurements', (req, res) => {
-    const measurement = req.body;
-    if (!checkData(measurement)) { // Check if the data is valid
-        res.status(400).json({ message: 'Invalid data' });
-        return;
-    }
-
-    // Add the measurement to Firestore
-    addMeasurement(measurement).then(() => {
-        res.json(measurement);
+    getAggregatedDailyMeasurements(params).then(measurements => {
+        measurements.status = 'OK'; // Add the status
+        res.json(measurements); // Send the measurements
     }).catch(error => {
         res.status(400).json({ message: error.message })
     });
 });
+
+/* Add a new measurement
+app.post('/api/measurements', (req, res) => {
+    const measurement = req.body;
+    if (measurement.passphrase !== process.env.ESP_PASSPHRASE) { // Check if the passphrase is valid
+        res.status(400).json({ message: 'Invalid passphrase' });
+        return; // Exit
+    }
+
+    if (!checkData(measurement)) { // Check if the data is valid
+        res.status(400).json({ message: 'Invalid data' });
+        return; // Exit
+    }
+
+    // Create the valid object
+    const validObj = {
+        humidity: measurement.humidity,
+        temperature: measurement.temperature
+    };
+
+    // Add the measurement to Firestore
+    addMeasurement(validObj).then(() => {
+        measurement.status = 'OK'; // Add the status
+        res.json(measurement); // Send the measurement
+    }).catch(error => {
+        res.status(400).json({ message: error.message })
+    });
+});
+*/
 
 // Update a measurement
 app.put('/api/measurements/:id', verifyToken, (req, res) => {
@@ -90,7 +113,7 @@ app.put('/api/measurements/:id', verifyToken, (req, res) => {
 
     // Update the measurement in Firestore
     updateMeasurement(id, newData).then(() => {
-        res.json({ id, ...newData })
+        res.json({ status: 'OK', id, ...newData })
     }).catch(error => {
         res.status(400).json({ message: error.message })
     });
@@ -106,7 +129,7 @@ app.delete('/api/measurements', verifyToken, (req, res) => {
 
     // Delete the measurement from Firestore
     deleteMeasurements(idList).then(() => {
-        res.json(idList) // Send the ID list
+        res.json({ status: 'OK', idList }) // Send the ID list
     }).catch(error => {
         res.status(400).json({ message: error.message })
     });
