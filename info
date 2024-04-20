@@ -1,0 +1,8 @@
+This project is deployed on Aruba Cloud. You can check it out at the following address: http://85.235.149.166:3000
+
+Some reminders and tips for Aruba Cloud:
+
+- Choose a VPS that supports IPv4.
+- Install NVM to manage the latest version of Node.js.
+- Open the necessary ports on the server using 'sudo ufw allow [PORT]' (e.g. 'sudo ufw allow 3000').
+- Start the server.
