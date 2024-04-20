@@ -121,7 +121,7 @@ const checkData = data => {
 
 // Initialize the web server
 export const initWebServer = () => {
-    app.listen(port, () => { // Start the server
+    app.listen(port, '0.0.0.0', () => { // Start the server
         console.log(`Web server listening on port ${port}`);
     });
 };
