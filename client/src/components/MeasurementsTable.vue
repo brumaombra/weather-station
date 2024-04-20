@@ -152,7 +152,7 @@ init(); // Call init function
     </div>
 
     <!-- Table -->
-    <table class="table table-striped mb-4">
+    <table class="table table-striped table-bordered mb-4">
         <thead class="text-center">
             <tr>
                 <th v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" @change="handleSelectDeselectAllPress()" /></th>
@@ -161,19 +161,18 @@ init(); // Call init function
                 <th>Temperature</th>
                 <th>Humidity</th>
                 <th v-if="GlobalStore.adminToken"></th>
+                <th v-if="GlobalStore.adminToken"></th>
             </tr>
         </thead>
         <tbody class="text-center">
             <tr v-for="item in GlobalStore.measurementsList.results">
-                <td v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
+                <td class="column-selection" v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
                 <th class="column-id">{{ item.id }}</th>
                 <td>{{ formatTimestamp(item.timestamp) }}</td>
                 <td>{{ formatTemperature(item.temperature) }} °C</td>
                 <td>{{ formatHumidity(item.humidity) }} %</td>
-                <td class="column-icons" v-if="GlobalStore.adminToken">
-                    <i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i>
-                    <i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer ms-4" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i>
-                </td>
+                <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
+                <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
             </tr>
         </tbody>
     </table>
@@ -310,7 +309,10 @@ init(); // Call init function
 .column-id {
     max-width: 120px;
 }
-.column-icons {
-    max-width: 60px;
+.column-icon {
+    width: 60px;
+}
+.column-selection {
+    width: 60px;
 }
 </style>
