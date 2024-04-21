@@ -3,12 +3,12 @@ import { reactive } from 'vue';
 import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/HumidityLineChart.vue';
 import GlobalStore from '@/stores/store.js';
-import { getAggregatedMeasurements, setBusy, fromDaysToMilliseconds } from '@/utils/utils.js';
+import { getAggregatedMeasurements, setBusy } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
 const viewModel = reactive({
-    periodSelect: 'W', // Selected period
+    periodSelect: 'D', // Selected period
     startDate: '', // Start date
     endDate: '', // End date
     dialogFilter: { // Filter dialog properties
@@ -52,8 +52,9 @@ const addFilterDatesFromPeriod = () => {
     }
 
     // Create the start and end dates
-    const start = new Date(new Date().getTime() - fromDaysToMilliseconds(days)); // Tot days ago
-    viewModel.startDate = formatJsDateToIsoStringDate(start); // Set formatted start date
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - days); // Tot days ago
+    viewModel.startDate = formatJsDateToIsoStringDate(pastDate); // Set formatted start date
 };
 
 // When period select changed
@@ -130,15 +131,17 @@ init(); // Call init function
     </div>
 
     <!-- Responsive grid -->
-    <div class="row">
-        <!-- Temperature chart -->
-        <div class="col-lg-6 col-12">
-            <TemperatureLineChart />
-        </div>
+    <div class="mb-4">
+        <div class="row">
+            <!-- Temperature chart -->
+            <div class="col-lg-6 col-12">
+                <TemperatureLineChart />
+            </div>
 
-        <!-- Humidity chart -->
-        <div class="col-lg-6 col-12 mt-lg-0 mt-4">
-            <HumidityLineChart />
+            <!-- Humidity chart -->
+            <div class="col-lg-6 col-12 mt-lg-0 mt-4">
+                <HumidityLineChart />
+            </div>
         </div>
     </div>
 

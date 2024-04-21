@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import knexLib from 'knex';
-import { getMaxAndMinFromDate } from '../utils/utils.js';
+import { getMaxAndMinFromDate, dateIsYesterday } from '../utils/utils.js';
 dotenv.config(); // Load the .env file
 
 let knex; // Declare the global variable for the Knex library
@@ -86,10 +86,22 @@ const createQueryGetAggregatedDailyMeasurements = params => {
     return query;
 };
 
+// Create the query to get the aggregated measurements from the database
+const createQueryGetAggregatedDailyMeasurementsSingle = params => {
+    let query = knex('measurements').select('timestamp as date'); // Select the date column
+    query = query.select('temperature as temperatureAvg').select('temperature as temperatureMin').select('temperature as temperatureMax'); // Add temperature data
+    query = query.select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax'); // Add humidity data
+    query = query.orderBy('date', 'asc'); // Add order filter
+    if (params.startDate) query = query.whereRaw('DATE(timestamp) >= ?', [getMaxAndMinFromDate(new Date(params.startDate)).minDate]); // Add start date
+    if (params.endDate) query = query.whereRaw('DATE(timestamp) <= ?', [getMaxAndMinFromDate(new Date(params.endDate)).maxDate]); // Add end date
+    return query;
+};
+
 // Get the aggregated measurements from the database
 export const getAggregatedDailyMeasurements = async params => {
     try {
-        const query = createQueryGetAggregatedDailyMeasurements(params); // Create the query
+        const startDate = new Date(params.startDate); // Get the start date
+        const query = dateIsYesterday(startDate) ? createQueryGetAggregatedDailyMeasurementsSingle(params) : createQueryGetAggregatedDailyMeasurements(params); // Create the query
         console.log(query.toString()); // Log the query
         const results = await query; // Execute the query
         return { count: results.length, results: results }; // Return the results and the number of results
