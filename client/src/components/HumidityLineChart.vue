@@ -2,17 +2,17 @@
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
 import GlobalStore from '@/stores/store.js';
-import { formatDate } from '@/utils/formatter.js';
+import { formatTimestamp } from '@/utils/formatter.js';
 
 let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
     const measurements = GlobalStore.measurementsListChart.results || []; // Measurements list
-    const label = measurements.map(item => formatDate(item.date)); // Label
-    const average = measurements.map(item => item.temperatureAvg); // Average
-    const max = measurements.map(item => item.temperatureMax); // Max
-    const min = measurements.map(item => item.temperatureMin); // Mix
+    const label = measurements.map(item => formatTimestamp(item.date)); // Label
+    const average = measurements.map(item => item.humidityAvg); // Average
+    const max = measurements.map(item => item.humidityMax); // Max
+    const min = measurements.map(item => item.humidityMin); // Mix
     const parameters = { // Chart parameters
         type: 'line',
         data: {

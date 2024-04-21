@@ -82,33 +82,62 @@ init(); // Call init function
 
 <template>
     <!-- Toolbar -->
-    <div class="d-flex mb-4-5 align-items-center justify-content-between">
-        <div>
-            <h3 class="mb-0"><i class="fa-solid fa-chart-line me-3"></i>Charts</h3>
-        </div>
+    <div class="mb-4-5">
+        <div class="row">
+            <div class="col-md-6 col-12">
+                <!-- Title -->
+                <div class="d-flex align-items-center justify-content-between h-100">
+                    <h3 class="mb-0"><i class="fa-solid fa-chart-line me-3"></i>Charts</h3>
+                </div>
+            </div>
+            <div class="col-md-6 col-12 mt-md-0 mt-3">
+                <!-- Actions desktop -->
+                <div class="d-none d-md-block">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <!-- Button filter modal -->
+                        <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
 
-        <div class="d-flex align-items-center justify-content-between">
-            <!-- Button filter modal -->
-            <button type="button" class="btn btn-secondary me-3" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                        <!-- Periods select -->
+                        <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
+                            <option value="D">Last day</option>
+                            <option value="W">Last week</option>
+                            <option value="M">Last month</option>
+                            <option value="Y">Last year</option>
+                        </select>
+                    </div>
+                </div>
 
-            <!-- Periods select -->
-            <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange">
-                <option value="W">Last week</option>
-                <option value="M">Last month</option>
-                <option value="Y">Last year</option>
-            </select>
+                <!-- Actions mobile -->
+                <div class="d-block d-md-none">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <!-- Button filter modal -->
+                            <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                        </div>
+                        <div class="col-6">
+                            <!-- Periods select -->
+                            <select class="form-select w-100" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
+                                <option value="D">Last day</option>
+                                <option value="W">Last week</option>
+                                <option value="M">Last month</option>
+                                <option value="Y">Last year</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Container responsive -->
+    <!-- Responsive grid -->
     <div class="row">
         <!-- Temperature chart -->
-        <div class="col-6">
+        <div class="col-lg-6 col-12">
             <TemperatureLineChart />
         </div>
 
         <!-- Humidity chart -->
-        <div class="col-6">
+        <div class="col-lg-6 col-12 mt-lg-0 mt-4">
             <HumidityLineChart />
         </div>
     </div>

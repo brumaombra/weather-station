@@ -26,7 +26,7 @@ getToken(); // get the token
 	<Navbar />
 
 	<!-- Main container -->
-	<div class="container mt-5">
+	<div class="container mt-md-5 mt-4">
 		<RouterView />
 	</div>
 

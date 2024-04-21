@@ -6,6 +6,16 @@ import { logout } from '@/utils/utils.js';
 const handleLogoutPress = () => {
 	logout(); // Excecute logout
 };
+
+// Only if mobile
+if (window.innerWidth < 992) {
+	document.addEventListener('click', function(event) { // Close the mobile navbar when clicking outside
+		let navbarToggle = document.querySelector('.navbar-toggler');
+		let navbarMenu = document.querySelector('.navbar-collapse');
+		const clickInsideNavbar = navbarMenu.contains(event.target) || navbarToggle.contains(event.target);
+		if ((!clickInsideNavbar || event.target.classList.contains('close-navbar')) && navbarMenu.classList.contains('show')) navbarToggle.click(); // Emulate the click event to close the navbar
+	});
+}
 </script>
 
 <template>
@@ -22,23 +32,23 @@ const handleLogoutPress = () => {
 				<!-- Views -->
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item">
-						<router-link to="/" class="nav-link" active-class="active">Measurements</router-link>
+						<router-link to="/" class="nav-link close-navbar" active-class="active">Measurements</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/charts" class="nav-link" active-class="active">Charts</router-link>
+						<router-link to="/charts" class="nav-link close-navbar" active-class="active">Charts</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/forecasts" class="nav-link" active-class="active">Forecasts</router-link>
+						<router-link to="/forecasts" class="nav-link close-navbar" active-class="active">Forecasts</router-link>
 					</li>
 				</ul>
 
 				<!-- Login/Logout -->
 				<ul class="navbar-nav mb-2 mb-lg-0">
 					<li class="nav-item" v-if="!GlobalStore.adminToken">
-						<router-link to="/login" class="nav-link" active-class="active">Login</router-link>
+						<router-link to="/login"><button type="button" class="btn btn-primary close-navbar"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button></router-link>
 					</li>
 					<li class="nav-item" v-if="GlobalStore.adminToken">
-						<button type="button" class="btn btn-primary" @click="handleLogoutPress()"><i class="fa-solid fa-right-from-bracket me-2"></i>LOGOUT</button>
+						<button type="button" class="btn btn-primary close-navbar" @click="handleLogoutPress()"><i class="fa-solid fa-right-from-bracket me-2"></i>LOGOUT</button>
 					</li>
 				</ul>
 			</div>

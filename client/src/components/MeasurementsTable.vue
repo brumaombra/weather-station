@@ -137,45 +137,71 @@ init(); // Call init function
 
 <template>
     <!-- Toolbar -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <!-- Title -->
-        <div>
-            <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ GlobalStore.measurementsList.count }}</span></h3>
-        </div>
+    <div class="mb-4-5">
+        <div class="row">
+            <div class="col-md-6 col-12">
+                <!-- Title -->
+                <div class="d-flex align-items-center justify-content-between h-100">
+                    <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ GlobalStore.measurementsList.count }}</span></h3>
+                </div>
+            </div>
+            <div class="col-md-6 col-12 mt-md-0 mt-3">
+                <!-- Actions desktop -->
+                <div class="d-none d-md-block">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <!-- Buttons -->
+                        <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
+                        <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                        <button type="button" class="btn btn-secondary" @click="handleResetIconPress()"><i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH</button>
+                    </div>
+                </div>
 
-        <!-- Buttons -->
-        <div>
-            <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
-            <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
-            <button type="button" class="btn btn-secondary" @click="handleResetIconPress()"><i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH</button>
+                <!-- Actions mobile -->
+                <div class="d-block d-md-none">
+                    <!-- Buttons -->
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-secondary w-100" @click="handleResetIconPress()"><i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Table -->
-    <table class="table table-striped table-bordered mb-4">
-        <thead class="text-center">
-            <tr>
-                <th v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" @change="handleSelectDeselectAllPress()" /></th>
-                <th>ID</th>
-                <th>Timestamp</th>
-                <th>Temperature</th>
-                <th>Humidity</th>
-                <th v-if="GlobalStore.adminToken"></th>
-                <th v-if="GlobalStore.adminToken"></th>
-            </tr>
-        </thead>
-        <tbody class="text-center">
-            <tr v-for="item in GlobalStore.measurementsList.results">
-                <td class="column-selection" v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
-                <th class="column-id">{{ item.id }}</th>
-                <td>{{ formatTimestamp(item.timestamp) }}</td>
-                <td>{{ formatTemperature(item.temperature) }} °C</td>
-                <td>{{ formatHumidity(item.humidity) }} %</td>
-                <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
-                <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered mb-4">
+            <thead class="text-center">
+                <tr>
+                    <th v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" @change="handleSelectDeselectAllPress()" /></th>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>Temperature</th>
+                    <th>Humidity</th>
+                    <th v-if="GlobalStore.adminToken"></th>
+                    <th v-if="GlobalStore.adminToken"></th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                <tr v-for="item in GlobalStore.measurementsList.results">
+                    <td class="column-selection" v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
+                    <th class="column-id">{{ item.id }}</th>
+                    <td>{{ formatTimestamp(item.timestamp) }}</td>
+                    <td>{{ formatTemperature(item.temperature) }} °C</td>
+                    <td>{{ formatHumidity(item.humidity) }} %</td>
+                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
+                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <!-- Pagination -->
     <div class="d-flex mb-4 justify-content-center">
