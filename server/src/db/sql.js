@@ -23,22 +23,43 @@ export const initMySqlDatabase = async () => {
         console.log('Successfully connected to the database');
     } catch (error) {
         const errorMessage = 'Error while connecting to the database';
-        console.error(errorMessage, error); // Log the error
-        throw new Error(errorMessage); // Throw the error
+        const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
+        console.log(errorMessage, newError); // Log the error
+        throw newError; // Throw the error
     }
+};
+
+// Destroy the connection to the database
+const destroyConnection = async () => {
+    try {
+        await knex.destroy(); // Destroy the connection to the database
+        console.log('Connection to the database closed');
+    } catch (error) {
+        const errorMessage = 'Error while closing the connection to the database';
+        const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
+        console.log(errorMessage, newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
+
+// Create the query to get the user from the database
+const createQueryGetUser = username => {
+    const query = knex('users').where({ username }).first(); // Create the query to get the user
+    console.log(query.toString()); // Log the query
+    return query;
 };
 
 // Get the user from the database
 export const getUser = async username => {
     try {
-        if (!username) throw new Error(); // Check if the username is provided
-        const query = knex('users').where({ username }); // Create the query to get the user
-        const result = await query.first(); // Execute the query and return the first result
+        if (!username) throw new Error('Username is required'); // Check if the username is provided
+        const result = await executeQueryWithReconnection(() => createQueryGetUser(username)); // Execute the query
         return result; // Return the user
     } catch (error) {
         const errorMessage = 'Error while reading the user';
-        console.log(errorMessage, error); // Log the error
-        throw new Error(errorMessage); // Throw the error
+        const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
+        console.log(errorMessage, newError); // Log the error
+        throw newError; // Throw the error
     }
 };
 
@@ -65,18 +86,14 @@ const createQueryGetMeasurementsCount = params => {
 // Get the measurements from the database
 export const getMeasurements = async params => {
     try {
-        // const query = createQueryGetMeasurements(params); // Create the query
-        // const queryCount = createQueryGetMeasurementsCount(params); // Create the query to get the number of results
-        // console.log(query.toString()); // Log the query
-        // const results = await query; // Execute the query
-        // const count = await queryCount.first(); // Get the number of results
         const results = await executeQueryWithReconnection(() => createQueryGetMeasurements(params)); // Execute the query
         const count = await executeQueryWithReconnection(() => createQueryGetMeasurementsCount(params)); // Execute the query
         return { count: count.count, results: results }; // Return the results and the number of results
     } catch (error) {
         const errorMessage = 'Error while reading the measurements';
-        console.log(errorMessage, error); // Log the error
-        throw new Error(errorMessage); // Throw the error
+        const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
+        console.log(errorMessage, newError); // Log the error
+        throw newError; // Throw the error
     }
 };
 
@@ -89,6 +106,7 @@ const createQueryGetAggregatedDailyMeasurements = params => {
     query = query.orderBy('date', 'asc'); // Add order filter
     if (params.startDate) query = query.whereRaw('DATE(timestamp) >= ?', [getMaxAndMinFromDate(new Date(params.startDate)).minDate]); // Add start date
     if (params.endDate) query = query.whereRaw('DATE(timestamp) <= ?', [getMaxAndMinFromDate(new Date(params.endDate)).maxDate]); // Add end date
+    console.log(query.toString()); // Log the query
     return query;
 };
 
@@ -100,6 +118,7 @@ const createQueryGetAggregatedDailyMeasurementsSingle = params => {
     query = query.orderBy('date', 'asc'); // Add order filter
     if (params.startDate) query = query.whereRaw('DATE(timestamp) >= ?', [getMaxAndMinFromDate(new Date(params.startDate)).minDate]); // Add start date
     if (params.endDate) query = query.whereRaw('DATE(timestamp) <= ?', [getMaxAndMinFromDate(new Date(params.endDate)).maxDate]); // Add end date
+    console.log(query.toString()); // Log the query
     return query;
 };
 
@@ -107,47 +126,62 @@ const createQueryGetAggregatedDailyMeasurementsSingle = params => {
 export const getAggregatedDailyMeasurements = async params => {
     try {
         const startDate = new Date(params.startDate); // Get the start date
-        const query = dateIsYesterday(startDate) ? createQueryGetAggregatedDailyMeasurementsSingle(params) : createQueryGetAggregatedDailyMeasurements(params); // Create the query
-        console.log(query.toString()); // Log the query
-        const results = await query; // Execute the query
+        let results;
+        if (dateIsYesterday(startDate)) // Check if the start date is yesterday
+            results = await executeQueryWithReconnection(() => createQueryGetAggregatedDailyMeasurementsSingle(params)); // Execute the query
+        else
+            results = await executeQueryWithReconnection(() => createQueryGetAggregatedDailyMeasurements(params)); // Execute the query
         return { count: results.length, results: results }; // Return the results and the number of results
     } catch (error) {
         const errorMessage = 'Error while reading the measurements';
-        console.log(errorMessage, error); // Log the error
-        throw new Error(errorMessage); // Throw the error
+        const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
+        console.log(errorMessage, newError); // Log the error
+        throw newError; // Throw the error
     }
+};
+
+// Create the query to get the aggregated measurements from the database
+const createQueryUpdateMeasurements = (id, newData) => {
+    const query = knex('measurements').where('id', id).update(newData); // Create the query
+    console.log(query.toString()); // Log the query
+    return query;
 };
 
 // Update the measurement in the database
 export const updateMeasurement = async (id, newData) => {
     try {
-        const query = knex('measurements').where('id', id).update(newData); // Create the query
-        console.log(query.toString()); // Log the query
-        const results = await query; // Execute the query
+        const results = await executeQueryWithReconnection(() => createQueryUpdateMeasurements(id, newData)); // Execute the query
         return results; // Return the results
     } catch (error) {
         const errorMessage = 'Error while updating the measurement';
-        console.log(errorMessage, error); // Log the error
-        throw new Error(errorMessage); // Throw the error
+        const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
+        console.log(errorMessage, newError); // Log the error
+        throw newError; // Throw the error
     }
+};
+
+// Create the query to delete the measurement from the database
+const createQueryDeleteMeasurements = idList => {
+    const query = knex('measurements').whereIn('id', idList).delete(); // Create the query
+    console.log(query.toString()); // Log the query
+    return query;
 };
 
 // Delete one or multiple measurements
 export const deleteMeasurements = async idList => {
     try {
-        const query = knex('measurements').whereIn('id', idList).delete(); // Create the query
-        console.log(query.toString()); // Log the query
-        const results = await query; // Execute the query
+        const results = await executeQueryWithReconnection(() => createQueryDeleteMeasurements(idList)); // Execute the query
         return results; // Return the results
     } catch (error) {
         const errorMessage = 'Error while deleting the measurements';
-        console.log(errorMessage, error); // Log the error
-        throw new Error(errorMessage); // Throw the error
+        const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
+        console.log(errorMessage, newError); // Log the error
+        throw newError; // Throw the error
     }
 };
 
 // Create the query to add a measurement to the database
-const createAddMeasurementQuery = measurement => {
+const createQueryAddMeasurement = measurement => {
     const query = knex('measurements').insert(measurement); // Create the query
     console.log(query.toString()); // Log the query
     return query;
@@ -156,9 +190,7 @@ const createAddMeasurementQuery = measurement => {
 // Add a measurement to the database
 export const addMeasurement = async measurement => {
     try {
-        const measurementToAdd = { ...measurement }; // Create a copy of the measurement
-        measurementToAdd.timestamp = new Date(); // Set the timestamp
-        const results = await executeQueryWithReconnection(() => createAddMeasurementQuery(measurementToAdd)); // Execute the query
+        const results = await executeQueryWithReconnection(() => createQueryAddMeasurement(measurement)); // Execute the query
         return results; // Return the results
     } catch (error) {
         const errorMessage = 'Error while adding the measurement';
@@ -174,13 +206,17 @@ const executeQueryWithReconnection = async queryFunction => {
         return await queryFunction(); // try to execute the query
     } catch (error) {
         const isConnectionError = error.message.includes('ECONNRESET') || error.cause?.message?.includes('ECONNRESET');
-        if (!isConnectionError) throw error; // Throw the error if it's not a connection error
-        console.log('Connection to MySQL database lost, reconnecting...');
-        try {
-            await initMySqlDatabase(); // Try to reconnect to the database
-            return await queryFunction(); // Execute the query again
-        } catch (reconnectionError) {
-            throw reconnectionError;
+        if (isConnectionError) { // Check if the error is a connection error
+            console.log('Connection to MySQL database lost, reconnecting...');
+            try { // Handle the reconnection
+                await destroyConnection(); // Destroy the connection to the database
+                await initMySqlDatabase(); // Try to reconnect to the database
+                return await queryFunction(); // Execute the query again
+            } catch (reconnectionError) {
+                throw reconnectionError;
+            }
+        } else {
+            throw error; // Rethrow the error
         }
     }
 };
