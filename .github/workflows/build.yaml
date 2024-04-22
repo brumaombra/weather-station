@@ -1,4 +1,4 @@
-name: Deploy on Render
+name: Build Vue.js App
 
 on:
   push:

@@ -156,8 +156,9 @@ const createAddMeasurementQuery = measurement => {
 // Add a measurement to the database
 export const addMeasurement = async measurement => {
     try {
-        measurement.timestamp = new Date(); // Set the timestamp
-        const results = await executeQueryWithReconnection(() => createAddMeasurementQuery(measurement)); // Execute the query
+        const measurementToAdd = { ...measurement }; // Create a copy of the measurement
+        measurementToAdd.timestamp = new Date(); // Set the timestamp
+        const results = await executeQueryWithReconnection(() => createAddMeasurementQuery(measurementToAdd)); // Execute the query
         return results; // Return the results
     } catch (error) {
         const errorMessage = 'Error while adding the measurement';

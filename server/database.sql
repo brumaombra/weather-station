@@ -1,6 +1,6 @@
 CREATE TABLE measurements (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    timestamp DATETIME NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     temperature FLOAT NOT NULL,
     humidity FLOAT NOT NULL
 );
