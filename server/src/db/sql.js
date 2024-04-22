@@ -49,6 +49,7 @@ const createQueryGetMeasurements = params => {
     query = query.limit(params.limit || 25).offset(params.offset || 0); // For pagination
     if (params.startDate) query = query.where('timestamp', '>=', getMaxAndMinFromDate(new Date(params.startDate)).minDate); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', getMaxAndMinFromDate(new Date(params.endDate)).maxDate); // Add end date
+    console.log(query.toString()); // Log the query
     return query;
 };
 
@@ -57,17 +58,20 @@ const createQueryGetMeasurementsCount = params => {
     let query = knex('measurements').count('* as count'); // Count the number of rows in the measurements table
     if (params.startDate) query = query.where('timestamp', '>=', getMaxAndMinFromDate(new Date(params.startDate)).minDate); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', getMaxAndMinFromDate(new Date(params.endDate)).maxDate); // Add end date
+    console.log(query.toString()); // Log the query
     return query;
 };
 
 // Get the measurements from the database
 export const getMeasurements = async params => {
     try {
-        const query = createQueryGetMeasurements(params); // Create the query
-        const queryCount = createQueryGetMeasurementsCount(params); // Create the query to get the number of results
-        console.log(query.toString()); // Log the query
-        const results = await query; // Execute the query
-        const count = await queryCount.first(); // Get the number of results
+        // const query = createQueryGetMeasurements(params); // Create the query
+        // const queryCount = createQueryGetMeasurementsCount(params); // Create the query to get the number of results
+        // console.log(query.toString()); // Log the query
+        // const results = await query; // Execute the query
+        // const count = await queryCount.first(); // Get the number of results
+        const results = await executeQueryWithReconnection(() => createQueryGetMeasurements(params)); // Execute the query
+        const count = await executeQueryWithReconnection(() => createQueryGetMeasurementsCount(params)); // Execute the query
         return { count: count.count, results: results }; // Return the results and the number of results
     } catch (error) {
         const errorMessage = 'Error while reading the measurements';
@@ -142,23 +146,24 @@ export const deleteMeasurements = async idList => {
     }
 };
 
+// Create the query to add a measurement to the database
+const createAddMeasurementQuery = measurement => {
+    const query = knex('measurements').insert(measurement); // Create the query
+    console.log(query.toString()); // Log the query
+    return query;
+};
+
 // Add a measurement to the database
 export const addMeasurement = async measurement => {
     try {
         measurement.timestamp = new Date(); // Set the timestamp
-        const query = knex('measurements').insert(measurement); // Create the query
-        console.log(query.toString()); // Log the query
-        const results = await executeQueryWithReconnection(() => query); // Execute the query
-        // const results = await query; // Execute the query
+        const results = await executeQueryWithReconnection(() => createAddMeasurementQuery(measurement)); // Execute the query
         return results; // Return the results
     } catch (error) {
         const errorMessage = 'Error while adding the measurement';
         const newError = new Error(errorMessage, { cause: error }); // Save the old error to the stack
         console.log(errorMessage, newError); // Log the error
         throw newError; // Throw the error
-        // const errorMessage = 'Error while adding the measurement';
-        // console.log(errorMessage, error); // Log the error
-        // throw new Error(errorMessage); // Throw the error
     }
 };
 
