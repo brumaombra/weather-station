@@ -15,12 +15,13 @@ const char ssid[] = ""; // WiFi SSID
 const char password[] = ""; // WiFi password
 const char mqttServer[] = "85.235.149.166"; // MQTT broker IP address
 const int mqttPort = 1883; // MQTT broker port
-float temperatureAvg = 0; // Average temperature value
-float humidityAvg = 0; // Average humidity value
-byte measurementsCount = 0; // Number of measurements taken
-byte measurementsBeforePublishing = 15; // Number of measurements before publishing
-unsigned long readingInterval = 60; // Publish interval in seconds
-const bool devMode = true; // Enable development mode (prints debug messages)
+RTC_DATA_ATTR bool setupDone = false; // First boot flag
+RTC_DATA_ATTR float temperatureAvg = 0; // Average temperature value
+RTC_DATA_ATTR float humidityAvg = 0; // Average humidity value
+RTC_DATA_ATTR byte measurementsCount = 0; // Number of measurements taken
+byte measurementsBeforePublishing = 60; // Number of measurements before publishing
+unsigned long readingInterval = 60; // Reading interval in seconds
+const bool devMode = false; // Enable development mode
 
 DHT dht(DHTPIN, DHTTYPE); // DHT object
 WiFiClient espClient; // WiFi client object
@@ -30,13 +31,13 @@ PubSubClient client(espClient); // MQTT client object
 bool connectToWifi() {
 	if (ssid == NULL || password == NULL || strlen(ssid) == 0 || strlen(password) == 0) { // Check if the SSID or password is empty
         if (devMode) Serial.println("SSID or Password is empty");
-        return false;
+        while (1) delay(1000); // Block the program
     }
 
 	// Begin connecting to Wi-Fi
-	WiFi.begin(ssid, password);
+	WiFi.begin(ssid, password); // Start the connection to Wi-Fi
 	if (devMode) Serial.print("Connecting to Wi-Fi");
-	while (WiFi.status() != WL_CONNECTED) {
+	while (WiFi.status() != WL_CONNECTED) { // Wait for Wi-Fi connection
 		if (devMode) Serial.print(".");
 		delay(500);
 	}
@@ -48,7 +49,8 @@ bool connectToWifi() {
 
 // Connecting to MQTT broker
 bool connectToMQTT() {
-	client.setServer(mqttServer, mqttPort);
+	if (WiFi.status() != WL_CONNECTED) return false; // Check if the WiFi is connected
+	client.setServer(mqttServer, mqttPort); // Set the MQTT broker server and port
 	while (!client.connected()) {
 		if (devMode) Serial.println("Connecting to MQTT...");
 		if (client.connect("esp_station")) {
@@ -63,10 +65,11 @@ bool connectToMQTT() {
 }
 
 // Check if the WiFi is still connected
-void checkWiFiConnection() {
-	if (WiFi.status() == WL_CONNECTED) return; // Exit if Wi-Fi is connected
+bool checkWiFiConnection() {
+	if (WiFi.status() == WL_CONNECTED) return true; // Exit if Wi-Fi is connected
 	if (devMode) Serial.println("WiFi disconnected, reconnecting...");
 	connectToWifi(); // Reconnect to Wi-Fi
+	return true;
 }
 
 // Check if the MQTT is still connected
@@ -80,7 +83,7 @@ void checkMQTTConnection() {
 void printMeasurement(const float humidity, const float temperature) {
 	char tempString[100] = "";
 	sprintf(tempString, "Reading... Temperature: %.2f *C, Humidity: %.2f %%", temperature, humidity);
-	Serial.println(tempString);
+	if (devMode) Serial.println(tempString);
 }
 
 // Publish the temperature and humidity readings to the MQTT broker
@@ -141,8 +144,11 @@ void enterDeepSleep() {
 void setup() {
 	if (devMode) initSerial(); // Initialize the serial
 	setupDHT(); // Initialize the DHT sensor
-	connectToWifi(); // Connect to Wi-Fi
-	connectToMQTT(); // Connect to MQTT broker
+	if (!setupDone) { // Do only of first boot
+		setupDone = true; // Set the first boot flag
+		connectToWifi(); // Connect to Wi-Fi
+		connectToMQTT(); // Connect to MQTT broker
+	}
 }
 
 // Loop

@@ -6,3 +6,10 @@ export const getMaxAndMinFromDate = date => {
     maxDate.setHours(23, 59, 59, 999);
     return { minDate, maxDate };
 };
+
+// Check if the date is yesterday
+export const dateIsYesterday = date => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return date.toLocaleDateString() === yesterday.toLocaleDateString();
+};

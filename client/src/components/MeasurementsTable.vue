@@ -176,8 +176,8 @@ init(); // Call init function
     </div>
 
     <!-- Table -->
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered mb-4">
+    <div class="table-responsive mb-4">
+        <table class="table table-striped table-bordered">
             <thead class="text-center">
                 <tr>
                     <th v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" @change="handleSelectDeselectAllPress()" /></th>

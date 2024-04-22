@@ -18,10 +18,10 @@ export const formatJsDateToIsoStringDate = date => {
 
 // Temperature formatter
 export const formatTemperature = temperature => {
-    return temperature.toFixed(2); // Round to 2 decimal places
+    return temperature.toFixed(1); // Round to 2 decimal places
 };
 
 // Humidity formatter
 export const formatHumidity = humidity => {
-    return humidity.toFixed(2); // Round to 2 decimal places
+    return humidity.toFixed(1); // Round to 2 decimal places
 };
