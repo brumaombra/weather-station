@@ -24,24 +24,28 @@ export const fromDaysToMilliseconds = days => {
 };
 
 // Login attempt
-export const loginAttempt = (username, password, success, error) => {
-    fetch(`${devUrl}/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    }).then(response => {
-        return response.json();
-    }).then(data => {
+export const loginAttempt = async (username, password, successCallback, errorCallback) => {
+    try {
+        const response = await fetch(`${devUrl}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
             localStorage.setItem('adminToken', data.token); // Save the token to local storage
             GlobalStore.adminToken = data.token; // Set the token in the global store
-            if (success) success(data);
+            if (successCallback) successCallback(data);
+            return data;
         } else { // Error
-            if (error) error(data);
+            if (errorCallback) errorCallback(data);
         }
-    }).catch(errorResponse => {
-        if (error) error(errorResponse);
-    });
+    } catch (error) {
+        const newError = new Error('Error while logging in', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        if (errorCallback) errorCallback(error);
+        throw newError; // Throw the error
+    }
 };
 
 // Logout the user
@@ -51,113 +55,137 @@ export const logout = () => {
 };
 
 // Validate the token
-export const validateSession = (success, error) => {
-    const token = localStorage.getItem('adminToken'); // Get the token from local storage
-    fetch(`${devUrl}/api/validateToken`, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${token}` }
-    }).then(response => {
-        return response.json();
-    }).then(data => {
+export const validateSession = async (successCallback, errorCallback) => {
+    try {
+        const token = localStorage.getItem('adminToken'); // Get the token from local storage
+        const response = await fetch(`${devUrl}/api/validateToken`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
             GlobalStore.adminToken = token; // Set the token in the global store
-            if (success) success(data);
+            if (successCallback) successCallback(data);
+            return data;
         } else { // Error
             logout(); // Logout the user
-            if (error) error(data);
+            if (errorCallback) errorCallback(data);
         }
-    }).catch(errorResponse => {
-        if (error) error(errorResponse);
-    });
+    } catch (error) {
+        const newError = new Error('Error while validating the token', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        if (errorCallback) errorCallback(error);
+        throw newError; // Throw the error
+    }
 };
 
 // Get all the measurements
-export const getMeasurements = (success, error, params) => {
-    const query = params ? `?${new URLSearchParams(params)}` : '';
-    fetch(`${devUrl}/api/measurements${query}`).then(response => {
-        return response.json();
-    }).then(data => {
+export const getMeasurements = async (successCallback, errorCallback, params) => {
+    try {
+        const query = params ? `?${new URLSearchParams(params)}` : ''; // Get the query parameters
+        const response = await fetch(`${devUrl}/api/measurements${query}`); // Get the response
+        const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
-            if (success) success(data.data);
+            if (successCallback) successCallback(data.data);
+            return data.data;
         } else { // Error
-            if (error) error(data);
+            if (errorCallback) errorCallback(data);
         }
-    }).catch(errorResponse => {
-        if (error) error(errorResponse);
-    });
+    } catch (error) {
+        const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        if (errorCallback) errorCallback(error);
+        throw newError; // Throw the error
+    }
 };
 
 // Get all the aggregated measurements
-export const getAggregatedMeasurements = (success, error, params) => {
-    const query = params ? `?${new URLSearchParams(params)}` : '';
-    fetch(`${devUrl}/api/aggregatedMeasurements${query}`).then(response => {
-        return response.json();
-    }).then(data => {
+export const getAggregatedMeasurements = async (successCallback, errorCallback, params) => {
+    try {
+        const query = params ? `?${new URLSearchParams(params)}` : ''; // Get the query parameters
+        const response = await fetch(`${devUrl}/api/aggregatedMeasurements${query}`); // Get the response
+        const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
-            if (success) success(data.data);
+            if (successCallback) successCallback(data.data);
+            return data.data;
         } else { // Error
-            if (error) error(data);
+            if (errorCallback) errorCallback(data);
         }
-    }).catch(errorResponse => {
-        if (error) error(errorResponse);
-    });
+    } catch (error) {
+        const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        if (errorCallback) errorCallback(error);
+        throw newError; // Throw the error
+    }
 };
 
 // Update a measurement
-export const updateMeasurement = (measurement, success, error) => {
-    const token = GlobalStore.adminToken; // Get the token from the global store
-    fetch(`${devUrl}/api/measurements/${measurement.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(measurement)
-    }).then(response => {
-        return response.json();
-    }).then(data => {
+export const updateMeasurement = async (measurement, successCallback, errorCallback) => {
+    try {
+        const token = GlobalStore.adminToken; // Get the token from the global store
+        const response = await fetch(`${devUrl}/api/measurements/${measurement.id}`, { // Get the response
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(measurement)
+        });
+        const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
-            if (success) success(data.data);
+            if (successCallback) successCallback(data.data);
+            return data.data;
         } else { // Error
-            if (error) error(data);
+            if (errorCallback) errorCallback(data);
         }
-    }).catch(errorResponse => {
-        if (error) error(errorResponse);
-    });
+    } catch (error) {
+        const newError = new Error('Error while updating the measurements', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        if (errorCallback) errorCallback(error);
+        throw newError; // Throw the error
+    }
 };
 
 // Add a measurement
-export const addMeasurement = (measurement, success, error) => {
-    fetch(`${devUrl}/api/measurements`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(measurement)
-    }).then(response => {
-        return response.json();
-    }).then(data => {
+export const addMeasurement = async (measurement, successCallback, errorCallback) => {
+    try {
+        const response = await fetch(`${devUrl}/api/measurements`, { // Get the response
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(measurement)
+        });
+        const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
-            if (success) success(data.data);
+            if (successCallback) successCallback(data.data);
+            return data.data;
         } else { // Error
-            if (error) error(data);
+            if (errorCallback) errorCallback(data);
         }
-    }).catch(errorResponse => {
-        if (error) error(errorResponse);
-    });
+    } catch (error) {
+        const newError = new Error('Error while adding the measurement', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        if (errorCallback) errorCallback(error);
+        throw newError; // Throw the error
+    }
 };
 
 // Delete multiple measurements
-export const deleteMeasurements = (idList, success, error) => {
-    const token = GlobalStore.adminToken; // Get the token from the global store
-    fetch(`${devUrl}/api/measurements`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ idList: idList })
-    }).then(response => {
-        return response.json();
-    }).then(data => {
+export const deleteMeasurements = async (idList, successCallback, errorCallback) => {
+    try {
+        const token = GlobalStore.adminToken; // Get the token from the global store
+        const response = await fetch(`${devUrl}/api/measurements`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ idList: idList })
+        });
+        const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
-            if (success) success(data.data);
+            if (successCallback) successCallback(data.data);
+            return data.data;
         } else { // Error
-            if (error) error(data);
+            if (errorCallback) errorCallback(data);
         }
-    }).catch(errorResponse => {
-        if (error) error(errorResponse);
-    });
+    } catch (error) {
+        const newError = new Error('Error while deleting the measurements', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        if (errorCallback) errorCallback(error);
+        throw newError; // Throw the error
+    }
 };

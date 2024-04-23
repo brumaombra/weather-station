@@ -25,8 +25,8 @@ aedesInstance.on('clientDisconnect', client => {
 
 // Handle incoming MQTT messages
 aedesInstance.on('publish', async (packet, client) => {
-    if (!client) return; // Ignore messages from unknown clients
-    console.log('Message from ', client.id);
+    // if (!client) return; // Ignore messages from unknown clients
+    console.log('Message from ', client?.id);
     console.log('Payload: ', packet.payload.toString());
     try { // Try to parse the JSON message
         const newMeasurement = JSON.parse(packet.payload.toString()); // Parse the JSON data
