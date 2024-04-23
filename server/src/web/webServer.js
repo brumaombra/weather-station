@@ -1,11 +1,12 @@
 import dotenv from 'dotenv';
-import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getUser } from '../db/sql.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getUser } from '../db/sql.js';
+import { validateNewMeasurementData } from '../utils/utils.js';
 dotenv.config(); // Load the .env file
 
 const app = express();
@@ -39,10 +40,14 @@ app.post('/api/login', async (req, res) => {
             const token = jwt.sign({ userId: user.id }, secret, { expiresIn: '1h' }); // Create the token
             res.json({ status: 'OK', token: token }); // Success, send the token
         } else {
-            res.status(400).json({ message: "Wrong username or password" });
+            const errorMessage = 'Wrong username or password'; // Error message
+            console.error(errorMessage); // Log the error
+            res.status(400).json({ status: 'KO', message: errorMessage }); // Send the error message
         }
     } catch (error) {
-        res.status(500).json({ message: "Error while logging in" });
+        const errorMessage = 'Error while logging in';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message
     }
 });
 
@@ -51,96 +56,77 @@ app.get('/api/validateToken', verifyToken, (req, res) => {
     res.json({ status: 'OK', message: 'Authorized' }); // Return the message
 });
 
-// Get all the measurements
-app.get('/api/measurements', (req, res) => {
-    const params = req.query; // Query parameters
-    getMeasurements(params).then(measurements => {
-        measurements.status = 'OK'; // Add the status
-        res.json(measurements); // Send the measurements
-    }).catch(error => {
-        res.status(400).json({ message: error.message })
-    });
+// Get the measurements
+app.get('/api/measurements', async (req, res) => {
+    try {
+        const params = req.query; // Query parameters
+        const measurements = await getMeasurements(params); // Get the measurements from the database
+        res.json({ status: 'OK', data: measurements }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while reading the measurements';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+    }
 });
 
 // Get the aggregated measurements
-app.get('/api/aggregatedMeasurements', (req, res) => {
-    const params = req.query; // Query parameters
-    getAggregatedDailyMeasurements(params).then(measurements => {
-        measurements.status = 'OK'; // Add the status
-        res.json(measurements); // Send the measurements
-    }).catch(error => {
-        res.status(400).json({ message: error.message })
-    });
+app.get('/api/aggregatedMeasurements', async (req, res) => {
+    try {
+        const params = req.query; // Query parameters
+        const measurements = await getAggregatedDailyMeasurements(params); // Get the measurements from the database
+        res.json({ status: 'OK', data: measurements }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while reading the measurements';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+    }
 });
 
-/* Add a new measurement
-app.post('/api/measurements', (req, res) => {
-    const measurement = req.body;
-    if (measurement.passphrase !== process.env.ESP_PASSPHRASE) { // Check if the passphrase is valid
-        res.status(400).json({ message: 'Invalid passphrase' });
-        return; // Exit
+// Add a new measurement
+app.post('/api/measurements', async (req, res) => {
+    try {
+        const newMeasurement = req.body; // Get the measurement from the request body
+        const validation = validateNewMeasurementData(newMeasurement); // Validate the data
+        if (!validation.isValid) return res.status(400).json({ message: 'Invalid data' }); // If the data is invalid, return 400
+        const result = await addMeasurement(validation.data); // Add the measurement to the database
+        res.json({ status: 'OK', data: result }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while adding the measurement';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
     }
-
-    if (!checkData(measurement)) { // Check if the data is valid
-        res.status(400).json({ message: 'Invalid data' });
-        return; // Exit
-    }
-
-    // Create the valid object
-    const validObj = {
-        humidity: measurement.humidity,
-        temperature: measurement.temperature
-    };
-
-    // Add the measurement to Firestore
-    addMeasurement(validObj).then(() => {
-        measurement.status = 'OK'; // Add the status
-        res.json(measurement); // Send the measurement
-    }).catch(error => {
-        res.status(400).json({ message: error.message })
-    });
 });
-*/
 
 // Update a measurement
-app.put('/api/measurements/:id', verifyToken, (req, res) => {
-    const { id } = req.params;
-    const newData = req.body;
-    if (!checkData(newData) || !id) { // Check if the data is valid
-        res.status(400).json({ message: 'Invalid data' });
-        return;
+app.put('/api/measurements/:id', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params; // Get the measurement ID from the request parameters
+        if (!id) return res.status(400).json({ message: 'Invalid data' }); // If the ID is invalid, return 400
+        const newMeasurement = req.body; // Get the measurement from the request body
+        const validation = validateNewMeasurementData(newMeasurement); // Validate the data
+        if (!validation.isValid) return res.status(400).json({ message: 'Invalid data' }); // If the data is invalid, return 400
+        const result = await updateMeasurement(id, validation.data); // Add the measurement to the database
+        res.json({ status: 'OK', data: result }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while updating the measurement';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
     }
-
-    // Update the measurement in Firestore
-    updateMeasurement(id, newData).then(() => {
-        res.json({ status: 'OK', id, ...newData })
-    }).catch(error => {
-        res.status(400).json({ message: error.message })
-    });
 });
 
 // Delete one or multiple measurements
-app.delete('/api/measurements', verifyToken, (req, res) => {
-    const { idList } = req.body;
-    if (!idList || !Array.isArray(idList) || idList.length === 0) {
-        res.status(400).json({ message: 'Invalid data, expected an array of ids' });
-        return;
+app.delete('/api/measurements', verifyToken, async (req, res) => {
+    try {
+        const { idList } = req.body; // Get the ID list from the request body
+        if (!idList || !Array.isArray(idList) || idList.length === 0) return res.status(400).json({ message: 'Invalid data, expected an array of ids' }); // If not an array, return error
+        const result = await deleteMeasurements(idList); // Delete the measurements from the database
+        res.json({ status: 'OK', data: result }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while deleting the measurement';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
     }
-
-    // Delete the measurement from Firestore
-    deleteMeasurements(idList).then(() => {
-        res.json({ status: 'OK', idList }) // Send the ID list
-    }).catch(error => {
-        res.status(400).json({ message: error.message })
-    });
 });
-
-// Check if the data is valid
-const checkData = data => {
-    const temperatureValid = data.temperature && Number.isFinite(data.temperature); // Check if the temperature is a number
-    const humidityValid = data.humidity && Number.isFinite(data.humidity); // Check if the humidity is a number
-    return temperatureValid && humidityValid;
-};
 
 // Initialize the web server
 export const initWebServer = () => {

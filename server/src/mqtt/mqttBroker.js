@@ -1,6 +1,7 @@
-import { addMeasurement } from '../db/sql.js';
 import aedes from 'aedes';
 import net from 'net';
+import { addMeasurement } from '../db/sql.js';
+import { validateNewMeasurementData } from '../utils/utils.js';
 
 const port = 1883;
 const aedesInstance = aedes();
@@ -23,28 +24,19 @@ aedesInstance.on('clientDisconnect', client => {
 });
 
 // Handle incoming MQTT messages
-aedesInstance.on('publish', (packet, client) => {
+aedesInstance.on('publish', async (packet, client) => {
     if (!client) return; // Ignore messages from unknown clients
     console.log('Message from ', client.id);
-    console.log('Topic: ', packet.topic);
     console.log('Payload: ', packet.payload.toString());
-    if (packet.topic !== 'station/newReading') return; // Ignore non-reading messages
     try { // Try to parse the JSON message
-        const jsonData = JSON.parse(packet.payload.toString()); // Parse the JSON data
-        const validObject = validateData(jsonData); // Validate the data
-        if (validObject) addMeasurement(validObject); // Add the measurement to Firebase
+        const newMeasurement = JSON.parse(packet.payload.toString()); // Parse the JSON data
+        const validation = validateNewMeasurementData(newMeasurement); // Validate the data
+        if (!validation.isValid) throw new Error('Invalid data'); // Throw an error if the data is invalid
+        await addMeasurement(validation.data); // Add the measurement to the DB
     } catch (error) {
-        console.error('Error while parsing the JSON message:', error);
+        console.error('Error while adding the measurement', error); // Log the error
     }
 });
-
-// Validate the received data
-const validateData = data => {
-    const temperatureValid = data.temperature && Number.isFinite(data.temperature); // Check if the temperature is a number
-    const humidityValid = data.humidity && Number.isFinite(data.humidity); // Check if the humidity is a number
-    if (!temperatureValid || !humidityValid) return false; // Invalid data
-    return { temperature: data.temperature, humidity: data.humidity }; // Return a cleaned object
-};
 
 // Start the MQTT broker
 export const startMQTTBroker = () => {

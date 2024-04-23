@@ -33,7 +33,6 @@ export const loginAttempt = (username, password, success, error) => {
         return response.json();
     }).then(data => {
         if (data.status === 'OK') { // Success
-            delete data.status; // Delete the status
             localStorage.setItem('adminToken', data.token); // Save the token to local storage
             GlobalStore.adminToken = data.token; // Set the token in the global store
             if (success) success(data);
@@ -61,7 +60,6 @@ export const validateSession = (success, error) => {
         return response.json();
     }).then(data => {
         if (data.status === 'OK') { // Success
-            delete data.status; // Delete the status
             GlobalStore.adminToken = token; // Set the token in the global store
             if (success) success(data);
         } else { // Error
@@ -80,8 +78,7 @@ export const getMeasurements = (success, error, params) => {
         return response.json();
     }).then(data => {
         if (data.status === 'OK') { // Success
-            delete data.status; // Delete the status
-            if (success) success(data);
+            if (success) success(data.data);
         } else { // Error
             if (error) error(data);
         }
@@ -97,8 +94,7 @@ export const getAggregatedMeasurements = (success, error, params) => {
         return response.json();
     }).then(data => {
         if (data.status === 'OK') { // Success
-            delete data.status; // Delete the status
-            if (success) success(data);
+            if (success) success(data.data);
         } else { // Error
             if (error) error(data);
         }
@@ -118,8 +114,7 @@ export const updateMeasurement = (measurement, success, error) => {
         return response.json();
     }).then(data => {
         if (data.status === 'OK') { // Success
-            delete data.status; // Delete the status
-            if (success) success(data);
+            if (success) success(data.data);
         } else { // Error
             if (error) error(data);
         }
@@ -138,8 +133,7 @@ export const addMeasurement = (measurement, success, error) => {
         return response.json();
     }).then(data => {
         if (data.status === 'OK') { // Success
-            delete data.status; // Delete the status
-            if (success) success(data);
+            if (success) success(data.data);
         } else { // Error
             if (error) error(data);
         }
@@ -159,8 +153,7 @@ export const deleteMeasurements = (idList, success, error) => {
         return response.json();
     }).then(data => {
         if (data.status === 'OK') { // Success
-            delete data.status; // Delete the status
-            if (success) success(data);
+            if (success) success(data.data);
         } else { // Error
             if (error) error(data);
         }
