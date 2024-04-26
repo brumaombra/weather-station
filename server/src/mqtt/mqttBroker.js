@@ -9,7 +9,8 @@ const server = net.createServer(aedesInstance.handle);
 
 // Handle new MQTT clients
 aedesInstance.on('client', client => {
-    console.log('Client connected:', client.id);
+    console.log(`\n----- ${new Date().toLocaleString()} -----`);
+    console.log(`Client connected: ${client.id}`);
 });
 
 // Handle MQTT subscriptions
@@ -20,23 +21,31 @@ aedesInstance.on('subscribe', (subscriptions, client) => {
 
 // Handle MQTT client disconnections
 aedesInstance.on('clientDisconnect', client => {
-    console.log('Client disconnected:', client.id);
+    console.log(`Client disconnected: ${client.id}`);
+    console.log(`----- ${new Date().toLocaleString()} -----`);
 });
 
 // Handle incoming MQTT messages
 aedesInstance.on('publish', async (packet, client) => {
-    // if (!client) return; // Ignore messages from unknown clients
-    console.log('Message from ', client?.id);
-    console.log('Payload: ', packet.payload.toString());
-    try { // Try to parse the JSON message
-        const newMeasurement = JSON.parse(packet.payload.toString()); // Parse the JSON data
-        const validation = validateNewMeasurementData(newMeasurement); // Validate the data
+    if (!client) return; // Ignore messages from unknown clients
+    const topic = packet.topic?.toString() || 'EMPTY';
+    const payload = packet.payload?.toString() || '{}';
+    console.log(`Message received from client ${client.id} on topic ${topic} with payload ${payload}`);
+    await addNewMeasurement(payload); // Execute the action
+});
+
+// Add a new measurement to the DB
+const addNewMeasurement = async payload => {
+    try {
+        const parsedPayload = JSON.parse(payload); // Parse the JSON data
+        const validation = validateNewMeasurementData(parsedPayload); // Validate the data
         if (!validation.isValid) throw new Error('Invalid data'); // Throw an error if the data is invalid
         await addMeasurement(validation.data); // Add the measurement to the DB
+        console.log('New measurement added successfully!'); // Log the success
     } catch (error) {
-        console.error('Error while adding the measurement', error); // Log the error
+        console.error('Error while adding the measurement!', error); // Log the error
     }
-});
+};
 
 // Start the MQTT broker
 export const startMQTTBroker = () => {

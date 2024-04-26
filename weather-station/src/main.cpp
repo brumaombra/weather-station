@@ -41,8 +41,7 @@ bool connectToWifi() {
 		if (devMode) Serial.print(".");
 		delay(500);
 	}
-	if (devMode) Serial.println();
-	if (devMode) Serial.print("Connected with IP: ");
+	if (devMode) Serial.print(" Connected with IP: ");
 	if (devMode) Serial.println(WiFi.localIP());
 	return true;
 }
@@ -51,14 +50,13 @@ bool connectToWifi() {
 bool connectToMQTT() {
 	if (WiFi.status() != WL_CONNECTED) return false; // Check if the WiFi is connected
 	client.setServer(mqttServer, mqttPort); // Set the MQTT broker server and port
+	if (devMode) Serial.print("Connecting to MQTT...");
 	while (!client.connected()) {
-		if (devMode) Serial.println("Connecting to MQTT...");
-		if (client.connect("esp_station")) {
-			if (devMode) Serial.println("Connected");
-		} else {
-			if (devMode) Serial.print("Failed with state ");
-			if (devMode) Serial.println(client.state());
-			delay(2000);
+		if (client.connect("esp_station")) { // Connect to the MQTT broker
+			if (devMode) Serial.println(" Connected!");
+		} else { // If the connection failed
+			if (devMode) Serial.print(".");
+			delay(1000);
 		}
 	}
 	return true;
@@ -86,23 +84,52 @@ void printMeasurement(const float humidity, const float temperature) {
 	if (devMode) Serial.println(tempString);
 }
 
+// Try to publish the readings to the MQTT broker
+bool tryToPublishReadings(const char* json) {
+	bool result = false; // The state of the sending
+	int attempt = 0; // Number of attempts
+	while (!result && attempt < 5) { // Try to send the readings
+		checkWiFiConnection(); // Check if the Wi-Fi is still connected
+		checkMQTTConnection(); // Check if the MQTT is still connected
+		delay(2000); // Add delay to avoid flooding the server
+        result = client.publish("station/newReading", json); // Publish the readings
+		delay(2000); // Add delay to avoid flooding the server
+        if (!result) { // If the readings were not sent successfully
+            attempt++; // Increment the number of attempts
+            if (devMode) Serial.println("Retry sending temperature and humidity readings...");
+        }
+    }
+	return result;
+}
+
 // Publish the temperature and humidity readings to the MQTT broker
 bool publishReadings() {
-	JsonDocument doc;
-    doc["temperature"] = temperatureAvg; // Set the temperature value in the JSON document
-	doc["humidity"] = humidityAvg; // Set the humidity value in the JSON document
+	JsonDocument doc; // Create the JSON
+    doc["temperature"] = temperatureAvg; // Add the temperature value
+	doc["humidity"] = humidityAvg; // Add the humidity value
     size_t jsonLength = measureJson(doc) + 1; // Size of the JSON document
     char json[jsonLength];
     serializeJson(doc, json, sizeof(json));
-	client.publish("station/newReading", json); // Publish the JSON document to the MQTT broker
-	if (devMode) Serial.println("Published temperature and humidity readings to MQTT broker");
-	return true;
+	const bool result = tryToPublishReadings(json); // Try to publish the readings
+	if (result) { // If the readings were published successfully
+		if (devMode) Serial.println("Published temperature and humidity readings to MQTT broker");
+		return true;
+	} else { // If the readings were not published successfully
+		if (devMode) Serial.println("Failed to publish temperature and humidity readings to MQTT broker");
+		return false;
+	}
 }
 
 // Read and publish the temperature and humidity readings to the MQTT broker
 void readAndPublishReadings() {
 	const float humidity = dht.readHumidity(); // Read the humidity from the DHT sensor
 	const float temperature = dht.readTemperature(); // Read the temperature from the DHT sensor
+	if (isnan(humidity) || isnan(temperature)) { // Check if the readings are valid
+		if (devMode) Serial.println("Failed to read from DHT sensor!"); // Print the error
+		return;
+	}
+
+	// Add the data
 	if (devMode) printMeasurement(humidity, temperature); // Print the readings
 	temperatureAvg += temperature; // Sum the new temperature reading
 	humidityAvg += humidity; // Sum the new humidity reading

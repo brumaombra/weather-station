@@ -9,20 +9,21 @@ const viewModel = reactive({
 });
 
 // Handle login button press
-const handleLoginPress = () => {
+const handleLoginPress = async () => {
     const username = viewModel.username;
     const password = viewModel.password;
     if (!username || !password) return; // If no username or password, exit
-
-    // Try to login
-    setBusy(true); // Busy on
-    loginAttempt(username, password, data => {
+    try { // Try to log in
+        setBusy(true); // Busy on
+        const result = await loginAttempt(username, password);
         setBusy(false); // Busy off
         window.location.href = '/'; // Redirect
-    }, error => {
+    } catch(error) {
         setBusy(false); // Busy off
-        showToast(error.message || 'Error while logging in', 'error');
-    });
+        const newError = new Error('Error while logging in', { cause: error }); // Save the old error to the stack
+        showToast(newError.message, 'error'); // Show toast
+        throw newError; // Throw the error
+    }
 };
 </script>
 
@@ -40,7 +41,7 @@ const handleLoginPress = () => {
             <input type="password" class="form-control" v-model="viewModel.password" @keyup.enter="handleLoginPress()" />
         </div>
         <div class="mb-3">
-            <button type="button" class="btn btn-primary" :disabled="!viewModel.username || !viewModel.password" @click="handleLoginPress()"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button>
+            <button type="button" class="btn btn-primary d-flex justify-content-center align-items-center" :disabled="!viewModel.username || !viewModel.password" @click="handleLoginPress()"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button>
         </div>
     </div>
 </template>

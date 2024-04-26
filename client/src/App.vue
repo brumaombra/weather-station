@@ -10,11 +10,15 @@ const getToken = () => {
 	const token = localStorage.getItem('adminToken');
 	if (!token) return; // If no token, exit
 	setBusy(true); // Busy on
-	validateSession(data => { // Validate the session token
+	try { // try to get the data
+		const result = validateSession(); // Validate the session
 		setBusy(false); // Busy off
-	}, error => {
+	} catch(error) {
 		setBusy(false); // Busy off
-	});
+        const newError = new Error('Error while authenticating the user', { cause: error }); // Save the old error to the stack
+        console.log(newError.message); // Log the error
+        throw newError; // Throw the error
+	}
 };
 
 getToken(); // get the token

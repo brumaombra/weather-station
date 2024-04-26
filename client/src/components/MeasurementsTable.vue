@@ -7,7 +7,7 @@ import { formatHumidity, formatTemperature, formatTimestamp } from '@/utils/form
 // View model
 const viewModel = reactive({
     tempMeasurement: {}, // Item temp value
-    buttonMassDeleteVisible: false, // Mass delete button
+    selectedElements: [], // Mass delete button
     selectedAll: false, // Select all checkbox value
     orderBy: 'timestamp', // The order field
     orderDirection: 'desc', // The order direction
@@ -22,7 +22,7 @@ const viewModel = reactive({
 });
 
 // Load the measurements
-const loadMeasurements = (successCallback, errorCallback, loadNewPage) => {
+const loadMeasurements = async loadNewPage => {
     setBusy(true); // Busy on
     let params = { // Query parameters
         orderField: viewModel.orderBy || 'timestamp',
@@ -31,22 +31,21 @@ const loadMeasurements = (successCallback, errorCallback, loadNewPage) => {
     };
     if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
-    if (loadNewPage) params.offset = GlobalStore.measurementsList.results.length; // Add offset for pagination
-
-    // Get the measurements
-    getMeasurements(response => {
+    if (loadNewPage) params.offset = GlobalStore.measurementsList?.results?.length || 0; // Add offset for pagination
+    try { // Try to get the measurements
+        const results = await getMeasurements(); // Get the measurements
         if (loadNewPage) // If pagination
-            GlobalStore.measurementsList.results = [...GlobalStore.measurementsList.results, ...response.results]; // Concatenate the new data
+            GlobalStore.measurementsList.results = [...GlobalStore.measurementsList.results, ...results.results]; // Concatenate the new data
         else
-            GlobalStore.measurementsList = response; // Update the data
+            GlobalStore.measurementsList = results; // Update the data
         handleTableSelectionChange(); // Check if selected
         setBusy(false); // Busy off
-        if (successCallback) successCallback(); // Success callback
-    }, error => {
+    } catch(error) {
         setBusy(false); // Busy off
-        if (errorCallback) errorCallback(); // Error callback
-        showToast('Error while loading the measurements', 'error'); // Show toast
-    }, params);
+        const newError = new Error('Error while loading the measurements', { cause: error }); // Save the old error to the stack
+        showToast(newError.message, 'error'); // Show toast
+        throw newError; // Throw the error
+    }
 };
 
 // The filter dialog button "apply"
@@ -67,8 +66,8 @@ const handleSelectDeselectAllPress = () => {
 
 // Table selection change event
 const handleTableSelectionChange = () => {
-    const selectedIds = GlobalStore.measurementsList.results.filter(item => item.selected); // Get the selected items
-    viewModel.buttonMassDeleteVisible = selectedIds.length > 0; // If items selected, display mass delete button
+    const selectedElements = GlobalStore.measurementsList.results.filter(item => item.selected); // Get the selected items
+    viewModel.selectedElements = selectedElements; // If items selected, display mass delete button
 };
 
 // Open a dialog
@@ -77,30 +76,37 @@ const saveItemReference = measurement => {
 };
 
 // Edit the measurement
-const handleSaveEditPress = () => {
+const handleSaveEditPress = async () => {
     setBusy(true); // Busy on
     const newData = { ...viewModel.tempMeasurement }; // Clone and clean object
     delete newData.timestamp; // Remove timestamp
     delete newData.selected; // Remove selected flag
-    updateMeasurement(newData, response => { // Update the measurement on the DB
+    try { // Try to get the measurements
+        const result = await updateMeasurement(newData); // Update the data
         loadMeasurements(); // Load the measurements
         showToast('Changes successfully saved!', 'success'); // Show toast
-    }, error => {
+    } catch(error) {
         setBusy(false); // Busy off
-        showToast('Error while saving the changes', 'error'); // Show toast
-    });
+        const newError = new Error('Error while saving the changes', { cause: error }); // Save the old error to the stack
+        showToast(newError.message, 'error'); // Show toast
+        throw newError; // Throw the error
+    }
 };
 
 // Delete the measurement
-const handleDeleteItemPress = () => {
-    setBusy(true); // Busy on
-    deleteMeasurements([viewModel.tempMeasurement.id], response => { // Delete the measurement from the DB
+const handleDeleteItemPress = async () => {
+    try {
+        setBusy(true); // Busy on
+        const results = await deleteMeasurements([viewModel.tempMeasurement.id]);
         loadMeasurements(); // Load the measurements
         showToast('Measurement deleted successfully!', 'success'); // Show toast
-    }, error => {
-        showToast('Error while deleting the measurement', 'error'); // Show toast
         setBusy(false); // Busy off
-    });
+    } catch(error) {
+        setBusy(false); // Busy off
+        const newError = new Error('Error while deleting the measurement', { cause: error }); // Save the old error to the stack
+        showToast(newError.message, 'error'); // Show toast
+        throw newError; // Throw the error
+    }
 };
 
 // Reset button pressed
@@ -109,16 +115,20 @@ const handleResetIconPress = () => {
 };
 
 // Delete selected button pressed
-const handleMassDeletePress = () => {
-    setBusy(true); // Busy on
-    const selectedIds = GlobalStore.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
-    deleteMeasurements(selectedIds, response => { // Delete the measurement from the DB
+const handleMassDeletePress = async () => {
+    try {
+        setBusy(true); // Busy on
+        const selectedIds = GlobalStore.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
+        const results = await deleteMeasurements(selectedIds); // Call mass delete
         loadMeasurements(); // Load the measurements
-        showToast('Measurements deleted successfully!', 'success'); // Show toast
-    }, error => {
+        showToast(`${results} measurements deleted successfully!`, 'success'); // Show toast
         setBusy(false); // Busy off
-        showToast('Error while deleting the measurements', 'error'); // Show toast
-    });
+    } catch(error) {
+        setBusy(false); // Busy off
+        const newError = new Error('Error while deleting the measurements', { cause: error }); // Save the old error to the stack
+        showToast(newError.message, 'error'); // Show toast
+        throw newError; // Throw the error
+    }
 };
 
 // Load more button pressed
@@ -137,7 +147,7 @@ init(); // Call init function
 
 <template>
     <!-- Toolbar -->
-    <div class="mb-4-5">
+    <div class="mb-4">
         <div class="row">
             <div class="col-md-6 col-12">
                 <!-- Title -->
@@ -150,9 +160,15 @@ init(); // Call init function
                 <div class="d-none d-md-block">
                     <div class="d-flex align-items-center justify-content-end">
                         <!-- Buttons -->
-                        <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
-                        <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
-                        <button type="button" class="btn btn-secondary" @click="handleResetIconPress()"><i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH</button>
+                        <button type="button" class="btn btn-danger me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.selectedElements.length > 0">
+                            <i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE {{ viewModel.selectedElements.length }} ITEMS
+                        </button>
+                        <button type="button" class="btn btn-secondary me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <i class="fa-solid fa-filter fs-5 me-2"></i>FILTER
+                        </button>
+                        <button type="button" class="btn btn-secondary d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
+                            <i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH
+                        </button>
                     </div>
                 </div>
 
@@ -161,13 +177,19 @@ init(); // Call init function
                     <!-- Buttons -->
                     <div class="row align-items-center">
                         <div class="col-12">
-                            <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.buttonMassDeleteVisible"><i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE SELECTED</button>
+                            <button type="button" class="btn btn-danger w-100 d-flex justify-content-center align-items-center mb-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.selectedElements.length > 0">
+                                <i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE {{ viewModel.selectedElements.length }} ITEMS
+                            </button>
                         </div>
                         <div class="col-6">
-                            <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                            <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fa-solid fa-filter fs-5 me-2"></i>FILTER
+                            </button>
                         </div>
                         <div class="col-6">
-                            <button type="button" class="btn btn-secondary w-100" @click="handleResetIconPress()"><i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH</button>
+                            <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
+                                <i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -205,7 +227,9 @@ init(); // Call init function
 
     <!-- Pagination -->
     <div class="d-flex mb-4 justify-content-center">
-        <button type="button" class="btn btn-secondary" @click="handleLoadMorePress()" v-if="GlobalStore.measurementsList.results.length < GlobalStore.measurementsList.count"><i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE</button>
+        <button type="button" class="btn btn-secondary d-flex justify-content-center align-items-center" @click="handleLoadMorePress()" v-if="GlobalStore.measurementsList.results.length < GlobalStore.measurementsList.count">
+            <i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE
+        </button>
     </div>
 
     <!-- Filter modal -->

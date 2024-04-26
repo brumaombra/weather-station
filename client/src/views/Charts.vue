@@ -3,7 +3,7 @@ import { reactive } from 'vue';
 import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/HumidityLineChart.vue';
 import GlobalStore from '@/stores/store.js';
-import { getAggregatedMeasurements, setBusy } from '@/utils/utils.js';
+import { getAggregatedMeasurements, setBusy, showToast } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -18,19 +18,21 @@ const viewModel = reactive({
 });
 
 // Load the measurements
-const loadMeasurements = () => {
+const loadMeasurements = async () => {
     setBusy(true); // Busy on
     const params = {};
     if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
-
-    // Get the measurements
-    getAggregatedMeasurements(data => {
-        GlobalStore.measurementsListChart = data; // Save the loaded measurements
+    try { // Try to get the data
+        const results = await getAggregatedMeasurements(params); // Get the aggregated measurements
+        GlobalStore.measurementsListChart = results; // Save the loaded measurements
         setBusy(false); // Busy off
-    }, error => {
+    } catch(error) {
         setBusy(false); // Busy off
-    }, params);
+        const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
+        showToast(newError.message, 'error'); // Show toast
+        throw newError; // Throw the error
+    }
 };
 
 // Add the filter dates from the selected period
@@ -96,7 +98,7 @@ init(); // Call init function
                 <div class="d-none d-md-block">
                     <div class="d-flex align-items-center justify-content-end">
                         <!-- Button filter modal -->
-                        <button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                        <button type="button" class="btn btn-secondary me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
 
                         <!-- Periods select -->
                         <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
@@ -113,7 +115,7 @@ init(); // Call init function
                     <div class="row align-items-center">
                         <div class="col-6">
                             <!-- Button filter modal -->
-                            <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                            <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
                         </div>
                         <div class="col-6">
                             <!-- Periods select -->

@@ -45,10 +45,10 @@ if (window.innerWidth < 992) {
 				<!-- Login/Logout -->
 				<ul class="navbar-nav mb-2 mb-lg-0">
 					<li class="nav-item" v-if="!GlobalStore.adminToken">
-						<router-link to="/login"><button type="button" class="btn btn-primary close-navbar"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button></router-link>
+						<router-link to="/login"><button type="button" class="btn btn-primary close-navbar d-flex justify-content-center align-items-center"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button></router-link>
 					</li>
 					<li class="nav-item" v-if="GlobalStore.adminToken">
-						<button type="button" class="btn btn-primary close-navbar" @click="handleLogoutPress()"><i class="fa-solid fa-right-from-bracket me-2"></i>LOGOUT</button>
+						<button type="button" class="btn btn-primary close-navbar d-flex justify-content-center align-items-center" @click="handleLogoutPress()"><i class="fa-solid fa-right-from-bracket me-2"></i>LOGOUT</button>
 					</li>
 				</ul>
 			</div>

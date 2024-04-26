@@ -1,3 +1,4 @@
+-- Table for the measurements
 CREATE TABLE measurements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -5,6 +6,7 @@ CREATE TABLE measurements (
     humidity FLOAT NOT NULL
 );
 
+-- Table for the users to manage the measurements
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
