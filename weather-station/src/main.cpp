@@ -21,7 +21,7 @@ RTC_DATA_ATTR float humidityAvg = 0; // Average humidity value
 RTC_DATA_ATTR byte measurementsCount = 0; // Number of measurements taken
 byte measurementsBeforePublishing = 60; // Number of measurements before publishing
 unsigned long readingInterval = 60; // Reading interval in seconds
-const bool devMode = true; // Enable development mode
+const bool devMode = false; // Enable development mode
 bool mqttConnected = false; // MQTT connection status
 bool confirmationReceived = false; // Confirmation received flag
 
@@ -50,7 +50,6 @@ bool connectToWifi() {
 // Handle the MQTT connection event
 void onMqttConnect(bool sessionPresent) {
   	if (devMode) Serial.println("Connected to the MQTT broker");
-	mqttClient.subscribe("station/confirmation/weather_station", 1); // Subscribe to the confirmation topic
   	mqttConnected = true; // Set MQTT connected flag
 }
 
@@ -62,10 +61,13 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
 
 // Handle the MQTT message event
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-    if (String(topic) == "station/confirmation/weather_station") {
-        Serial.println("Confirmation received from MQTT broker!");
-		confirmationReceived = true;
-    }
+    if (devMode) Serial.println("New message received");
+}
+
+// Handle the MQTT publish event
+void onMqttPublish(uint16_t packetId) {
+	Serial.println("Acknowledgment received from MQTT broker!");
+  	confirmationReceived = true;
 }
 
 // Connecting to MQTT broker
@@ -75,6 +77,7 @@ bool connectToMQTT() {
 	mqttClient.onConnect(onMqttConnect); // Set the MQTT connection event handler
     mqttClient.onDisconnect(onMqttDisconnect); // Set the MQTT disconnection event handler
 	mqttClient.onMessage(onMqttMessage); // Set the MQTT message event handler
+	mqttClient.onPublish(onMqttPublish); // Set the MQTT publish event handler
 	mqttClient.setClientId("weather_station"); // Set the client ID
 	mqttClient.setServer(mqttServer, mqttPort); // Set the MQTT broker server and port
 	mqttClient.connect(); // Connect to the MQTT broker
@@ -130,11 +133,11 @@ bool tryToPublishReadings(const char* json) {
 	if (!result) return false;
 
 	// Check if we get the confirmation from the MQTT broker
-	confirmationReceived = false;
 	unsigned long timestamp = millis();
 	while (!confirmationReceived) { // Wait for the MQTT confirmation
 		if (millis() - timestamp > 10000) { // If the confirmation take more than 10 seconds, exit
 			if (devMode) Serial.println("No confirmation received");
+			confirmationReceived = false; // Reset the confirmation received flag
 			return false;
 		}
 	}

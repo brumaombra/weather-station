@@ -37,15 +37,13 @@ aedesInstance.on('publish', async (packet, client) => {
 });
 
 // Add a new measurement to the DB
-const addNewMeasurement = async (payload, client) => {
+const addNewMeasurement = async payload => {
     try {
         const parsedPayload = JSON.parse(payload); // Parse the JSON data
         const validation = validateNewMeasurementData(parsedPayload); // Validate the data
         if (!validation.isValid) throw new Error('Invalid data'); // Throw an error if the data is invalid
         await addMeasurement(validation.data); // Add the measurement to the DB
         console.log('New measurement added successfully!'); // Log the success
-        aedesInstance.publish({ topic: `station/confirmation/${client.id}`, payload: JSON.stringify({ status: 'OK' }), qos: 0, retain: false }); // Send a confirmation to the client
-        console.log(`Confirmation sent to ${client.id}`);
     } catch (error) {
         console.error('Error while adding the measurement!', error); // Log the error
     }
