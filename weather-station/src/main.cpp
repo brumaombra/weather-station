@@ -3,10 +3,10 @@
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <WiFi.h>
-#include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <esp_sleep.h>
 #include <utils.h>
+#include <AsyncMqttClient.h>
 
 #define DHTPIN 16 // DHT22 pin
 #define DHTTYPE DHT22 // Specify DHT type (DHT11, DHT22, DHT21, AM2301)
@@ -21,11 +21,12 @@ RTC_DATA_ATTR float humidityAvg = 0; // Average humidity value
 RTC_DATA_ATTR byte measurementsCount = 0; // Number of measurements taken
 byte measurementsBeforePublishing = 60; // Number of measurements before publishing
 unsigned long readingInterval = 60; // Reading interval in seconds
-const bool devMode = false; // Enable development mode
+const bool devMode = true; // Enable development mode
+bool mqttConnected = false; // MQTT connection status
+bool confirmationReceived = false; // Confirmation received flag
 
 DHT dht(DHTPIN, DHTTYPE); // DHT object
-WiFiClient espClient; // WiFi client object
-PubSubClient client(espClient); // MQTT client object
+AsyncMqttClient mqttClient; // MQTT client object
 
 // Connect to Wi-Fi
 bool connectToWifi() {
@@ -46,17 +47,42 @@ bool connectToWifi() {
 	return true;
 }
 
+// Handle the MQTT connection event
+void onMqttConnect(bool sessionPresent) {
+  	if (devMode) Serial.println("Connected to the MQTT broker");
+	mqttClient.subscribe("station/confirmation/weather_station", 1); // Subscribe to the confirmation topic
+  	mqttConnected = true; // Set MQTT connected flag
+}
+
+// Handle the MQTT disconnection event
+void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
+	if (devMode) Serial.println("Disconnected from the MQTT broker");
+	mqttConnected = false; // Set MQTT connected flag
+}
+
+// Handle the MQTT message event
+void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+    if (String(topic) == "station/confirmation/weather_station") {
+        Serial.println("Confirmation received from MQTT broker!");
+		confirmationReceived = true;
+    }
+}
+
 // Connecting to MQTT broker
 bool connectToMQTT() {
 	if (WiFi.status() != WL_CONNECTED) return false; // Check if the WiFi is connected
-	client.setServer(mqttServer, mqttPort); // Set the MQTT broker server and port
-	if (devMode) Serial.print("Connecting to MQTT...");
-	while (!client.connected()) {
-		if (client.connect("esp_station")) { // Connect to the MQTT broker
-			if (devMode) Serial.println(" Connected!");
-		} else { // If the connection failed
-			if (devMode) Serial.print(".");
-			delay(1000);
+	if (devMode) Serial.println("Connecting to MQTT...");
+	mqttClient.onConnect(onMqttConnect); // Set the MQTT connection event handler
+    mqttClient.onDisconnect(onMqttDisconnect); // Set the MQTT disconnection event handler
+	mqttClient.onMessage(onMqttMessage); // Set the MQTT message event handler
+	mqttClient.setClientId("weather_station"); // Set the client ID
+	mqttClient.setServer(mqttServer, mqttPort); // Set the MQTT broker server and port
+	mqttClient.connect(); // Connect to the MQTT broker
+	unsigned long timestamp = millis();
+	while (!mqttConnected) { // Wait for the MQTT connection
+		if (millis() - timestamp > 10000) { // If the connection takes more than 10 seconds, exit
+			if (devMode) Serial.println("Failed to connect to the MQTT broker");
+			return false;
 		}
 	}
 	return true;
@@ -66,15 +92,16 @@ bool connectToMQTT() {
 bool checkWiFiConnection() {
 	if (WiFi.status() == WL_CONNECTED) return true; // Exit if Wi-Fi is connected
 	if (devMode) Serial.println("WiFi disconnected, reconnecting...");
-	connectToWifi(); // Reconnect to Wi-Fi
-	return true;
+	bool result = connectToWifi(); // Reconnect to Wi-Fi
+	return result;
 }
 
 // Check if the MQTT is still connected
-void checkMQTTConnection() {
-	if (client.connected()) return; // Exit if MQTT is connected
+bool checkMQTTConnection() {
+	if (mqttConnected) return true; // Exit if MQTT is connected
 	if (devMode) Serial.println("MQTT disconnected, reconnecting...");
-	connectToMQTT(); // Reconnect to MQTT
+	bool result = connectToMQTT(); // Reconnect to MQTT
+	return result;
 }
 
 // Print the readings
@@ -89,17 +116,30 @@ bool tryToPublishReadings(const char* json) {
 	bool result = false; // The state of the sending
 	int attempt = 0; // Number of attempts
 	while (!result && attempt < 5) { // Try to send the readings
-		checkWiFiConnection(); // Check if the Wi-Fi is still connected
-		checkMQTTConnection(); // Check if the MQTT is still connected
-		delay(2000); // Add delay to avoid flooding the server
-        result = client.publish("station/newReading", json); // Publish the readings
-		delay(2000); // Add delay to avoid flooding the server
+		if (!checkWiFiConnection()) return false; // Check if the Wi-Fi is still connected
+		if (!checkMQTTConnection()) return false; // Check if the MQTT is still connected
+		result = mqttClient.publish("station/newReading", 1, false, json); // Publish the readings
         if (!result) { // If the readings were not sent successfully
             attempt++; // Increment the number of attempts
             if (devMode) Serial.println("Retry sending temperature and humidity readings...");
+			delay(2000); // Wait for 2 seconds
         }
     }
-	return result;
+
+	// If the readings were not sent successfully
+	if (!result) return false;
+
+	// Check if we get the confirmation from the MQTT broker
+	confirmationReceived = false;
+	unsigned long timestamp = millis();
+	while (!confirmationReceived) { // Wait for the MQTT confirmation
+		if (millis() - timestamp > 10000) { // If the confirmation take more than 10 seconds, exit
+			if (devMode) Serial.println("No confirmation received");
+			return false;
+		}
+	}
+	confirmationReceived = false;
+	return true;
 }
 
 // Publish the temperature and humidity readings to the MQTT broker
@@ -173,8 +213,8 @@ void setup() {
 	setupDHT(); // Initialize the DHT sensor
 	if (!setupDone) { // Do only of first boot
 		setupDone = true; // Set the first boot flag
-		connectToWifi(); // Connect to Wi-Fi
-		connectToMQTT(); // Connect to MQTT broker
+		connectToWifi(); // Test the Wi-Fi connection
+		connectToMQTT(); // Test the MQTT connection
 	}
 }
 
