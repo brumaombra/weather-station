@@ -33,7 +33,7 @@ aedesInstance.on('publish', async (packet, client) => {
     const topic = packet.topic?.toString() || 'EMPTY';
     const payload = packet.payload?.toString() || '{}';
     console.log(`Message received from client ${client.id} on topic ${topic} with payload ${payload}`);
-    await addNewMeasurement(payload, client); // Execute the action
+    await addNewMeasurement(payload); // Execute the action
 });
 
 // Add a new measurement to the DB
