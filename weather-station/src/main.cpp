@@ -23,7 +23,8 @@ byte measurementsBeforePublishing = 60; // Number of measurements before publish
 unsigned long readingInterval = 60; // Reading interval in seconds
 const bool devMode = false; // Enable development mode
 bool mqttConnected = false; // MQTT connection status
-bool confirmationReceived = false; // Confirmation received flag
+bool confirmationReceived = false; // Confirmation received 
+uint16_t lastPacketId = 0; // Last MQTT packet ID
 
 DHT dht(DHTPIN, DHTTYPE); // DHT object
 AsyncMqttClient mqttClient; // MQTT client object
@@ -66,8 +67,10 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 
 // Handle the MQTT publish event
 void onMqttPublish(uint16_t packetId) {
-	Serial.println("Acknowledgment received from MQTT broker!");
-  	confirmationReceived = true;
+	if (packetId == lastPacketId) { // Check if the packet ID matches the last packet ID
+        if (devMode) Serial.println("Acknowledgment received from the MQTT broker!");
+        confirmationReceived = true; // Set confirmation received flag
+    }
 }
 
 // Connecting to MQTT broker
@@ -81,14 +84,15 @@ bool connectToMQTT() {
 	mqttClient.setClientId("weather_station"); // Set the client ID
 	mqttClient.setServer(mqttServer, mqttPort); // Set the MQTT broker server and port
 	mqttClient.connect(); // Connect to the MQTT broker
+	unsigned long timeout = secondsToMilliseconds(10); // Timeout in milliseconds
 	unsigned long timestamp = millis();
-	while (!mqttConnected) { // Wait for the MQTT connection
-		if (millis() - timestamp > 10000) { // If the connection takes more than 10 seconds, exit
-			if (devMode) Serial.println("Failed to connect to the MQTT broker");
-			return false;
-		}
-	}
-	return true;
+	while (!mqttConnected && (millis() - timestamp < timeout)) {;} // Wait for the connection to be established
+    if (!mqttConnected) { // If the connection was not successful
+        if (devMode) Serial.println("Failed to connect to the MQTT broker");
+        return false;
+    } else {
+		return true;
+    }
 }
 
 // Check if the WiFi is still connected
@@ -116,33 +120,26 @@ void printMeasurement(const float humidity, const float temperature) {
 
 // Try to publish the readings to the MQTT broker
 bool tryToPublishReadings(const char* json) {
-	bool result = false; // The state of the sending
-	int attempt = 0; // Number of attempts
-	while (!result && attempt < 5) { // Try to send the readings
-		if (!checkWiFiConnection()) return false; // Check if the Wi-Fi is still connected
-		if (!checkMQTTConnection()) return false; // Check if the MQTT is still connected
-		result = mqttClient.publish("station/newReading", 1, false, json); // Publish the readings
-        if (!result) { // If the readings were not sent successfully
-            attempt++; // Increment the number of attempts
-            if (devMode) Serial.println("Retry sending temperature and humidity readings...");
-			delay(2000); // Wait for 2 seconds
-        }
+	if (!checkWiFiConnection() || !checkMQTTConnection()) return false; // Check if the Wi-Fi or MQTT is still connected
+	confirmationReceived = false; // Reset the confirmation received flag
+    lastPacketId = mqttClient.publish("station/newReading", 1, false, json); // Publish the readings
+    if (lastPacketId == 0) { // If the readings were not sent successfully
+        if (devMode) Serial.println("Publish failed immediately");
+        return false;
     }
 
-	// If the readings were not sent successfully
-	if (!result) return false;
+    // Wait for the confirmation
+	unsigned long timeout = secondsToMilliseconds(5); // Timeout in milliseconds
+	unsigned long startTime = millis();
+    while (!confirmationReceived && (millis() - startTime < timeout)) {;}
+    if (!confirmationReceived) { // If the confirmation was not received within the timeout
+        if (devMode) Serial.println("No confirmation received within timeout");
+        return false;
+    }
 
-	// Check if we get the confirmation from the MQTT broker
-	unsigned long timestamp = millis();
-	while (!confirmationReceived) { // Wait for the MQTT confirmation
-		if (millis() - timestamp > 10000) { // If the confirmation take more than 10 seconds, exit
-			if (devMode) Serial.println("No confirmation received");
-			confirmationReceived = false; // Reset the confirmation received flag
-			return false;
-		}
-	}
-	confirmationReceived = false;
-	return true;
+    // Reset the confirmation received flag
+    confirmationReceived = false;
+    return true;
 }
 
 // Publish the temperature and humidity readings to the MQTT broker
