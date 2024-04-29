@@ -3,33 +3,63 @@ import net from 'net';
 import { addMeasurement } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
 
-const port = 1883;
 const aedesInstance = aedes();
-const server = net.createServer(aedesInstance.handle);
+const port = 1883; // Broker port
+const server = net.createServer(aedesInstance.handle); // Create the server
+const clientWhiteList = ['weather_station']; // List of allowed client IDs
+
+// Connection authorization
+aedesInstance.authenticate = (client, username, password, callback) => {
+    if (clientWhiteList.includes(client.id)) { // Client in whitelist
+        callback(null, true);
+    } else { // Client not in whitelist
+        const errorMessage = `Unauthorized connection attempt by ${client.id}`;
+        console.warning(errorMessage);
+        const error = new Error(errorMessage);
+        error.returnCode = 4; // MQTT connack return code for bad username or password
+        callback(error, false); // Unauthorized
+    }
+};
+
+// Subscription authorization
+aedesInstance.authorizeSubscribe = (client, sub, callback) => {
+    if (clientWhiteList.includes(client.id)) { // Client in whitelist
+        callback(null, sub);
+    } else { // Client not in whitelist
+        console.warning(`Unauthorized subscribe attempt by ${client.id}`);
+        callback(new Error('Unauthorized'), null); // Unauthorized
+    }
+};
+
+// Publish authorization
+aedesInstance.authorizePublish = (client, packet, callback) => {
+    if (clientWhiteList.includes(client.id)) { // Client in whitelist
+        callback(null);
+    } else { // Client not in whitelist
+        console.warning(`Unauthorized publish attempt by ${client.id}`);
+        callback(new Error('Unauthorized')); // Unauthorized
+    }
+};
 
 // Handle new MQTT clients
 aedesInstance.on('client', client => {
-    if (!client) return; // Ignore subscriptions from unknown clients
-    console.log(`\n----- ${new Date().toLocaleString()} -----`);
+    console.log(`---------------------------------------------- ${new Date().toLocaleString()}`);
     console.log(`Client connected: ${client.id}`);
 });
 
 // Handle MQTT subscriptions
 aedesInstance.on('subscribe', (subscriptions, client) => {
-    if (!client) return; // Ignore subscriptions from unknown clients
     console.log(`Client subscribed: ${client.id}`);
 });
 
 // Handle MQTT client disconnections
 aedesInstance.on('clientDisconnect', client => {
-    if (!client) return; // Ignore subscriptions from unknown clients
     console.log(`Client disconnected: ${client.id}`);
-    console.log(`----- ${new Date().toLocaleString()} -----`);
+    console.log(`---------------------------------------------- ${new Date().toLocaleString()}`);
 });
 
 // Handle incoming MQTT messages
 aedesInstance.on('publish', async (packet, client) => {
-    if (!client) return; // Ignore messages from unknown clients
     const topic = packet.topic?.toString() || 'EMPTY';
     const payload = packet.payload?.toString() || '{}';
     console.log(`Message received from client ${client.id} on topic ${topic} with payload ${payload}`);

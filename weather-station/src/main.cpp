@@ -118,46 +118,49 @@ void printMeasurement(const float humidity, const float temperature) {
 	if (devMode) Serial.println(tempString);
 }
 
+// Create the JSON for the readings
+bool createJsonMeasurements(char* jsonBuffer, size_t bufferSize) {
+	JsonDocument doc; // Create the JSON
+    doc["temperature"] = temperatureAvg; // Add the temperature value
+	doc["humidity"] = humidityAvg; // Add the humidity value
+	size_t length = serializeJson(doc, jsonBuffer, bufferSize);
+	const bool result = length > 0 && length < bufferSize; // Check if the JSON is valid
+	if (!result) { if (devMode) Serial.println("Error while creating the JSON"); }
+	return result;
+}
+
 // Try to publish the readings to the MQTT broker
 bool tryToPublishReadings(const char* json) {
 	if (!checkWiFiConnection() || !checkMQTTConnection()) return false; // Check if the Wi-Fi or MQTT is still connected
 	confirmationReceived = false; // Reset the confirmation received flag
     lastPacketId = mqttClient.publish("station/newReading", 1, false, json); // Publish the readings
     if (lastPacketId == 0) { // If the readings were not sent successfully
-        if (devMode) Serial.println("Publish failed immediately");
+        if (devMode) Serial.println("Failed to publish the data: Publishing failed immediately");
         return false;
     }
 
     // Wait for the confirmation
 	unsigned long timeout = secondsToMilliseconds(5); // Timeout in milliseconds
-	unsigned long startTime = millis();
-    while (!confirmationReceived && (millis() - startTime < timeout)) {;}
+	unsigned long timestamp = millis();
+    while (!confirmationReceived && (millis() - timestamp < timeout)) {;}
     if (!confirmationReceived) { // If the confirmation was not received within the timeout
-        if (devMode) Serial.println("No confirmation received within timeout");
+        if (devMode) Serial.println("Failed to publish the data: No confirmation received within timeout");
         return false;
     }
 
     // Reset the confirmation received flag
     confirmationReceived = false;
+	if (devMode) Serial.println("Published temperature and humidity readings to MQTT broker!");
     return true;
 }
 
 // Publish the temperature and humidity readings to the MQTT broker
 bool publishReadings() {
-	JsonDocument doc; // Create the JSON
-    doc["temperature"] = temperatureAvg; // Add the temperature value
-	doc["humidity"] = humidityAvg; // Add the humidity value
-    size_t jsonLength = measureJson(doc) + 1; // Size of the JSON document
-    char json[jsonLength];
-    serializeJson(doc, json, sizeof(json));
-	const bool result = tryToPublishReadings(json); // Try to publish the readings
-	if (result) { // If the readings were published successfully
-		if (devMode) Serial.println("Published temperature and humidity readings to MQTT broker");
-		return true;
-	} else { // If the readings were not published successfully
-		if (devMode) Serial.println("Failed to publish temperature and humidity readings to MQTT broker");
-		return false;
-	}
+	char json[256]; // Buffer for the JSON
+	const bool jsonParsed = createJsonMeasurements(json, sizeof(json)); // Create the JSON
+	if (!jsonParsed) return false; // If the JSON was not created successfully
+	const bool dataPublished = tryToPublishReadings(json); // Try to publish the readings
+	return dataPublished;
 }
 
 // Read and publish the temperature and humidity readings to the MQTT broker
