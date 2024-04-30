@@ -1,65 +1,67 @@
 import aedes from 'aedes';
 import net from 'net';
-import { addMeasurement } from '../db/sql.js';
+import bcrypt from 'bcrypt';
+import { addMeasurement, getMqttUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
 
 const aedesInstance = aedes();
 const port = 1883; // Broker port
 const server = net.createServer(aedesInstance.handle); // Create the server
-const clientWhiteList = ['weather_station']; // List of allowed client IDs
 
 // Connection authorization
-aedesInstance.authenticate = (client, username, password, callback) => {
-    if (clientWhiteList.includes(client.id)) { // Client in whitelist
-        callback(null, true);
-    } else { // Client not in whitelist
-        const errorMessage = `Unauthorized connection attempt by ${client.id}`;
-        console.warning(errorMessage);
-        const error = new Error(errorMessage);
-        error.returnCode = 4; // MQTT connack return code for bad username or password
+aedesInstance.authenticate = async (client, username, password, callback) => {
+    console.log(`Client ${client.id} is trying to authenticate`);
+    if (!username) return callback(new Error(`Client ${client.id} unauthorized`), false); // Error if the username is empty
+    try { // Check if the username and password are valid
+        const user = await getMqttUser(username); // Get the user from the database
+        if (user && await bcrypt.compare(password, user.password)) {
+            console.log(`Client ${client.id} is authenticated`);
+            callback(null, true); // Success
+        } else {
+            const errorMessage = `Client ${client.id} unauthorized`;
+            console.warning(errorMessage);
+            const error = new Error(errorMessage);
+            error.returnCode = 4; // MQTT connack return code for bad username or password
+            callback(error, false); // Unauthorized
+        }
+    } catch (error) {
+        const errorMessage = 'Error while authenticating the MQTT user';
+        console.error(errorMessage, error); // Log the error
         callback(error, false); // Unauthorized
     }
 };
 
 // Subscription authorization
 aedesInstance.authorizeSubscribe = (client, sub, callback) => {
-    if (clientWhiteList.includes(client.id)) { // Client in whitelist
-        callback(null, sub);
-    } else { // Client not in whitelist
-        console.warning(`Unauthorized subscribe attempt by ${client.id}`);
-        callback(new Error('Unauthorized'), null); // Unauthorized
-    }
+    callback(null, sub); // Success
 };
 
 // Publish authorization
 aedesInstance.authorizePublish = (client, packet, callback) => {
-    if (clientWhiteList.includes(client.id)) { // Client in whitelist
-        callback(null);
-    } else { // Client not in whitelist
-        console.warning(`Unauthorized publish attempt by ${client.id}`);
-        callback(new Error('Unauthorized')); // Unauthorized
-    }
+    callback(null); // Success
 };
 
 // Handle new MQTT clients
 aedesInstance.on('client', client => {
-    console.log(`---------------------------------------------- ${new Date().toLocaleString()}`);
-    console.log(`Client connected: ${client.id}`);
+    if (!client) return; // Ignore the unknown clients
+    console.log(`Client connected: ${client.id} ------------------------ ${new Date().toLocaleString()}`);
 });
 
 // Handle MQTT subscriptions
 aedesInstance.on('subscribe', (subscriptions, client) => {
+    if (!client) return; // Ignore the unknown clients
     console.log(`Client subscribed: ${client.id}`);
 });
 
 // Handle MQTT client disconnections
 aedesInstance.on('clientDisconnect', client => {
-    console.log(`Client disconnected: ${client.id}`);
-    console.log(`---------------------------------------------- ${new Date().toLocaleString()}`);
+    if (!client) return; // Ignore the unknown clients
+    console.log(`Client disconnected: ${client.id} ------------------------ ${new Date().toLocaleString()}`);
 });
 
 // Handle incoming MQTT messages
 aedesInstance.on('publish', async (packet, client) => {
+    if (!client) return; // Ignore the unknown clients
     const topic = packet.topic?.toString() || 'EMPTY';
     const payload = packet.payload?.toString() || '{}';
     console.log(`Message received from client ${client.id} on topic ${topic} with payload ${payload}`);

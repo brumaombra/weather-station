@@ -60,6 +60,26 @@ export const getUser = async username => {
     }
 };
 
+// Create the query to get the MQTT user from the database
+const createQueryGetMqttUser = username => {
+    const query = knex('mqttUsers').where({ username }).first(); // Create the query to get the user
+    console.log(query.toString()); // Log the query
+    return query;
+};
+
+// Get the MQTT user from the database
+export const getMqttUser = async username => {
+    try {
+        if (!username) throw new Error('Username is required'); // Check if the username is provided
+        const result = await executeQueryWithReconnection(() => createQueryGetMqttUser(username)); // Execute the query
+        return result; // Return the user
+    } catch (error) {
+        const newError = new Error('Error while reading the user', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
+
 // Create the query to get the measurements from the database
 const createQueryGetMeasurements = params => {
     let query = knex('measurements').select('*'); // Select all columns from the measurements table

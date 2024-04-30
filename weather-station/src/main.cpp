@@ -13,6 +13,9 @@
 
 const char ssid[] = ""; // WiFi SSID
 const char password[] = ""; // WiFi password
+const char mqttUsername[] = ""; // MQTT user
+const char mqttPassword[] = ""; // MQTT password
+const char mqttClientId[] = "weather_station"; // MQTT client ID
 const char mqttServer[] = "85.235.149.166"; // MQTT broker IP address
 const int mqttPort = 1883; // MQTT broker port
 RTC_DATA_ATTR bool setupDone = false; // First boot flag
@@ -81,12 +84,13 @@ bool connectToMQTT() {
     mqttClient.onDisconnect(onMqttDisconnect); // Set the MQTT disconnection event handler
 	mqttClient.onMessage(onMqttMessage); // Set the MQTT message event handler
 	mqttClient.onPublish(onMqttPublish); // Set the MQTT publish event handler
-	mqttClient.setClientId("weather_station"); // Set the client ID
+	mqttClient.setClientId(mqttClientId); // Set the client ID
+	mqttClient.setCredentials(mqttUsername, mqttPassword); // Setting MQTT credentials
 	mqttClient.setServer(mqttServer, mqttPort); // Set the MQTT broker server and port
 	mqttClient.connect(); // Connect to the MQTT broker
 	unsigned long timeout = secondsToMilliseconds(10); // Timeout in milliseconds
 	unsigned long timestamp = millis();
-	while (!mqttConnected && (millis() - timestamp < timeout)) {;} // Wait for the connection to be established
+	while (!mqttConnected && (millis() - timestamp < timeout)) { delay(10); } // Wait for the connection to be established
     if (!mqttConnected) { // If the connection was not successful
         if (devMode) Serial.println("Failed to connect to the MQTT broker");
         return false;
@@ -131,27 +135,32 @@ bool createJsonMeasurements(char* jsonBuffer, size_t bufferSize) {
 
 // Try to publish the readings to the MQTT broker
 bool tryToPublishReadings(const char* json) {
-	if (!checkWiFiConnection() || !checkMQTTConnection()) return false; // Check if the Wi-Fi or MQTT is still connected
+    byte maxAttempts = 5; // Max sending attempts
+    unsigned long timeout = secondsToMilliseconds(10); // Send timeout
+    unsigned long timestamp = 0;
 	confirmationReceived = false; // Reset the confirmation received flag
-    lastPacketId = mqttClient.publish("station/newReading", 1, false, json); // Publish the readings
-    if (lastPacketId == 0) { // If the readings were not sent successfully
-        if (devMode) Serial.println("Failed to publish the data: Publishing failed immediately");
-        return false;
+    while (maxAttempts > 0) { // Try to publish the readings
+		if (!checkWiFiConnection() || !checkMQTTConnection()) return false;
+        lastPacketId = mqttClient.publish("station/newReading", 1, false, json); // Publish the readings
+        if (lastPacketId != 0) { // Send OK
+            timestamp = millis(); // Reset the timestamp
+            while (!confirmationReceived && (millis() - timestamp < timeout)) { delay(10); } // Wait for the confirmation
+            if (confirmationReceived) { // Send OK
+                confirmationReceived = false; // Reset the confirmation received flag
+                if (devMode) Serial.println("Published temperature and humidity readings to MQTT broker!");
+                return true; // Success
+            } else {
+				if (devMode) Serial.println("Failed to publish the data: No confirmation received within timeout. Retry...");
+			}
+        } else { // Send KO
+            if (devMode) Serial.println("Failed to publish the data: Publishing failed immediately. Retry...");
+        }
+        maxAttempts--;
     }
 
-    // Wait for the confirmation
-	unsigned long timeout = secondsToMilliseconds(5); // Timeout in milliseconds
-	unsigned long timestamp = millis();
-    while (!confirmationReceived && (millis() - timestamp < timeout)) {;}
-    if (!confirmationReceived) { // If the confirmation was not received within the timeout
-        if (devMode) Serial.println("Failed to publish the data: No confirmation received within timeout");
-        return false;
-    }
-
-    // Reset the confirmation received flag
-    confirmationReceived = false;
-	if (devMode) Serial.println("Published temperature and humidity readings to MQTT broker!");
-    return true;
+	// Error
+    if (devMode) Serial.println("Failed to publish the data: No attempts left");
+    return false;
 }
 
 // Publish the temperature and humidity readings to the MQTT broker
