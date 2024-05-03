@@ -10,10 +10,10 @@ export const formatDate = timestamp => {
     return date.toLocaleDateString(); // Format date as a string
 };
 
-// Format from JS date to YYYY-MM-DD
-export const formatJsDateToIsoStringDate = date => {
-    if (!date) return; // Return an empty string if not valid
-    return date.toISOString().split('T')[0]; // Format date as a string
+// Format from JS date to YYYY-MM-DD + TIME
+export const formatJsDateToIsoStringDate = (date, includeTime) => {
+    if (!date) return; // If no date, exit
+    return includeTime ? date.toISOString() : date.toISOString().split('T')[0]; // Format date as a string
 };
 
 // Temperature formatter

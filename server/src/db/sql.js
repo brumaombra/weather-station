@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import knexLib from 'knex';
-import { getMaxAndMinFromDate, dateIsYesterday } from '../utils/utils.js';
+import { dateIsYesterday } from '../utils/utils.js';
 dotenv.config(); // Load the .env file
 
 let knex; // Declare the global variable for the Knex library
@@ -85,8 +85,8 @@ const createQueryGetMeasurements = params => {
     let query = knex('measurements').select('*'); // Select all columns from the measurements table
     query = query.orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc'); // Add order filter
     query = query.limit(params.limit || 25).offset(params.offset || 0); // For pagination
-    if (params.startDate) query = query.where('timestamp', '>=', getMaxAndMinFromDate(new Date(params.startDate)).minDate); // Add start date
-    if (params.endDate) query = query.where('timestamp', '<=', getMaxAndMinFromDate(new Date(params.endDate)).maxDate); // Add end date
+    if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
+    if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -94,8 +94,8 @@ const createQueryGetMeasurements = params => {
 // Create the query to get the number of measurements from the database
 const createQueryGetMeasurementsCount = params => {
     let query = knex('measurements').count('id as count').first(); // Count the number of rows in the measurements table
-    if (params.startDate) query = query.where('timestamp', '>=', getMaxAndMinFromDate(new Date(params.startDate)).minDate); // Add start date
-    if (params.endDate) query = query.where('timestamp', '<=', getMaxAndMinFromDate(new Date(params.endDate)).maxDate); // Add end date
+    if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
+    if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -118,10 +118,14 @@ const createQueryGetAggregatedDailyMeasurements = params => {
     let query = knex('measurements').select(knex.raw('DATE(timestamp) as date')); // Select the date column
     query = query.avg('temperature as temperatureAvg').min('temperature as temperatureMin').max('temperature as temperatureMax'); // Add temperature data
     query = query.avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax'); // Add humidity data
+    query = query.avg('pressure as pressureAvg').min('pressure as pressureMin').max('pressure as pressureMax'); // Add pressure data
+    query = query.avg('gas as gasAvg').min('gas as gasMin').max('gas as gasMax'); // Add gas data
+    query = query.avg('pm25 as pm25Avg').min('pm25 as pm25Min').max('pm25 as pm25Max'); // Add PM 2.5 data
+    query = query.avg('pm10 as pm10Avg').min('pm10 as pm10Min').max('pm10 as pm10Max'); // Add PM 10 data
     query = query.groupByRaw('DATE(timestamp)'); // Group by
     query = query.orderBy('date', 'asc'); // Add order filter
-    if (params.startDate) query = query.whereRaw('DATE(timestamp) >= ?', [getMaxAndMinFromDate(new Date(params.startDate)).minDate]); // Add start date
-    if (params.endDate) query = query.whereRaw('DATE(timestamp) <= ?', [getMaxAndMinFromDate(new Date(params.endDate)).maxDate]); // Add end date
+    if (params.startDate) query = query.whereRaw('timestamp >= ?', [new Date(params.startDate)]); // Add start date
+    if (params.endDate) query = query.whereRaw('timestamp <= ?', [new Date(params.endDate)]); // Add end date
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -131,9 +135,13 @@ const createQueryGetAggregatedDailyMeasurementsSingle = params => {
     let query = knex('measurements').select('timestamp as date'); // Select the date column
     query = query.select('temperature as temperatureAvg').select('temperature as temperatureMin').select('temperature as temperatureMax'); // Add temperature data
     query = query.select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax'); // Add humidity data
+    query = query.select('pressure as pressureAvg').select('pressure as pressureMin').select('pressure as pressureMax'); // Add pressure data
+    query = query.select('gas as gasAvg').select('gas as gasMin').select('gas as gasMax'); // Add gas data
+    query = query.select('pm25 as pm25Avg').select('pm25 as pm25Min').select('pm25 as pm25Max'); // Add PM 2.5 data
+    query = query.select('pm10 as pm10Avg').select('pm10 as pm10Min').select('pm10 as pm10Max'); // Add PM 10 data
     query = query.orderBy('date', 'asc'); // Add order filter
-    if (params.startDate) query = query.whereRaw('DATE(timestamp) >= ?', [getMaxAndMinFromDate(new Date(params.startDate)).minDate]); // Add start date
-    if (params.endDate) query = query.whereRaw('DATE(timestamp) <= ?', [getMaxAndMinFromDate(new Date(params.endDate)).maxDate]); // Add end date
+    if (params.startDate) query = query.whereRaw('timestamp >= ?', [new Date(params.startDate)]); // Add start date
+    if (params.endDate) query = query.whereRaw('timestamp <= ?', [new Date(params.endDate)]); // Add end date
     console.log(query.toString()); // Log the query
     return query;
 };

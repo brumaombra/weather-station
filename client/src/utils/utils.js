@@ -23,6 +23,16 @@ export const fromDaysToMilliseconds = days => {
     return days * 24 * 60 * 60 * 1000;
 };
 
+// Get min and max date from a date
+export const getMaxAndMinFromDate = date => {
+    if (!date) return { minDate: null, maxDate: null }; // If no date, exit
+    const minDate = new Date(date);
+    minDate.setHours(0, 0, 0, 0);
+    const maxDate = new Date(date);
+    maxDate.setHours(23, 59, 59, 999);
+    return { minDate, maxDate };
+};
+
 // Login attempt
 export const loginAttempt = async (username, password) => {
     try {

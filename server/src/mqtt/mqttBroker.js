@@ -18,16 +18,15 @@ aedesInstance.authenticate = async (client, username, password, callback) => {
             console.log(`Client ${client.id} is authenticated`);
             callback(null, true); // Success
         } else {
-            const errorMessage = `Client ${client.id} unauthorized`;
-            console.warning(errorMessage);
-            const error = new Error(errorMessage);
+            const error = new Error(`Client ${client.id} unauthorized`);
             error.returnCode = 4; // MQTT connack return code for bad username or password
+            console.error(error.message); // Log the error
             callback(error, false); // Unauthorized
         }
     } catch (error) {
-        const errorMessage = 'Error while authenticating the MQTT user';
-        console.error(errorMessage, error); // Log the error
-        callback(error, false); // Unauthorized
+        const newError = new Error('Error while authenticating the MQTT user', { cause: error });
+        console.error(newError); // Log the error
+        callback(newError, false); // Unauthorized
     }
 };
 

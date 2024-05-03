@@ -2,8 +2,10 @@
 import { reactive } from 'vue';
 import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/HumidityLineChart.vue';
+import PressureLineChart from '@/components/PressureLineChart.vue';
+import GasLineChart from '@/components/GasLineChart.vue';
 import GlobalStore from '@/stores/store.js';
-import { getAggregatedMeasurements, setBusy, showToast } from '@/utils/utils.js';
+import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -56,7 +58,8 @@ const addFilterDatesFromPeriod = () => {
     // Create the start and end dates
     const pastDate = new Date();
     pastDate.setDate(pastDate.getDate() - days); // Tot days ago
-    viewModel.startDate = formatJsDateToIsoStringDate(pastDate); // Set formatted start date
+    const startDate = days === 1 ? pastDate : getMaxAndMinFromDate(pastDate).minDate; // Get the date at 00:00
+    viewModel.startDate = formatJsDateToIsoStringDate(startDate, true); // Set formatted start date (If 1 day include time)
 };
 
 // When period select changed
@@ -67,8 +70,10 @@ const handlePeriodChange = event => {
 
 // Handle filter dialog button "apply"
 const handleApplyFilterPress = () => {
-    viewModel.startDate = viewModel.dialogFilter.startDate; // Apply start date
-    viewModel.endDate = viewModel.dialogFilter.endDate; // Apply end date
+    const startDate = getMaxAndMinFromDate(viewModel.dialogFilter.startDate).minDate; // Get the date at 00:00
+    const endDate = getMaxAndMinFromDate(viewModel.dialogFilter.endDate).maxDate; // Get the date at 23:59
+    if (startDate) viewModel.startDate = formatJsDateToIsoStringDate(startDate, true); // Apply start date
+    if (endDate) viewModel.endDate = formatJsDateToIsoStringDate(endDate, true); // Apply end date
     loadMeasurements(); // Load measurements
 };
 
@@ -85,7 +90,7 @@ init(); // Call init function
 
 <template>
     <!-- Toolbar -->
-    <div class="mb-4-5">
+    <div>
         <div class="row">
             <div class="col-md-6 col-12">
                 <!-- Title -->
@@ -136,13 +141,23 @@ init(); // Call init function
     <div class="mb-4">
         <div class="row">
             <!-- Temperature chart -->
-            <div class="col-lg-6 col-12">
+            <div class="col-lg-6 col-12 mt-5">
                 <TemperatureLineChart />
             </div>
 
             <!-- Humidity chart -->
-            <div class="col-lg-6 col-12 mt-lg-0 mt-4">
+            <div class="col-lg-6 col-12 mt-5">
                 <HumidityLineChart />
+            </div>
+
+            <!-- Pressure chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <PressureLineChart />
+            </div>
+
+            <!-- Gas chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <GasLineChart />
             </div>
         </div>
     </div>

@@ -127,6 +127,10 @@ bool createJsonMeasurements(char* jsonBuffer, size_t bufferSize) {
 	JsonDocument doc; // Create the JSON
     doc["temperature"] = temperatureAvg; // Add the temperature value
 	doc["humidity"] = humidityAvg; // Add the humidity value
+	doc["pressure"] = humidityAvg; // Add the pressure value
+	doc["gas"] = humidityAvg; // Add the gas value
+	doc["pm25"] = humidityAvg; // Add the PM 2.5 value
+	doc["pm10"] = humidityAvg; // Add the PM 10 value
 	size_t length = serializeJson(doc, jsonBuffer, bufferSize);
 	const bool result = length > 0 && length < bufferSize; // Check if the JSON is valid
 	if (!result) { if (devMode) Serial.println("Error while creating the JSON"); }
@@ -165,7 +169,7 @@ bool tryToPublishReadings(const char* json) {
 
 // Publish the temperature and humidity readings to the MQTT broker
 bool publishReadings() {
-	char json[256]; // Buffer for the JSON
+	char json[512]; // Buffer for the JSON
 	const bool jsonParsed = createJsonMeasurements(json, sizeof(json)); // Create the JSON
 	if (!jsonParsed) return false; // If the JSON was not created successfully
 	const bool dataPublished = tryToPublishReadings(json); // Try to publish the readings

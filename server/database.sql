@@ -3,7 +3,11 @@ CREATE TABLE measurements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     temperature FLOAT NOT NULL,
-    humidity FLOAT NOT NULL
+    humidity FLOAT NOT NULL,
+    pressure FLOAT NOT NULL,
+    gas FLOAT NOT NULL,
+    pm25 FLOAT NOT NULL,
+    pm10 FLOAT NOT NULL
 );
 
 -- Table for the users to manage the measurements

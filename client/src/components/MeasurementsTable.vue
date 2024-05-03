@@ -1,8 +1,8 @@
 <script setup>
 import { reactive } from 'vue';
 import GlobalStore from '@/stores/store.js';
-import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements } from '@/utils/utils.js';
-import { formatHumidity, formatTemperature, formatTimestamp } from '@/utils/formatter.js';
+import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
+import { formatHumidity, formatTemperature, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
 const viewModel = reactive({
@@ -33,7 +33,7 @@ const loadMeasurements = async loadNewPage => {
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     if (loadNewPage) params.offset = GlobalStore.measurementsList?.results?.length || 0; // Add offset for pagination
     try { // Try to get the measurements
-        const results = await getMeasurements(); // Get the measurements
+        const results = await getMeasurements(params); // Get the measurements
         if (loadNewPage) // If pagination
             GlobalStore.measurementsList.results = [...GlobalStore.measurementsList.results, ...results.results]; // Concatenate the new data
         else
@@ -52,8 +52,10 @@ const loadMeasurements = async loadNewPage => {
 const handleApplyFilterPress = () => {
     viewModel.orderBy = viewModel.dialogFilter.orderBy; // Apply order by
     viewModel.orderDirection = viewModel.dialogFilter.orderDirection; // Apply order direction
-    viewModel.startDate = viewModel.dialogFilter.startDate; // Apply start date
-    viewModel.endDate = viewModel.dialogFilter.endDate; // Apply end date
+    const startDate = getMaxAndMinFromDate(viewModel.dialogFilter.startDate).minDate; // Get the date at 00:00
+    const endDate = getMaxAndMinFromDate(viewModel.dialogFilter.endDate).maxDate; // Get the date at 23:59
+    if (startDate) viewModel.startDate = formatJsDateToIsoStringDate(startDate, true); // Apply start date
+    if (endDate) viewModel.endDate = formatJsDateToIsoStringDate(endDate, true); // Apply end date
     loadMeasurements(); // Load measurements
 };
 
@@ -133,12 +135,12 @@ const handleMassDeletePress = async () => {
 
 // Load more button pressed
 const handleLoadMorePress = () => {
-    loadMeasurements(null, null, true); // Load more measurements
+    loadMeasurements(true); // Load more measurements
 };
 
 // Init function
 const init = () => {
-    if (GlobalStore.measurementsList.results.length > 0) return; // If already done, exit
+    if (GlobalStore.measurementsList?.results?.length > 0) return; // If already done, exit
     loadMeasurements(); // Load the measurements
 };
 
@@ -207,6 +209,10 @@ init(); // Call init function
                     <th>Timestamp</th>
                     <th>Temperature</th>
                     <th>Humidity</th>
+                    <th>Pressure</th>
+                    <th>Gas</th>
+                    <th>PM2.5</th>
+                    <th>PM10</th>
                     <th v-if="GlobalStore.adminToken"></th>
                     <th v-if="GlobalStore.adminToken"></th>
                 </tr>
@@ -216,8 +222,12 @@ init(); // Call init function
                     <td class="column-selection" v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
                     <th class="column-id">{{ item.id }}</th>
                     <td>{{ formatTimestamp(item.timestamp) }}</td>
-                    <td>{{ formatTemperature(item.temperature) }} °C</td>
-                    <td>{{ formatHumidity(item.humidity) }} %</td>
+                    <td class="column-measurements">{{ formatTemperature(item.temperature) }} °C</td>
+                    <td class="column-measurements">{{ formatHumidity(item.humidity) }} %</td>
+                    <td class="column-measurements">{{ formatHumidity(item.pressure) }} hPa</td>
+                    <td class="column-measurements">{{ formatHumidity(item.gas) }} %</td>
+                    <td class="column-measurements">{{ formatHumidity(item.pm25) }} %</td>
+                    <td class="column-measurements">{{ formatHumidity(item.pm10) }} %</td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
                 </tr>
@@ -357,12 +367,15 @@ init(); // Call init function
 <style scoped>
 /* Table column classes */
 .column-id {
-    max-width: 120px;
+    width: 100px;
 }
 .column-icon {
     width: 60px;
 }
 .column-selection {
     width: 60px;
+}
+.column-measurements {
+    width: 130px
 }
 </style>
