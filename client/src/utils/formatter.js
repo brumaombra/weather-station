@@ -16,12 +16,7 @@ export const formatJsDateToIsoStringDate = (date, includeTime) => {
     return includeTime ? date.toISOString() : date.toISOString().split('T')[0]; // Format date as a string
 };
 
-// Temperature formatter
-export const formatTemperature = temperature => {
-    return temperature.toFixed(1); // Round to 2 decimal places
-};
-
-// Humidity formatter
-export const formatHumidity = humidity => {
-    return humidity.toFixed(1); // Round to 2 decimal places
+// Decimal formatter
+export const formatDecimal = (number, decimal) => {
+    return number.toFixed(decimal || 2); // Round number
 };

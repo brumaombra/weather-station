@@ -2,7 +2,7 @@
 import { reactive } from 'vue';
 import GlobalStore from '@/stores/store.js';
 import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
-import { formatHumidity, formatTemperature, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
+import { formatDecimal, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
 const viewModel = reactive({
@@ -222,12 +222,12 @@ init(); // Call init function
                     <td class="column-selection" v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
                     <th class="column-id">{{ item.id }}</th>
                     <td>{{ formatTimestamp(item.timestamp) }}</td>
-                    <td class="column-measurements">{{ formatTemperature(item.temperature) }} °C</td>
-                    <td class="column-measurements">{{ formatHumidity(item.humidity) }} %</td>
-                    <td class="column-measurements">{{ formatHumidity(item.pressure) }} hPa</td>
-                    <td class="column-measurements">{{ formatHumidity(item.gas) }} %</td>
-                    <td class="column-measurements">{{ formatHumidity(item.pm25) }} %</td>
-                    <td class="column-measurements">{{ formatHumidity(item.pm10) }} %</td>
+                    <td class="column-measurements">{{ formatDecimal(item.temperature, 1) }} °C</td>
+                    <td class="column-measurements">{{ formatDecimal(item.humidity, 0) }} %</td>
+                    <td class="column-measurements">{{ formatDecimal(item.pressure, 1) }} hPa</td>
+                    <td class="column-measurements">{{ formatDecimal(item.gas, 1) }} ppm</td>
+                    <td class="column-measurements">{{ formatDecimal(item.pm25, 1) }} µg/m³</td>
+                    <td class="column-measurements">{{ formatDecimal(item.pm10, 1) }} µg/m³</td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
                 </tr>
@@ -271,6 +271,10 @@ init(); // Call init function
                             <option value="timestamp">Timestamp</option>
                             <option value="temperature">Temperature</option>
                             <option value="humidity">Humidity</option>
+                            <option value="pressure">Pressure</option>
+                            <option value="gas">Gas</option>
+                            <option value="pm25">PM2.5</option>
+                            <option value="pm10">PM10</option>
                         </select>
                         <div class="form-text">On which field to apply the filter</div>
                     </div>
@@ -337,22 +341,33 @@ init(); // Call init function
                     <h1 class="modal-title fs-5"><i class="fa-solid fa-pen-to-square me-2"></i>Edit</h1>
                 </div>
                 <div class="modal-body">
-                    <!-- Timestamp -->
                     <div class="mb-3">
                         <label class="form-label">Timestamp</label>
                         <p>{{ formatTimestamp(viewModel.tempMeasurement.timestamp) }}</p>
                     </div>
-
-                    <!-- Temperature -->
                     <div class="mb-3">
                         <label class="form-label">Temperature</label>
                         <input type="number" v-model="viewModel.tempMeasurement.temperature" class="form-control" placeholder="Temperature" />
                     </div>
-
-                    <!-- Humidity -->
                     <div class="mb-3">
                         <label class="form-label">Humidity</label>
                         <input type="number" v-model="viewModel.tempMeasurement.humidity" class="form-control" placeholder="Humidity" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pressure</label>
+                        <input type="number" v-model="viewModel.tempMeasurement.pressure" class="form-control" placeholder="Pressure" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gas</label>
+                        <input type="number" v-model="viewModel.tempMeasurement.gas" class="form-control" placeholder="Gas" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">PM2.5</label>
+                        <input type="number" v-model="viewModel.tempMeasurement.pm25" class="form-control" placeholder="PM2.5" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">PM10</label>
+                        <input type="number" v-model="viewModel.tempMeasurement.pm10" class="form-control" placeholder="PM10" />
                     </div>
                 </div>
                 <div class="modal-footer">

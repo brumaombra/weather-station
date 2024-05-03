@@ -4,6 +4,8 @@ import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/HumidityLineChart.vue';
 import PressureLineChart from '@/components/PressureLineChart.vue';
 import GasLineChart from '@/components/GasLineChart.vue';
+import Pm25LineChart from '@/components/Pm25LineChart.vue';
+import Pm10LineChart from '@/components/Pm10LineChart.vue';
 import GlobalStore from '@/stores/store.js';
 import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
@@ -158,6 +160,16 @@ init(); // Call init function
             <!-- Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
                 <GasLineChart />
+            </div>
+
+            <!-- PM2.5 chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <Pm25LineChart />
+            </div>
+
+            <!-- PM10 chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <Pm10LineChart />
             </div>
         </div>
     </div>
