@@ -128,6 +128,17 @@ app.delete('/api/measurements', verifyToken, async (req, res) => {
     }
 });
 
+// Middleware for handling exceptions and errors globally
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log the error stack
+    res.status(500).json({ status: 'KO', message: 'Internal Server Error' });
+});
+
+// Every other route
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../public', 'index.html'));
+});
+
 // Initialize the web server
 export const initWebServer = () => {
     app.listen(port, '0.0.0.0', () => { // Start the server
