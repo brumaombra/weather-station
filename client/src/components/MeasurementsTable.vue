@@ -1,25 +1,11 @@
 <script setup>
-import { reactive } from 'vue';
-import GlobalStore from '@/stores/store.js';
+import GlobalStore from '@/stores/global.js';
+import MeasurementsStore from '@/stores/measurements.js';
 import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatDecimal, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
-const viewModel = reactive({
-    tempMeasurement: {}, // Item temp value
-    selectedElements: [], // Mass delete button
-    selectedAll: false, // Select all checkbox value
-    orderBy: 'timestamp', // The order field
-    orderDirection: 'desc', // The order direction
-    startDate: '', // Start date
-    endDate: '', // End date
-    dialogFilter: { // Filter dialog properties
-        orderBy: 'timestamp', // The order field
-        orderDirection: 'desc', // The order direction
-        startDate: '', // Start date
-        endDate: '' // End date
-    }
-});
+const viewModel = MeasurementsStore;
 
 // Load the measurements
 const loadMeasurements = async loadNewPage => {
@@ -140,7 +126,8 @@ const handleLoadMorePress = () => {
 
 // Init function
 const init = () => {
-    if (GlobalStore.measurementsList?.results?.length > 0) return; // If already done, exit
+    if (viewModel.initTableDone) return; // If already done, exit
+    viewModel.initTableDone = true; // Mark as executed
     loadMeasurements(); // Load the measurements
 };
 

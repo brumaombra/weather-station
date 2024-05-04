@@ -1,25 +1,17 @@
 <script setup>
-import { reactive } from 'vue';
 import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/HumidityLineChart.vue';
 import PressureLineChart from '@/components/PressureLineChart.vue';
 import GasLineChart from '@/components/GasLineChart.vue';
 import Pm25LineChart from '@/components/Pm25LineChart.vue';
 import Pm10LineChart from '@/components/Pm10LineChart.vue';
-import GlobalStore from '@/stores/store.js';
+import ChartsStore from '@/stores/charts.js';
+import GlobalStore from '@/stores/global.js';
 import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
-const viewModel = reactive({
-    periodSelect: 'D', // Selected period
-    startDate: '', // Start date
-    endDate: '', // End date
-    dialogFilter: { // Filter dialog properties
-        startDate: '', // Start date
-        endDate: '' // End date
-    }
-});
+const viewModel = ChartsStore;
 
 // Load the measurements
 const loadMeasurements = async () => {
@@ -81,7 +73,8 @@ const handleApplyFilterPress = () => {
 
 // Init function
 const init = () => {
-    if (GlobalStore.measurementsListChart.results.length > 0) return; // If already done, exit
+    if (viewModel.initDone) return; // If already done, exit
+    viewModel.initDone = true; // Mark as executed
     addFilterDatesFromPeriod(); // Add the filter dates from the selected period
     loadMeasurements(); // Load the measurements
 };

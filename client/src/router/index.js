@@ -4,6 +4,7 @@ import Measurements from '@/views/Measurements.vue';
 import Charts from '@/views/Charts.vue';
 import Forecasts from '@/views/Forecasts.vue';
 import Login from '@/views/Login.vue';
+import NotFound from '@/views/NotFound.vue';
 
 export default createRouter({
     history: createWebHistory('/'),
@@ -23,5 +24,9 @@ export default createRouter({
         path: '/login',
         name: 'login',
         component: Login
+    }, {
+        path: '/:pathMatch(.*)*',
+        name: 'notFound',
+        component: NotFound
     }]
 });

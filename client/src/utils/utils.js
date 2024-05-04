@@ -1,4 +1,4 @@
-import GlobalStore from '@/stores/store.js';
+import GlobalStore from '@/stores/global.js';
 
 const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
 

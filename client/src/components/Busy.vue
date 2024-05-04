@@ -1,5 +1,5 @@
 <script setup>
-import GlobalStore from '@/stores/store.js';
+import GlobalStore from '@/stores/global.js';
 </script>
 
 <template>
