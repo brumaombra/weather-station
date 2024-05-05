@@ -103,6 +103,7 @@ const createQueryGetMeasurementsCount = params => {
 // Get the measurements from the database
 export const getMeasurements = async params => {
     try {
+        if (!params) params = {}; // If no params, assign an empty object
         const results = await executeQueryWithReconnection(() => createQueryGetMeasurements(params)); // Execute the query
         const count = await executeQueryWithReconnection(() => createQueryGetMeasurementsCount(params)); // Execute the query
         return { count: count.count, results: results }; // Return the results and the number of results

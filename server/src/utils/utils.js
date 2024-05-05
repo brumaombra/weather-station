@@ -1,16 +1,3 @@
-import { spawn } from 'child_process';
-
-// Run a Python script
-export const executePython = scriptUrl => {
-    return new Promise((resolve, reject) => {
-        const pyprog = spawn('python', [scriptUrl]);
-        let dataAccumulator = '';
-        pyprog.stdout.on('data', data => { dataAccumulator += data.toString(); }); // Create the string from the stream
-        pyprog.on('close', code => { code !== 0 ? reject(new Error(`Script exited with code ${code}`)) : resolve(dataAccumulator); }); // Check if the script has ended
-        pyprog.stderr.on('data', data => { reject(new Error(data.toString())); }); // Check if there is an error
-    });
-};
-
 // Check if the date is yesterday
 export const dateIsYesterday = date => {
     const yesterday = new Date();
