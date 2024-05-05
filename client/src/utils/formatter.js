@@ -4,6 +4,12 @@ export const formatTimestamp = timestamp => {
     return date.toLocaleString(); // Format date as a string
 };
 
+// Timestamp formatter (If midnight, don't display the time)
+export const formatTimestampChart = timestamp => {
+    const date = new Date(timestamp); // Create date object from timestamp
+    return date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0 ? date.toLocaleDateString() : date.toLocaleString(); // If midnight, format the date without the time
+};
+
 // Date formatter
 export const formatDate = timestamp => {
     const date = new Date(timestamp); // Create date object from timestamp
@@ -18,5 +24,7 @@ export const formatJsDateToIsoStringDate = (date, includeTime) => {
 
 // Decimal formatter
 export const formatDecimal = (number, decimal) => {
-    return number.toFixed(decimal || 2); // Round number
+    if (typeof number !== 'number') return; // If no data, exit
+    const decimals = typeof number === 'number' ? decimal : 2;
+    return number.toFixed(decimals); // Round number
 };

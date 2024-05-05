@@ -21,31 +21,31 @@ const handleDismissToastPress = () => {
 </template>
 
 <style scoped>
-/* Toast */
-.toast {
-    border: 2px solid #dfe4ea;
-    box-shadow: none;
-    border-radius: 15px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-bottom: 3px;
-    padding-top: 3px;
-}
-.toast .success-green-tick-toast {
-    width: 25px;
-    margin-right: 10px;
-}
-.toast-body p {
-    font-weight: 500;
-    align-self: center;
-    margin-bottom: 0;
-}
+    /* Toast */
+    .toast {
+        border: 2px solid #dfe4ea;
+        box-shadow: none;
+        border-radius: 15px;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 3px;
+        padding-top: 3px;
+    }
+    .toast .success-green-tick-toast {
+        width: 25px;
+        margin-right: 10px;
+    }
+    .toast-body p {
+        font-weight: 500;
+        align-self: center;
+        margin-bottom: 0;
+    }
 
-/* Icone */
-.success-icon {
-    color: #198754;
-}
-.error-icon {
-    color: #dc3545;
-}
+    /* Icone */
+    .success-icon {
+        color: #198754;
+    }
+    .error-icon {
+        color: #dc3545;
+    }
 </style>

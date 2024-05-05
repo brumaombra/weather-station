@@ -2,14 +2,24 @@
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
 import GlobalStore from '@/stores/global.js';
-import { formatTimestamp } from '@/utils/formatter.js';
+import { formatTimestampChart } from '@/utils/formatter.js';
 
 let chart = null; // The chart element
 
+// Set the size of the chart
+const setChartSize = () => {
+    if (window.innerWidth < 992) { // Only if mobile
+        const chartDom = document.getElementById('humidityLineChart'); // Get the DOM element
+        chartDom.width = 800; // Set the width of the canvas
+        chartDom.height = 600; // Set the height of the canvas
+    }
+};
+
 // Create the chart
 const createChart = () => {
+    setChartSize(); // Set the size of the chart
     const measurements = GlobalStore.measurementsListChart.results || []; // Measurements list
-    const label = measurements.map(item => formatTimestamp(item.date)); // Label
+    const label = measurements.map(item => formatTimestampChart(item.date)); // Label
     const average = measurements.map(item => item.humidityAvg); // Average
     const max = measurements.map(item => item.humidityMax); // Max
     const min = measurements.map(item => item.humidityMin); // Mix

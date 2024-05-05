@@ -121,6 +121,23 @@ export const getAggregatedMeasurements = async params => {
     }
 };
 
+// Get the last measurement
+export const getLastMeasurement = async () => {
+    try {
+        const response = await fetch(`${devUrl}/api/lastMeasurement`); // Get the response
+        const data = await response.json(); // Get the data
+        if (data.status === 'OK') { // Success
+            return data.data;
+        } else { // Error
+            throw new Error(data.message || 'Error while reading the measurement');
+        }
+    } catch (error) {
+        const newError = new Error('Error while reading the measurement', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
+
 // Update a measurement
 export const updateMeasurement = async measurement => {
     try {

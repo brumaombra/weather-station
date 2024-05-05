@@ -163,6 +163,25 @@ export const getAggregatedDailyMeasurements = async params => {
     }
 };
 
+// Create the query to get the last measurement from the database
+const createQueryGetLastMeasurement = () => {
+    const query = knex('measurements').select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
+    console.log(query.toString()); // Log the query
+    return query;
+};
+
+// Get the last measurement from the database
+export const getLastMeasurement = async () => {
+    try {
+        const result = await executeQueryWithReconnection(() => createQueryGetLastMeasurement()); // Execute the query
+        return result; // Return the results and the number of results
+    } catch (error) {
+        const newError = new Error('Error while reading the measurement', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
+
 // Create the query to get the aggregated measurements from the database
 const createQueryUpdateMeasurements = (id, newData) => {
     const query = knex('measurements').where('id', id).update(newData); // Create the query

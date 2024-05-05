@@ -5,9 +5,10 @@ import PressureLineChart from '@/components/PressureLineChart.vue';
 import GasLineChart from '@/components/GasLineChart.vue';
 import Pm25LineChart from '@/components/Pm25LineChart.vue';
 import Pm10LineChart from '@/components/Pm10LineChart.vue';
+import CurrentDataCards from '@/components/CurrentDataCards.vue';
 import ChartsStore from '@/stores/charts.js';
 import GlobalStore from '@/stores/global.js';
-import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
+import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -29,6 +30,12 @@ const loadMeasurements = async () => {
         showToast(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
+};
+
+// Load the last measurement
+const loadLastMeasurement = async () => {
+    const result = await getLastMeasurement(); // Get the last measurement
+    GlobalStore.lastMeasurement = result; // Save the measurement
 };
 
 // Add the filter dates from the selected period
@@ -76,6 +83,7 @@ const init = () => {
     if (viewModel.initDone) return; // If already done, exit
     viewModel.initDone = true; // Mark as executed
     addFilterDatesFromPeriod(); // Add the filter dates from the selected period
+    loadLastMeasurement(); // Load the last measurement
     loadMeasurements(); // Load the measurements
 };
 
@@ -132,8 +140,11 @@ init(); // Call init function
         </div>
     </div>
 
+    <!-- Real-time data cards -->
+    <CurrentDataCards />
+
     <!-- Responsive grid -->
-    <div class="mb-4">
+    <div class="mb-5">
         <div class="row">
             <!-- Temperature chart -->
             <div class="col-lg-6 col-12 mt-5">

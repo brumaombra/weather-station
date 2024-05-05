@@ -208,13 +208,13 @@ init(); // Call init function
                 <tr v-for="item in GlobalStore.measurementsList.results">
                     <td class="column-selection" v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
                     <th class="column-id">{{ item.id }}</th>
-                    <td>{{ formatTimestamp(item.timestamp) }}</td>
-                    <td class="column-measurements">{{ formatDecimal(item.temperature, 1) }} °C</td>
-                    <td class="column-measurements">{{ formatDecimal(item.humidity, 0) }} %</td>
-                    <td class="column-measurements">{{ formatDecimal(item.pressure, 1) }} hPa</td>
-                    <td class="column-measurements">{{ formatDecimal(item.gas, 1) }} ppm</td>
-                    <td class="column-measurements">{{ formatDecimal(item.pm25, 1) }} µg/m³</td>
-                    <td class="column-measurements">{{ formatDecimal(item.pm10, 1) }} µg/m³</td>
+                    <td class="column-timestamp">{{ formatTimestamp(item.timestamp) }}</td>
+                    <td class="column-measurements">{{ formatDecimal(item.temperature, 1) }} <span class="measurementUnit">°C</span></td>
+                    <td class="column-measurements">{{ formatDecimal(item.humidity, 1) }} <span class="measurementUnit">%</span></td>
+                    <td class="column-measurements">{{ formatDecimal(item.pressure, 0) }} <span class="measurementUnit">hPa</span></td>
+                    <td class="column-measurements">{{ formatDecimal(item.gas, 0) }} <span class="measurementUnit">ppm</span></td>
+                    <td class="column-measurements">{{ formatDecimal(item.pm25, 0) }} <span class="measurementUnit">µg/m³</span></td>
+                    <td class="column-measurements">{{ formatDecimal(item.pm10, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
                 </tr>
@@ -367,17 +367,29 @@ init(); // Call init function
 </template>
 
 <style scoped>
-/* Table column classes */
-.column-id {
-    width: 100px;
-}
-.column-icon {
-    width: 60px;
-}
-.column-selection {
-    width: 60px;
-}
-.column-measurements {
-    width: 130px
-}
+    /* Table column classes */
+    .column-id {
+        width: 100px;
+        min-width: 70px;
+    }
+    .column-icon {
+        width: 60px;
+        min-width: 50px;
+    }
+    .column-selection {
+        width: 60px;
+        min-width: 50px;
+    }
+    .column-timestamp {
+        min-width: 180px;
+    }
+    .column-measurements {
+        width: 130px;
+        min-width: 130px;
+        font-weight: 600;
+    }
+    .measurementUnit {
+        font-size: 14px;
+        font-weight: 400;
+    }
 </style>
