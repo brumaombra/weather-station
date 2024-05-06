@@ -202,3 +202,20 @@ export const deleteMeasurements = async idList => {
         throw newError; // Throw the error
     }
 };
+
+// Get the temperature and humidity correlation data
+export const getTempHumCorrData = async () => {
+    try {
+        const response = await fetch(`${devUrl}/api/correlation/temperatureHumidity`); // Get the response
+        const data = await response.json(); // Get the data
+        if (data.status === 'OK') { // Success
+            return data.data;
+        } else { // Error
+            throw new Error(data.message || 'Error while reading the data');
+        }
+    } catch (error) {
+        const newError = new Error('Error while reading the data', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
