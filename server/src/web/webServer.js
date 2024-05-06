@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getLastMeasurement, getUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
+import { createTempHumCorrelationData } from '../ml/temperatureHumidity.js';
 dotenv.config(); // Load the .env file
 
 const app = express();
@@ -135,6 +136,18 @@ app.delete('/api/measurements', verifyToken, async (req, res) => {
         res.json({ status: 'OK', data: result }); // Send the response
     } catch (error) {
         const errorMessage = 'Error while deleting the measurement';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+    }
+});
+
+// Get the humidity/temperature correlation
+app.get('/api/correlation/temperatureHumidity', async (req, res) => {
+    try {
+        const data = await createTempHumCorrelationData(); // Create the data
+        res.json({ status: 'OK', data: data }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while getting the temperature/humidity correlation data';
         console.error(errorMessage, error); // Log the error
         res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
     }

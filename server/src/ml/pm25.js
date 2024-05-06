@@ -18,7 +18,7 @@ const formatTrainingData = data => {
     return { X_train, y_train };
 };
 
-// Train the PM2.5 model
+// Train the model
 export const trainPm25Model = async () => {
     try {
         const measurements = await getMeasurements(); // Get the measurements from the database
@@ -35,7 +35,7 @@ export const trainPm25Model = async () => {
     }
 };
 
-// Get the PM2.5 prediction
+// Get the prediction
 export const getPm25Prediction = async X_test => {
     try {
         if (!X_test) throw new Error('Input data is required'); // Check if the input data is provided
