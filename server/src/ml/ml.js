@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs-node';
+import * as tf from '@tensorflow/tfjs';
 
 // Normalize the data
 const normalizeData = (data, mean = null, std = null) => {
@@ -44,12 +44,12 @@ export const trainModelRegression = async (X_train, y_train, polynomialDegree = 
 
         // Create and train the model
         const model = tf.sequential(); // Create a sequential model
-        model.add(tf.layers.dense({ units: 64, activation: 'relu', inputShape: [xs_normalized.shape[1]] }));
-        model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 50, activation: 'relu', inputShape: [xs_normalized.shape[1]] }));
+        model.add(tf.layers.dense({ units: 25, activation: 'relu' }));
         model.add(tf.layers.dense({ units: 1, activation: 'linear' }));
         model.compile({ optimizer: 'adam', loss: 'meanSquaredError', metrics: [tf.metrics.meanSquaredError] }); // Compile the model with the specified parameters
         console.log('Training the model...');
-        await model.fit(xs_normalized, ys, { epochs: 30, verbose: 0 }); // Train the model for 10 epochs
+        await model.fit(xs_normalized, ys, { epochs: 100, verbose: 0 }); // Train the model for 10 epochs
         console.log('Model trained successfully!');
         return { model, X_mean, X_std }; // Return the trained model and the normalization parameters
     } catch (error) {

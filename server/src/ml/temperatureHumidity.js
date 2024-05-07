@@ -1,7 +1,7 @@
 import { trainModelRegression, getPrediction } from "./ml.js";
 import { getMeasurements } from '../db/sql.js';
 
-const polynomialDegree = 2;
+const polynomialDegree = 1;
 let temperatureHumidityPredictionModel = null;
 let temperatureHumidityPredictionMean = null;
 let temperatureHumidityPredictionStd = null;

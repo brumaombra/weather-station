@@ -1,18 +1,11 @@
 <script setup>
-import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
-import HumidityLineChart from '@/components/HumidityLineChart.vue';
-import PressureLineChart from '@/components/PressureLineChart.vue';
-import GasLineChart from '@/components/GasLineChart.vue';
-import Pm25LineChart from '@/components/Pm25LineChart.vue';
-import Pm10LineChart from '@/components/Pm10LineChart.vue';
-import CurrentDataCards from '@/components/CurrentDataCards.vue';
-import ChartsStore from '@/stores/charts.js';
-import GlobalStore from '@/stores/global.js';
-import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
+import TempHumCorrelationChart from '@/components/TempHumCorrelationChart.vue';
+import CorrelationsStore from '@/stores/correlations.js';
+import { getMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
-const viewModel = ChartsStore;
+const viewModel = CorrelationsStore;
 
 // Load the measurements
 const loadMeasurements = async () => {
@@ -21,8 +14,8 @@ const loadMeasurements = async () => {
     if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     try { // Try to get the data
-        const results = await getAggregatedMeasurements(params); // Get the aggregated measurements
-        GlobalStore.measurementsListChart = results; // Save the loaded measurements
+        const results = await getMeasurements(params); // Get the aggregated measurements
+        CorrelationsStore.measurementsList = results; // Save the loaded measurements
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
@@ -30,12 +23,6 @@ const loadMeasurements = async () => {
         showToast(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
-};
-
-// Load the last measurement
-const loadLastMeasurement = async () => {
-    const result = await getLastMeasurement(); // Get the last measurement
-    GlobalStore.lastMeasurement = result; // Save the measurement
 };
 
 // Add the filter dates from the selected period
@@ -83,12 +70,10 @@ const init = () => {
     if (viewModel.initDone) return; // If already done, exit
     viewModel.initDone = true; // Mark as executed
     addFilterDatesFromPeriod(); // Add the filter dates from the selected period
-    loadLastMeasurement(); // Load the last measurement
     loadMeasurements(); // Load the measurements
 };
 
 init(); // Call init function
-
 </script>
 
 <template>
@@ -97,7 +82,7 @@ init(); // Call init function
         <div class="col-md-6 col-12">
             <!-- Title -->
             <div class="d-flex align-items-center justify-content-between h-100">
-                <h3 class="mb-0"><i class="fa-solid fa-chart-line me-3"></i>Charts</h3>
+                <h3 class="mb-0"><i class="fa-solid fa-magnifying-glass-chart me-3"></i>Correlations</h3>
             </div>
         </div>
         <div class="col-md-6 col-12 mt-md-0 mt-3">
@@ -138,40 +123,12 @@ init(); // Call init function
         </div>
     </div>
 
-    <!-- Real-time data cards -->
-    <CurrentDataCards />
-
     <!-- Responsive grid -->
     <div class="mb-5">
         <div class="row">
-            <!-- Temperature chart -->
+            <!-- Temperature/humidity chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <TemperatureLineChart />
-            </div>
-
-            <!-- Humidity chart -->
-            <div class="col-lg-6 col-12 mt-5">
-                <HumidityLineChart />
-            </div>
-
-            <!-- Pressure chart -->
-            <div class="col-lg-6 col-12 mt-5">
-                <PressureLineChart />
-            </div>
-
-            <!-- Gas chart -->
-            <div class="col-lg-6 col-12 mt-5">
-                <GasLineChart />
-            </div>
-
-            <!-- PM2.5 chart -->
-            <div class="col-lg-6 col-12 mt-5">
-                <Pm25LineChart />
-            </div>
-
-            <!-- PM10 chart -->
-            <div class="col-lg-6 col-12 mt-5">
-                <Pm10LineChart />
+                <TempHumCorrelationChart />
             </div>
         </div>
     </div>

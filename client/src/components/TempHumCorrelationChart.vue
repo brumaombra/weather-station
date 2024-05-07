@@ -2,7 +2,7 @@
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
 import ForecastsStore from '@/stores/forecasts.js';
-import { formatTimestampChart } from '@/utils/formatter.js';
+import GlobalStore from '@/stores/global.js';
 
 let chart = null; // The chart element
 
@@ -15,7 +15,7 @@ const setChartSize = () => {
     }
 };
 
-// Create the chart
+/* Create the chart
 const createChart = () => {
     setChartSize(); // Set the size of the chart
     const measurements = ForecastsStore.tempHumCorrData || []; // Measurements list
@@ -39,6 +39,32 @@ const createChart = () => {
     if (chart) chart.destroy(); // Destroy the current chart
     chart = new Chart(chartDom, parameters); // Create the chart
 };
+*/
+
+// Create the chart
+const createChart = () => {
+    setChartSize(); // Set the size of the chart
+    const measurements = GlobalStore.measurementsList.results || []; // Measurements list
+    const data = measurements.map(item => ({
+        x: item.temperature,
+        y: item.humidity
+    }));
+    const parameters = { // Chart parameters
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Temperature vs Humidity',
+                data: data,
+                backgroundColor: 'rgba(255, 99, 132, 1)'
+            }]
+        }
+    };
+
+    // Create chart
+    const chartDom = document.getElementById('temperatureHumidityCorrelationChart'); // Get the DOM element
+    if (chart) chart.destroy(); // Destroy the current chart
+    chart = new Chart(chartDom, parameters); // Create the chart
+};
 
 // On mounted event
 onMounted(() => {
@@ -46,12 +72,12 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => ForecastsStore.tempHumCorrData, () => {
+watch(() => GlobalStore.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 text-danger"></i>Temperature/Humidity Correlation</h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 text-danger"></i>Temperature/Humidity</h3>
     <canvas id="temperatureHumidityCorrelationChart"></canvas>
 </template>

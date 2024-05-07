@@ -84,7 +84,8 @@ export const getMqttUser = async username => {
 const createQueryGetMeasurements = params => {
     let query = knex('measurements').select('*'); // Select all columns from the measurements table
     query = query.orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc'); // Add order filter
-    query = query.limit(params.limit || 25).offset(params.offset || 0); // For pagination
+    if (params.limit) query = query.limit(params.limit); // Limit
+    if (params.offset) query = query.offset(params.offset); // Offset
     if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
     console.log(query.toString()); // Log the query
