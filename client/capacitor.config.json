@@ -1,0 +1,5 @@
+{
+  "appId": "com.weather.station.app",
+  "appName": "weather-station",
+  "webDir": "dist"
+}
