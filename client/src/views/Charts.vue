@@ -1,13 +1,12 @@
 <script setup>
-import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
-import HumidityLineChart from '@/components/HumidityLineChart.vue';
-import PressureLineChart from '@/components/PressureLineChart.vue';
-import GasLineChart from '@/components/GasLineChart.vue';
-import Pm25LineChart from '@/components/Pm25LineChart.vue';
-import Pm10LineChart from '@/components/Pm10LineChart.vue';
-import CurrentDataCards from '@/components/CurrentDataCards.vue';
+import TemperatureLineChart from '@/components/charts/TemperatureLineChart.vue';
+import HumidityLineChart from '@/components/charts/HumidityLineChart.vue';
+import PressureLineChart from '@/components/charts/PressureLineChart.vue';
+import GasLineChart from '@/components/charts/GasLineChart.vue';
+import Pm25LineChart from '@/components/charts/Pm25LineChart.vue';
+import Pm10LineChart from '@/components/charts/Pm10LineChart.vue';
+import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
 import ChartsStore from '@/stores/charts.js';
-import GlobalStore from '@/stores/global.js';
 import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
@@ -22,7 +21,7 @@ const loadMeasurements = async () => {
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     try { // Try to get the data
         const results = await getAggregatedMeasurements(params); // Get the aggregated measurements
-        GlobalStore.measurementsListChart = results; // Save the loaded measurements
+        viewModel.measurementsList = results; // Save the loaded measurements
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
@@ -35,7 +34,7 @@ const loadMeasurements = async () => {
 // Load the last measurement
 const loadLastMeasurement = async () => {
     const result = await getLastMeasurement(); // Get the last measurement
-    GlobalStore.lastMeasurement = result; // Save the measurement
+    viewModel.lastMeasurement = result; // Save the measurement
 };
 
 // Add the filter dates from the selected period

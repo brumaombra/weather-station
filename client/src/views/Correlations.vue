@@ -1,5 +1,8 @@
 <script setup>
-import TempHumCorrelationChart from '@/components/TempHumCorrelationChart.vue';
+import TempHumScatterChart from '@/components/correlations/TempHumScatterChart.vue';
+import Pm25Pm10ScatterChart from '@/components/correlations/Pm25Pm10ScatterChart.vue';
+import PressGasScatterChart from '@/components/correlations/PressGasScatterChart.vue';
+import TempGasScatterChart from '@/components/correlations/TempGasScatterChart.vue';
 import CorrelationsStore from '@/stores/correlations.js';
 import { getMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
@@ -128,7 +131,22 @@ init(); // Call init function
         <div class="row">
             <!-- Temperature/humidity chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <TempHumCorrelationChart />
+                <TempHumScatterChart />
+            </div>
+
+            <!-- PM2.5/PM10 chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <Pm25Pm10ScatterChart />
+            </div>
+
+            <!-- Pressure/Gas chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <PressGasScatterChart />
+            </div>
+
+            <!-- Temperature/Gas chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <TempGasScatterChart />
             </div>
         </div>
     </div>

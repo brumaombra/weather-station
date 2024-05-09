@@ -33,6 +33,15 @@ export const getMaxAndMinFromDate = date => {
     return { minDate, maxDate };
 };
 
+// Set the size of the chart
+export const setResponsiveChartSize = chartId => {
+    if (window.innerWidth < 992) { // Only if mobile
+        const chartDom = document.getElementById(chartId); // Get the DOM element
+        chartDom.width = 800; // Set the width of the canvas
+        chartDom.height = 600; // Set the height of the canvas
+    }
+};
+
 // Login attempt
 export const loginAttempt = async (username, password) => {
     try {

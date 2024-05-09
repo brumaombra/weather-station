@@ -1,5 +1,5 @@
 <script setup>
-import GlobalStore from '@/stores/global.js';
+import ChartsStore from '@/stores/charts.js';
 import { formatDecimal } from '@/utils/formatter.js';
 </script>
 
@@ -14,7 +14,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <i class="fa-solid fa-temperature-half text-danger measurementIcon"></i>
-                            <h2 class="mb-0 measurementText">{{ formatDecimal(GlobalStore.lastMeasurement.temperature, 1) }} <span class="measurementUnit">°C</span></h2>
+                            <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.temperature, 1) }} <span class="measurementUnit">°C</span></h2>
                         </div>
                     </div>
                 </div>
@@ -26,7 +26,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <i class="fa-solid fa-droplet text-primary measurementIcon"></i>
-                            <h2 class="mb-0 measurementText">{{ formatDecimal(GlobalStore.lastMeasurement.humidity, 1) }} <span class="measurementUnit">%</span></h2>
+                            <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.humidity, 1) }} <span class="measurementUnit">%</span></h2>
                         </div>
                     </div>
                 </div>
@@ -38,7 +38,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <i class="fa-solid fa-gauge-high text-warning measurementIcon"></i>
-                            <h2 class="mb-0 measurementText">{{ formatDecimal(GlobalStore.lastMeasurement.pressure, 0) }} <span class="measurementUnit">hPa</span></h2>
+                            <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.pressure, 0) }} <span class="measurementUnit">hPa</span></h2>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <i class="fa-solid fa-smog text-info measurementIcon"></i>
-                            <h2 class="mb-0 measurementText">{{ formatDecimal(GlobalStore.lastMeasurement.gas, 0) }} <span class="measurementUnit">ppm</span></h2>
+                            <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.gas, 0) }} <span class="measurementUnit">ppm</span></h2>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <i class="fa-solid fa-hill-rockslide text-success measurementIcon"></i>
-                            <h2 class="mb-0 measurementText">{{ formatDecimal(GlobalStore.lastMeasurement.pm25, 0) }} <span class="measurementUnit">µg/m³</span></h2>
+                            <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.pm25, 0) }} <span class="measurementUnit">µg/m³</span></h2>
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <i class="fa-solid fa-hill-rockslide text-dark measurementIcon"></i>
-                            <h2 class="mb-0 measurementText">{{ formatDecimal(GlobalStore.lastMeasurement.pm10, 0) }} <span class="measurementUnit">µg/m³</span></h2>
+                            <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.pm10, 0) }} <span class="measurementUnit">µg/m³</span></h2>
                         </div>
                     </div>
                 </div>

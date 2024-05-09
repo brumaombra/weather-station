@@ -1,28 +1,20 @@
 <script setup>
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
-import GlobalStore from '@/stores/global.js';
+import ChartsStore from '@/stores/charts.js';
 import { formatTimestampChart } from '@/utils/formatter.js';
+import { setResponsiveChartSize } from '@/utils/utils.js';
 
 let chart = null; // The chart element
 
-// Set the size of the chart
-const setChartSize = () => {
-    if (window.innerWidth < 992) { // Only if mobile
-        const chartDom = document.getElementById('temperatureLineChart'); // Get the DOM element
-        chartDom.width = 800; // Set the width of the canvas
-        chartDom.height = 600; // Set the height of the canvas
-    }
-};
-
 // Create the chart
 const createChart = () => {
-    setChartSize(); // Set the size of the chart
-    const measurements = GlobalStore.measurementsListChart.results || []; // Measurements list
+    setResponsiveChartSize('pressureLineChart'); // Set the size of the chart
+    const measurements = ChartsStore.measurementsList?.results || []; // Measurements list
     const label = measurements.map(item => formatTimestampChart(item.date)); // Label
-    const average = measurements.map(item => item.temperatureAvg); // Average
-    const max = measurements.map(item => item.temperatureMax); // Max
-    const min = measurements.map(item => item.temperatureMin); // Mix
+    const average = measurements.map(item => item.pressureAvg); // Average
+    const max = measurements.map(item => item.pressureMax); // Max
+    const min = measurements.map(item => item.pressureMin); // Mix
     const parameters = { // Chart parameters
         type: 'line',
         data: {
@@ -47,7 +39,7 @@ const createChart = () => {
     };
 
     // Create chart
-    const chartDom = document.getElementById('temperatureLineChart'); // Get the DOM element
+    const chartDom = document.getElementById('pressureLineChart'); // Get the DOM element
     if (chart) chart.destroy(); // Destroy the current chart
     chart = new Chart(chartDom, parameters); // Create the chart
 };
@@ -58,12 +50,12 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => GlobalStore.measurementsListChart, () => {
+watch(() => ChartsStore.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 text-danger"></i>Temperature</h3>
-    <canvas id="temperatureLineChart"></canvas>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-gauge-high me-3 text-warning"></i>Pressure</h3>
+    <canvas id="pressureLineChart"></canvas>
 </template>

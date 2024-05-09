@@ -1,5 +1,5 @@
 <script setup>
-import MeasurementsTable from '@/components/MeasurementsTable.vue';
+import MeasurementsTable from '@/components/measurements/MeasurementsTable.vue';
 </script>
 
 <template>

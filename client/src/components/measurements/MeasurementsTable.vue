@@ -17,13 +17,13 @@ const loadMeasurements = async loadNewPage => {
     };
     if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
-    if (loadNewPage) params.offset = GlobalStore.measurementsList?.results?.length || 0; // Add offset for pagination
+    if (loadNewPage) params.offset = viewModel.measurementsList?.results?.length || 0; // Add offset for pagination
     try { // Try to get the measurements
         const results = await getMeasurements(params); // Get the measurements
         if (loadNewPage) // If pagination
-            GlobalStore.measurementsList.results = [...GlobalStore.measurementsList.results, ...results.results]; // Concatenate the new data
+            viewModel.measurementsList.results = [...viewModel.measurementsList.results, ...results.results]; // Concatenate the new data
         else
-            GlobalStore.measurementsList = results; // Update the data
+            viewModel.measurementsList = results; // Update the data
         handleTableSelectionChange(); // Check if selected
         setBusy(false); // Busy off
     } catch(error) {
@@ -48,13 +48,13 @@ const handleApplyFilterPress = () => {
 // Select all table items
 const handleSelectDeselectAllPress = () => {
     viewModel.selectedAll = !viewModel.selectedAll; // Change true/false
-    GlobalStore.measurementsList.results.forEach(item => item.selected = viewModel.selectedAll);
+    viewModel.measurementsList.results.forEach(item => item.selected = viewModel.selectedAll);
     handleTableSelectionChange(); // Check if selected
 };
 
 // Table selection change event
 const handleTableSelectionChange = () => {
-    const selectedElements = GlobalStore.measurementsList.results.filter(item => item.selected); // Get the selected items
+    const selectedElements = viewModel.measurementsList.results.filter(item => item.selected); // Get the selected items
     viewModel.selectedElements = selectedElements; // If items selected, display mass delete button
 };
 
@@ -106,7 +106,7 @@ const handleResetIconPress = () => {
 const handleMassDeletePress = async () => {
     try {
         setBusy(true); // Busy on
-        const selectedIds = GlobalStore.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
+        const selectedIds = viewModel.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
         const results = await deleteMeasurements(selectedIds); // Call mass delete
         loadMeasurements(); // Load the measurements
         showToast(`${results} measurements deleted successfully!`, 'success'); // Show toast
@@ -141,7 +141,7 @@ init(); // Call init function
             <div class="col-md-6 col-12">
                 <!-- Title -->
                 <div class="d-flex align-items-center justify-content-between h-100">
-                    <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ GlobalStore.measurementsList.count }}</span></h3>
+                    <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ viewModel.measurementsList.count }}</span></h3>
                 </div>
             </div>
             <div class="col-md-6 col-12 mt-md-0 mt-3">
@@ -205,7 +205,7 @@ init(); // Call init function
                 </tr>
             </thead>
             <tbody class="text-center">
-                <tr v-for="item in GlobalStore.measurementsList.results">
+                <tr v-for="item in viewModel.measurementsList.results">
                     <td class="column-selection" v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" /></td>
                     <th class="column-id">{{ item.id }}</th>
                     <td class="column-timestamp">{{ formatTimestamp(item.timestamp) }}</td>
@@ -224,7 +224,7 @@ init(); // Call init function
 
     <!-- Pagination -->
     <div class="d-flex mb-4 justify-content-center">
-        <button type="button" class="btn btn-secondary d-flex justify-content-center align-items-center" @click="handleLoadMorePress()" v-if="GlobalStore.measurementsList.results.length < GlobalStore.measurementsList.count">
+        <button type="button" class="btn btn-secondary d-flex justify-content-center align-items-center" @click="handleLoadMorePress()" v-if="viewModel.measurementsList.results.length < viewModel.measurementsList.count">
             <i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE
         </button>
     </div>

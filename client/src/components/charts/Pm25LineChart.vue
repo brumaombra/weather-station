@@ -1,28 +1,20 @@
 <script setup>
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
-import GlobalStore from '@/stores/global.js';
+import ChartsStore from '@/stores/charts.js';
 import { formatTimestampChart } from '@/utils/formatter.js';
+import { setResponsiveChartSize } from '@/utils/utils.js';
 
 let chart = null; // The chart element
 
-// Set the size of the chart
-const setChartSize = () => {
-    if (window.innerWidth < 992) { // Only if mobile
-        const chartDom = document.getElementById('pressureLineChart'); // Get the DOM element
-        chartDom.width = 800; // Set the width of the canvas
-        chartDom.height = 600; // Set the height of the canvas
-    }
-};
-
 // Create the chart
 const createChart = () => {
-    setChartSize(); // Set the size of the chart
-    const measurements = GlobalStore.measurementsListChart.results || []; // Measurements list
+    setResponsiveChartSize('pm25LineChart'); // Set the size of the chart
+    const measurements = ChartsStore.measurementsList?.results || []; // Measurements list
     const label = measurements.map(item => formatTimestampChart(item.date)); // Label
-    const average = measurements.map(item => item.pressureAvg); // Average
-    const max = measurements.map(item => item.pressureMax); // Max
-    const min = measurements.map(item => item.pressureMin); // Mix
+    const average = measurements.map(item => item.pm25Avg); // Average
+    const max = measurements.map(item => item.pm25Max); // Max
+    const min = measurements.map(item => item.pm25Min); // Mix
     const parameters = { // Chart parameters
         type: 'line',
         data: {
@@ -47,7 +39,7 @@ const createChart = () => {
     };
 
     // Create chart
-    const chartDom = document.getElementById('pressureLineChart'); // Get the DOM element
+    const chartDom = document.getElementById('pm25LineChart'); // Get the DOM element
     if (chart) chart.destroy(); // Destroy the current chart
     chart = new Chart(chartDom, parameters); // Create the chart
 };
@@ -58,12 +50,12 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => GlobalStore.measurementsListChart, () => {
+watch(() => ChartsStore.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-gauge-high me-3 text-warning"></i>Pressure</h3>
-    <canvas id="pressureLineChart"></canvas>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 text-success"></i>PM2.5</h3>
+    <canvas id="pm25LineChart"></canvas>
 </template>

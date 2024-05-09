@@ -1,24 +1,16 @@
 <script setup>
 import { onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
-import GlobalStore from '@/stores/global.js';
+import ChartsStore from '@/stores/charts.js';
 import { formatTimestampChart } from '@/utils/formatter.js';
+import { setResponsiveChartSize } from '@/utils/utils.js';
 
 let chart = null; // The chart element
 
-// Set the size of the chart
-const setChartSize = () => {
-    if (window.innerWidth < 992) { // Only if mobile
-        const chartDom = document.getElementById('pm10LineChart'); // Get the DOM element
-        chartDom.width = 800; // Set the width of the canvas
-        chartDom.height = 600; // Set the height of the canvas
-    }
-};
-
 // Create the chart
 const createChart = () => {
-    setChartSize(); // Set the size of the chart
-    const measurements = GlobalStore.measurementsListChart.results || []; // Measurements list
+    setResponsiveChartSize('pm10LineChart'); // Set the size of the chart
+    const measurements = ChartsStore.measurementsList?.results || []; // Measurements list
     const label = measurements.map(item => formatTimestampChart(item.date)); // Label
     const average = measurements.map(item => item.pm10Avg); // Average
     const max = measurements.map(item => item.pm10Max); // Max
@@ -58,7 +50,7 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => GlobalStore.measurementsListChart, () => {
+watch(() => ChartsStore.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>
