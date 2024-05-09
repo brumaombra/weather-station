@@ -129,6 +129,7 @@ bool createJsonMeasurements(char* jsonBuffer, size_t bufferSize) {
 	doc["humidity"] = humidityAvg; // Add the humidity value
 	doc["pressure"] = humidityAvg; // Add the pressure value
 	doc["gas"] = humidityAvg; // Add the gas value
+	doc["pm1"] = humidityAvg; // Add the PM 1 value
 	doc["pm25"] = humidityAvg; // Add the PM 2.5 value
 	doc["pm10"] = humidityAvg; // Add the PM 10 value
 	size_t length = serializeJson(doc, jsonBuffer, bufferSize);

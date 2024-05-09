@@ -3,6 +3,7 @@ import TemperatureLineChart from '@/components/charts/TemperatureLineChart.vue';
 import HumidityLineChart from '@/components/charts/HumidityLineChart.vue';
 import PressureLineChart from '@/components/charts/PressureLineChart.vue';
 import GasLineChart from '@/components/charts/GasLineChart.vue';
+import Pm1LineChart from '@/components/charts/Pm1LineChart.vue';
 import Pm25LineChart from '@/components/charts/Pm25LineChart.vue';
 import Pm10LineChart from '@/components/charts/Pm10LineChart.vue';
 import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
@@ -161,6 +162,11 @@ init(); // Call init function
             <!-- Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
                 <GasLineChart />
+            </div>
+
+            <!-- PM1 chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <Pm1LineChart />
             </div>
 
             <!-- PM2.5 chart -->

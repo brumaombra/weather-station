@@ -198,6 +198,7 @@ init(); // Call init function
                     <th>Humidity</th>
                     <th>Pressure</th>
                     <th>Gas</th>
+                    <th>PM1</th>
                     <th>PM2.5</th>
                     <th>PM10</th>
                     <th v-if="GlobalStore.adminToken"></th>
@@ -213,6 +214,7 @@ init(); // Call init function
                     <td class="column-measurements">{{ formatDecimal(item.humidity, 1) }} <span class="measurementUnit">%</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.pressure, 0) }} <span class="measurementUnit">hPa</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.gas, 0) }} <span class="measurementUnit">ppm</span></td>
+                    <td class="column-measurements">{{ formatDecimal(item.pm1, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.pm25, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.pm10, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
@@ -260,6 +262,7 @@ init(); // Call init function
                             <option value="humidity">Humidity</option>
                             <option value="pressure">Pressure</option>
                             <option value="gas">Gas</option>
+                            <option value="pm1">PM1</option>
                             <option value="pm25">PM2.5</option>
                             <option value="pm10">PM10</option>
                         </select>
@@ -347,6 +350,10 @@ init(); // Call init function
                     <div class="mb-3">
                         <label class="form-label">Gas</label>
                         <input type="number" v-model="viewModel.tempMeasurement.gas" class="form-control" placeholder="Gas" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">PM1</label>
+                        <input type="number" v-model="viewModel.tempMeasurement.pm1" class="form-control" placeholder="PM1" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">PM2.5</label>

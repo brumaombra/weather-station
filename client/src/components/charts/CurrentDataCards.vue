@@ -56,6 +56,18 @@ import { formatDecimal } from '@/utils/formatter.js';
                 </div>
             </div>
 
+            <!-- PM1 card -->
+            <div class="col-lg-3 col-12 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <i class="fa-solid fa-hill-rockslide text-secondary measurementIcon"></i>
+                            <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.pm1, 0) }} <span class="measurementUnit">µg/m³</span></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- PM2.5 card -->
             <div class="col-lg-3 col-12 mt-3">
                 <div class="card">

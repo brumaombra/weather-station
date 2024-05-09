@@ -19,9 +19,10 @@ export const validateNewMeasurementData = data => {
     const humidityValid = typeof data.humidity === 'number' && Number.isFinite(data.humidity);
     const pressureValid = typeof data.pressure === 'number' && Number.isFinite(data.pressure);
     const gasValid = typeof data.gas === 'number' && Number.isFinite(data.gas);
+    const pm1Valid = typeof data.pm1 === 'number' && Number.isFinite(data.pm1);
     const pm25Valid = typeof data.pm25 === 'number' && Number.isFinite(data.pm25);
     const pm10Valid = typeof data.pm10 === 'number' && Number.isFinite(data.pm10);
-    if (!temperatureValid || !humidityValid || !pressureValid || !gasValid || !pm25Valid || !pm10Valid) return { isValid: false }; // Invalid data
-    const validMeasurement = { temperature: data.temperature, humidity: data.humidity, pressure: data.pressure, gas: data.gas, pm25: data.pm25, pm10: data.pm10 }; // Create the valid data
+    if (!temperatureValid || !humidityValid || !pressureValid || !gasValid || !pm1Valid || !pm25Valid || !pm10Valid) return { isValid: false }; // Invalid data
+    const validMeasurement = { temperature: data.temperature, humidity: data.humidity, pressure: data.pressure, gas: data.gas, pm1: data.pm1, pm25: data.pm25, pm10: data.pm10 }; // Create the valid data
     return { isValid: true, data: validMeasurement }; // Return the valid data
 };

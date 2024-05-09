@@ -3,7 +3,6 @@ import net from 'net';
 import bcrypt from 'bcrypt';
 import { addMeasurement, getMqttUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
-import { trainPm25Model } from '../ml/pm25.js';
 
 const aedesInstance = aedes();
 const port = 1883; // Broker port
@@ -76,8 +75,6 @@ const addNewMeasurement = async payload => {
         if (!validation.isValid) throw new Error('Invalid data'); // Throw an error if the data is invalid
         await addMeasurement(validation.data); // Add the measurement to the DB
         console.log('New measurement added successfully!'); // Log the success
-        await trainPm25Model(); // Train the PM25 model
-        console.log('PM2.5 model trained successfully!'); // Log the success
     } catch (error) {
         console.error('Error while adding the measurement!', error); // Log the error
     }

@@ -122,6 +122,7 @@ const createQueryGetAggregatedDailyMeasurements = params => {
     query = query.avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax'); // Add humidity data
     query = query.avg('pressure as pressureAvg').min('pressure as pressureMin').max('pressure as pressureMax'); // Add pressure data
     query = query.avg('gas as gasAvg').min('gas as gasMin').max('gas as gasMax'); // Add gas data
+    query = query.avg('pm1 as pm1Avg').min('pm1 as pm1Min').max('pm1 as pm1Max'); // Add PM 1 data
     query = query.avg('pm25 as pm25Avg').min('pm25 as pm25Min').max('pm25 as pm25Max'); // Add PM 2.5 data
     query = query.avg('pm10 as pm10Avg').min('pm10 as pm10Min').max('pm10 as pm10Max'); // Add PM 10 data
     query = query.groupByRaw('DATE(timestamp)'); // Group by
@@ -139,6 +140,7 @@ const createQueryGetAggregatedDailyMeasurementsSingle = params => {
     query = query.select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax'); // Add humidity data
     query = query.select('pressure as pressureAvg').select('pressure as pressureMin').select('pressure as pressureMax'); // Add pressure data
     query = query.select('gas as gasAvg').select('gas as gasMin').select('gas as gasMax'); // Add gas data
+    query = query.select('pm1 as pm1Avg').select('pm1 as pm1Min').select('pm1 as pm1Max'); // Add PM 1 data
     query = query.select('pm25 as pm25Avg').select('pm25 as pm25Min').select('pm25 as pm25Max'); // Add PM 2.5 data
     query = query.select('pm10 as pm10Avg').select('pm10 as pm10Min').select('pm10 as pm10Max'); // Add PM 10 data
     query = query.orderBy('date', 'asc'); // Add order filter
