@@ -1,5 +1,8 @@
 {
   "appId": "com.weather.station.app",
   "appName": "weather-station",
-  "webDir": "dist"
+  "webDir": "dist",
+  "allowNavigation": [
+    "85.235.149.166:3000"
+  ]
 }

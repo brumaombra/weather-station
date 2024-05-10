@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import https from 'https';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import cors from 'cors';
@@ -166,7 +168,20 @@ app.get('*', (req, res) => {
 
 // Initialize the web server
 export const initWebServer = () => {
-    app.listen(port, '0.0.0.0', () => { // Start the server
-        console.log(`Web server listening on port ${port}`);
-    });
+    try {
+        const httpsOptions = { // Load the SSL certificate
+            key: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/privkey.pem'),
+            cert: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/fullchain.pem')
+        };
+
+        // Start the server HTTPS
+        https.createServer(httpsOptions, app).listen(port, () => {
+            console.log(`Web server listening on port ${port}`);
+        });
+    } catch (error) {
+        console.error('Error while starting the HTTPS server, starting the HTTP server...');
+        app.listen(port, () => { // Start the server without HTTPS
+            console.log(`Web server listening on port ${port}`);
+        });
+    }
 };
