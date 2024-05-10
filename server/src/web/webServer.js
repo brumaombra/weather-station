@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -166,18 +167,35 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../public', 'index.html'));
 });
 
+// Start the HTTPS server
+const startHttpsServer = () => {
+    const httpsOptions = { // Load the SSL certificate
+        key: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/fullchain.pem')
+    };
+
+    // Start the HTTPS server
+    https.createServer(httpsOptions, app).listen(port, () => {
+        console.log(`Web server listening on HTTPS port ${port}`);
+    });
+
+    // Express app for the HTTP redirect
+    const httpApp = express();
+    httpApp.use((req, res) => {
+        const host = req.headers.host.replace(/:\d+$/, ''); // Remove the port from the host if present
+        res.redirect(301, `https://${host}${req.url}`); // Redirect to HTTPS with status code 301
+    });
+
+    // Start the HTTP server on port 80
+    http.createServer(httpApp).listen(80, () => {
+        console.log('HTTP server for redirection to HTTPS running on port 80');
+    });
+};
+
 // Initialize the web server
 export const initWebServer = () => {
     try {
-        const httpsOptions = { // Load the SSL certificate
-            key: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/privkey.pem'),
-            cert: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/fullchain.pem')
-        };
-
-        // Start the server HTTPS
-        https.createServer(httpsOptions, app).listen(port, () => {
-            console.log(`Web server listening on port ${port}`);
-        });
+        startHttpsServer(); // Start the HTTPS server
     } catch (error) {
         console.error('Error while starting the HTTPS server, starting the HTTP server...');
         app.listen(port, () => { // Start the server without HTTPS
