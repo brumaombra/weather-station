@@ -4,6 +4,7 @@ import { setBusy, validateSession } from './utils/utils';
 import Navbar from '@/components/Navbar.vue';
 import Busy from '@/components/Busy.vue';
 import MessageToast from '@/components/MessageToast.vue';
+import MessageDialog from '@/components/MessageDialog.vue';
 
 // Load the token from local storage
 const getToken = () => {
@@ -36,6 +37,9 @@ getToken(); // get the token
 
 	<!-- Message toast -->
 	<MessageToast />
+
+	<!-- Message dialog -->
+	<MessageDialog />
 
 	<!-- Busy -->
 	<Busy />

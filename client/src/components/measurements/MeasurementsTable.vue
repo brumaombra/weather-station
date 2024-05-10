@@ -1,7 +1,7 @@
 <script setup>
 import GlobalStore from '@/stores/global.js';
 import MeasurementsStore from '@/stores/measurements.js';
-import { setBusy, showToast, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
+import { setBusy, showMessageDialog, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatDecimal, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -29,7 +29,7 @@ const loadMeasurements = async loadNewPage => {
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while loading the measurements', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };
@@ -72,11 +72,11 @@ const handleSaveEditPress = async () => {
     try { // Try to get the measurements
         const result = await updateMeasurement(newData); // Update the data
         loadMeasurements(); // Load the measurements
-        showToast('Changes successfully saved!', 'success'); // Show toast
+        showMessageDialog('Changes successfully saved!', 'success'); // Show toast
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while saving the changes', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };
@@ -87,12 +87,12 @@ const handleDeleteItemPress = async () => {
         setBusy(true); // Busy on
         const results = await deleteMeasurements([viewModel.tempMeasurement.id]);
         loadMeasurements(); // Load the measurements
-        showToast('Measurement deleted successfully!', 'success'); // Show toast
+        showMessageDialog('Measurement deleted successfully!', 'success'); // Show toast
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while deleting the measurement', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };
@@ -109,12 +109,12 @@ const handleMassDeletePress = async () => {
         const selectedIds = viewModel.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
         const results = await deleteMeasurements(selectedIds); // Call mass delete
         loadMeasurements(); // Load the measurements
-        showToast(`${results} measurements deleted successfully!`, 'success'); // Show toast
+        showMessageDialog(`${results} measurements deleted successfully!`, 'success'); // Show toast
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while deleting the measurements', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };

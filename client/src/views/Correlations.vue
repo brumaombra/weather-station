@@ -3,8 +3,10 @@ import TempHumScatterChart from '@/components/correlations/TempHumScatterChart.v
 import Pm25Pm10ScatterChart from '@/components/correlations/Pm25Pm10ScatterChart.vue';
 import PressGasScatterChart from '@/components/correlations/PressGasScatterChart.vue';
 import TempGasScatterChart from '@/components/correlations/TempGasScatterChart.vue';
+import TempPm1ScatterChart from '@/components/correlations/TempPm1ScatterChart.vue';
+import HumPm1ScatterChart from '@/components/correlations/HumPm1ScatterChart.vue';
 import CorrelationsStore from '@/stores/correlations.js';
-import { getMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
+import { getMeasurements, setBusy, showMessageDialog, getMaxAndMinFromDate } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -23,7 +25,7 @@ const loadMeasurements = async () => {
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };
@@ -147,6 +149,16 @@ init(); // Call init function
             <!-- Temperature/Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
                 <TempGasScatterChart />
+            </div>
+
+            <!-- Temperature/PM1 chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <TempPm1ScatterChart />
+            </div>
+
+            <!-- Humidity/PM1 chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <HumPm1ScatterChart />
             </div>
         </div>
     </div>

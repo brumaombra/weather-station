@@ -1,6 +1,6 @@
 <script setup>
 import ForecastsStore from '@/stores/forecasts.js';
-import { getTempHumCorrData, setBusy, showToast } from '@/utils/utils.js';
+import { getTempHumCorrData, setBusy, showMessageDialog } from '@/utils/utils.js';
 
 // View model
 const viewModel = ForecastsStore;
@@ -15,7 +15,7 @@ const loadTempHumCorrData = async () => {
     } catch (error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while reading the data', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };

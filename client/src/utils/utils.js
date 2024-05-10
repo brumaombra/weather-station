@@ -1,6 +1,6 @@
 import GlobalStore from '@/stores/global.js';
 
-const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
+const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'http://85.235.149.166:3000';
 
 // Set the busy state of the app
 export const setBusy = busy => {
@@ -16,6 +16,14 @@ export const showToast = (message, type, time) => {
     setTimeout(() => { // Hide the toast after 5 seconds
         GlobalStore.toast.visible = false; // Hide the toast
     }, time || 3000);
+};
+
+// Show the message dialog
+export const showMessageDialog = (message, type) => {
+    GlobalStore.dialog.message = message;
+    GlobalStore.dialog.type = type;
+    const modal = new bootstrap.Modal(document.getElementById('globalMessageDialog'));
+    modal.show(); // Open the dialog
 };
 
 // Convert days in milliseconds

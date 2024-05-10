@@ -8,17 +8,17 @@ let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
-    setResponsiveChartSize('pm25Pm10ScatterChart'); // Set the size of the chart
+    setResponsiveChartSize('tempPm1ScatterChart'); // Set the size of the chart
     const measurements = CorrelationsStore.measurementsList?.results || []; // Measurements list
     const data = measurements.map(item => ({
-        x: item.pm25,
-        y: item.pm10
+        x: item.temperature,
+        y: item.pm1
     }));
     const parameters = { // Chart parameters
         type: 'scatter',
         data: {
             datasets: [{
-                label: 'PM2.5 vs PM10',
+                label: 'Temperature vs PM1',
                 data: data,
                 backgroundColor: 'rgba(255, 99, 132, 1)'
             }]
@@ -26,7 +26,7 @@ const createChart = () => {
     };
 
     // Create chart
-    const chartDom = document.getElementById('pm25Pm10ScatterChart'); // Get the DOM element
+    const chartDom = document.getElementById('tempPm1ScatterChart'); // Get the DOM element
     if (chart) chart.destroy(); // Destroy the current chart
     chart = new Chart(chartDom, parameters); // Create the chart
 };
@@ -43,6 +43,6 @@ watch(() => CorrelationsStore.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 text-secondary"></i>PM2.5 vs PM10<i class="fa-solid fa-hill-rockslide ms-3 text-dark"></i></h3>
-    <canvas id="pm25Pm10ScatterChart"></canvas>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 text-danger"></i>Temperature vs PM1<i class="fa-solid fa-hill-rockslide ms-3 text-success"></i></h3>
+    <canvas id="tempPm1ScatterChart"></canvas>
 </template>

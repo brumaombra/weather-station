@@ -8,7 +8,7 @@ import Pm25LineChart from '@/components/charts/Pm25LineChart.vue';
 import Pm10LineChart from '@/components/charts/Pm10LineChart.vue';
 import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
 import ChartsStore from '@/stores/charts.js';
-import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
+import { getAggregatedMeasurements, setBusy, showMessageDialog, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -27,7 +27,7 @@ const loadMeasurements = async () => {
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };

@@ -61,7 +61,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
-                            <i class="fa-solid fa-hill-rockslide text-secondary measurementIcon"></i>
+                            <i class="fa-solid fa-hill-rockslide text-success measurementIcon"></i>
                             <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.pm1, 0) }} <span class="measurementUnit">µg/m³</span></h2>
                         </div>
                     </div>
@@ -73,7 +73,7 @@ import { formatDecimal } from '@/utils/formatter.js';
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
-                            <i class="fa-solid fa-hill-rockslide text-success measurementIcon"></i>
+                            <i class="fa-solid fa-hill-rockslide text-secondary measurementIcon"></i>
                             <h2 class="mb-0 measurementText">{{ formatDecimal(ChartsStore.lastMeasurement?.pm25, 0) }} <span class="measurementUnit">µg/m³</span></h2>
                         </div>
                     </div>

@@ -7,5 +7,8 @@ export default reactive({
         visible: false,
         message: '',
         type: 'success'
+    }, dialog: { // Message dialog data
+        message: '',
+        type: 'success'
     }
 });
