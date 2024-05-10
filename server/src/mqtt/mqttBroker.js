@@ -1,12 +1,12 @@
 import aedes from 'aedes';
 import net from 'net';
+import tls from 'tls';
+import fs from 'fs';
 import bcrypt from 'bcrypt';
 import { addMeasurement, getMqttUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
 
 const aedesInstance = aedes();
-const port = 1883; // Broker port
-const server = net.createServer(aedesInstance.handle); // Create the server
 
 // Connection authorization
 aedesInstance.authenticate = async (client, username, password, callback) => {
@@ -81,8 +81,37 @@ const addNewMeasurement = async payload => {
 };
 
 // Start the MQTT broker
-export const startMQTTBroker = () => {
+const startNormalMqttBroker = () => {
+    const port = 1883; // Broker port
+    const server = net.createServer(aedesInstance.handle); // Create the server
     server.listen(port, () => { // Start the MQTT broker
         console.log(`Broker MQTT listening on port ${port}`);
     });
+};
+
+// Start the secure MQTT broker
+const startSecureMqttBroker = () => {
+    const port = 8883; // Broker port (SSL)
+    const options = { // Load the certificate
+        key: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/fullchain.pem')
+    };
+
+    // Create and start the server
+    const server = tls.createServer(options, aedesInstance.handle);
+    server.listen(port, () => {
+        console.log(`Broker MQTT listening on port ${port}`);
+    });
+};
+
+// Start the MQTT broker
+export const startMqttBroker = secure => {
+    try {
+        if (secure) // If true, start the secure MQTT broker
+            startSecureMqttBroker(); // Start the secure MQTT broker
+        else
+            startNormalMqttBroker(); // Start the normal MQTT broker
+    } catch (error) {
+        console.error('Error while starting the MQTT broker', error);
+    }
 };
