@@ -1,6 +1,6 @@
 <script setup>
 import { reactive } from 'vue';
-import { setBusy, showToast, loginAttempt } from '@/utils/utils.js';
+import { setBusy, showMessageDialog, loginAttempt } from '@/utils/utils.js';
 
 // View model
 const viewModel = reactive({
@@ -21,7 +21,7 @@ const handleLoginPress = async () => {
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while logging in', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
 };

@@ -84,7 +84,8 @@ export const getMqttUser = async username => {
 const createQueryGetMeasurements = params => {
     let query = knex('measurements').select('*'); // Select all columns from the measurements table
     query = query.orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc'); // Add order filter
-    query = query.limit(params.limit || 25).offset(params.offset || 0); // For pagination
+    if (params.limit) query = query.limit(params.limit); // Limit
+    if (params.offset) query = query.offset(params.offset); // Offset
     if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
     console.log(query.toString()); // Log the query
@@ -103,6 +104,7 @@ const createQueryGetMeasurementsCount = params => {
 // Get the measurements from the database
 export const getMeasurements = async params => {
     try {
+        if (!params) params = {}; // If no params, assign an empty object
         const results = await executeQueryWithReconnection(() => createQueryGetMeasurements(params)); // Execute the query
         const count = await executeQueryWithReconnection(() => createQueryGetMeasurementsCount(params)); // Execute the query
         return { count: count.count, results: results }; // Return the results and the number of results
@@ -120,6 +122,7 @@ const createQueryGetAggregatedDailyMeasurements = params => {
     query = query.avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax'); // Add humidity data
     query = query.avg('pressure as pressureAvg').min('pressure as pressureMin').max('pressure as pressureMax'); // Add pressure data
     query = query.avg('gas as gasAvg').min('gas as gasMin').max('gas as gasMax'); // Add gas data
+    query = query.avg('pm1 as pm1Avg').min('pm1 as pm1Min').max('pm1 as pm1Max'); // Add PM 1 data
     query = query.avg('pm25 as pm25Avg').min('pm25 as pm25Min').max('pm25 as pm25Max'); // Add PM 2.5 data
     query = query.avg('pm10 as pm10Avg').min('pm10 as pm10Min').max('pm10 as pm10Max'); // Add PM 10 data
     query = query.groupByRaw('DATE(timestamp)'); // Group by
@@ -137,6 +140,7 @@ const createQueryGetAggregatedDailyMeasurementsSingle = params => {
     query = query.select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax'); // Add humidity data
     query = query.select('pressure as pressureAvg').select('pressure as pressureMin').select('pressure as pressureMax'); // Add pressure data
     query = query.select('gas as gasAvg').select('gas as gasMin').select('gas as gasMax'); // Add gas data
+    query = query.select('pm1 as pm1Avg').select('pm1 as pm1Min').select('pm1 as pm1Max'); // Add PM 1 data
     query = query.select('pm25 as pm25Avg').select('pm25 as pm25Min').select('pm25 as pm25Max'); // Add PM 2.5 data
     query = query.select('pm10 as pm10Avg').select('pm10 as pm10Min').select('pm10 as pm10Max'); // Add PM 10 data
     query = query.orderBy('date', 'asc'); // Add order filter
@@ -158,6 +162,25 @@ export const getAggregatedDailyMeasurements = async params => {
         return { count: results.length, results: results }; // Return the results and the number of results
     } catch (error) {
         const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
+
+// Create the query to get the last measurement from the database
+const createQueryGetLastMeasurement = () => {
+    const query = knex('measurements').select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
+    console.log(query.toString()); // Log the query
+    return query;
+};
+
+// Get the last measurement from the database
+export const getLastMeasurement = async () => {
+    try {
+        const result = await executeQueryWithReconnection(() => createQueryGetLastMeasurement()); // Execute the query
+        return result; // Return the results and the number of results
+    } catch (error) {
+        const newError = new Error('Error while reading the measurement', { cause: error }); // Save the old error to the stack
         console.error(newError); // Log the error
         throw newError; // Throw the error
     }

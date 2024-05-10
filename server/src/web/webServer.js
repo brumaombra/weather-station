@@ -5,8 +5,9 @@ import path from 'path';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getUser } from '../db/sql.js';
+import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getLastMeasurement, getUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
+import { createTempHumCorrelationData } from '../ml/temperatureHumidity.js';
 dotenv.config(); // Load the .env file
 
 const app = express();
@@ -82,6 +83,18 @@ app.get('/api/aggregatedMeasurements', async (req, res) => {
     }
 });
 
+// Get the last measurement
+app.get('/api/lastMeasurement', async (req, res) => {
+    try {
+        const measurement = await getLastMeasurement(); // Get the last measurement from the database
+        res.json({ status: 'OK', data: measurement }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while reading the measurement';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+    }
+});
+
 // Add a new measurement
 app.post('/api/measurements', async (req, res) => {
     try {
@@ -123,6 +136,18 @@ app.delete('/api/measurements', verifyToken, async (req, res) => {
         res.json({ status: 'OK', data: result }); // Send the response
     } catch (error) {
         const errorMessage = 'Error while deleting the measurement';
+        console.error(errorMessage, error); // Log the error
+        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+    }
+});
+
+// Get the humidity/temperature correlation
+app.get('/api/correlation/temperatureHumidity', async (req, res) => {
+    try {
+        const data = await createTempHumCorrelationData(); // Create the data
+        res.json({ status: 'OK', data: data }); // Send the response
+    } catch (error) {
+        const errorMessage = 'Error while getting the temperature/humidity correlation data';
         console.error(errorMessage, error); // Log the error
         res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
     }

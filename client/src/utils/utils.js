@@ -1,6 +1,6 @@
 import GlobalStore from '@/stores/global.js';
 
-const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
+const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'http://85.235.149.166:3000';
 
 // Set the busy state of the app
 export const setBusy = busy => {
@@ -18,6 +18,14 @@ export const showToast = (message, type, time) => {
     }, time || 3000);
 };
 
+// Show the message dialog
+export const showMessageDialog = (message, type) => {
+    GlobalStore.dialog.message = message;
+    GlobalStore.dialog.type = type;
+    const modal = new bootstrap.Modal(document.getElementById('globalMessageDialog'));
+    modal.show(); // Open the dialog
+};
+
 // Convert days in milliseconds
 export const fromDaysToMilliseconds = days => {
     return days * 24 * 60 * 60 * 1000;
@@ -31,6 +39,15 @@ export const getMaxAndMinFromDate = date => {
     const maxDate = new Date(date);
     maxDate.setHours(23, 59, 59, 999);
     return { minDate, maxDate };
+};
+
+// Set the size of the chart
+export const setResponsiveChartSize = chartId => {
+    if (window.innerWidth < 992) { // Only if mobile
+        const chartDom = document.getElementById(chartId); // Get the DOM element
+        chartDom.width = 800; // Set the width of the canvas
+        chartDom.height = 600; // Set the height of the canvas
+    }
 };
 
 // Login attempt
@@ -121,6 +138,23 @@ export const getAggregatedMeasurements = async params => {
     }
 };
 
+// Get the last measurement
+export const getLastMeasurement = async () => {
+    try {
+        const response = await fetch(`${devUrl}/api/lastMeasurement`); // Get the response
+        const data = await response.json(); // Get the data
+        if (data.status === 'OK') { // Success
+            return data.data;
+        } else { // Error
+            throw new Error(data.message || 'Error while reading the measurement');
+        }
+    } catch (error) {
+        const newError = new Error('Error while reading the measurement', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
+
 // Update a measurement
 export const updateMeasurement = async measurement => {
     try {
@@ -181,6 +215,23 @@ export const deleteMeasurements = async idList => {
         }
     } catch (error) {
         const newError = new Error('Error while deleting the measurements', { cause: error }); // Save the old error to the stack
+        console.error(newError); // Log the error
+        throw newError; // Throw the error
+    }
+};
+
+// Get the temperature and humidity correlation data
+export const getTempHumCorrData = async () => {
+    try {
+        const response = await fetch(`${devUrl}/api/correlation/temperatureHumidity`); // Get the response
+        const data = await response.json(); // Get the data
+        if (data.status === 'OK') { // Success
+            return data.data;
+        } else { // Error
+            throw new Error(data.message || 'Error while reading the data');
+        }
+    } catch (error) {
+        const newError = new Error('Error while reading the data', { cause: error }); // Save the old error to the stack
         console.error(newError); // Log the error
         throw newError; // Throw the error
     }

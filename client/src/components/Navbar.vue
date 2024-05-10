@@ -38,6 +38,9 @@ if (window.innerWidth < 992) {
 						<router-link to="/charts" class="nav-link close-navbar" active-class="active">Charts</router-link>
 					</li>
 					<li class="nav-item">
+						<router-link to="/correlations" class="nav-link close-navbar" active-class="active">Correlations</router-link>
+					</li>
+					<li class="nav-item">
 						<router-link to="/forecasts" class="nav-link close-navbar" active-class="active">Forecasts</router-link>
 					</li>
 				</ul>

@@ -1,13 +1,14 @@
 <script setup>
-import TemperatureLineChart from '@/components/TemperatureLineChart.vue';
-import HumidityLineChart from '@/components/HumidityLineChart.vue';
-import PressureLineChart from '@/components/PressureLineChart.vue';
-import GasLineChart from '@/components/GasLineChart.vue';
-import Pm25LineChart from '@/components/Pm25LineChart.vue';
-import Pm10LineChart from '@/components/Pm10LineChart.vue';
+import TemperatureLineChart from '@/components/charts/TemperatureLineChart.vue';
+import HumidityLineChart from '@/components/charts/HumidityLineChart.vue';
+import PressureLineChart from '@/components/charts/PressureLineChart.vue';
+import GasLineChart from '@/components/charts/GasLineChart.vue';
+import Pm1LineChart from '@/components/charts/Pm1LineChart.vue';
+import Pm25LineChart from '@/components/charts/Pm25LineChart.vue';
+import Pm10LineChart from '@/components/charts/Pm10LineChart.vue';
+import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
 import ChartsStore from '@/stores/charts.js';
-import GlobalStore from '@/stores/global.js';
-import { getAggregatedMeasurements, setBusy, showToast, getMaxAndMinFromDate } from '@/utils/utils.js';
+import { getAggregatedMeasurements, setBusy, showMessageDialog, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -21,14 +22,20 @@ const loadMeasurements = async () => {
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     try { // Try to get the data
         const results = await getAggregatedMeasurements(params); // Get the aggregated measurements
-        GlobalStore.measurementsListChart = results; // Save the loaded measurements
+        viewModel.measurementsList = results; // Save the loaded measurements
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
         const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
-        showToast(newError.message, 'error'); // Show toast
+        showMessageDialog(newError.message, 'error'); // Show toast
         throw newError; // Throw the error
     }
+};
+
+// Load the last measurement
+const loadLastMeasurement = async () => {
+    const result = await getLastMeasurement(); // Get the last measurement
+    viewModel.lastMeasurement = result; // Save the measurement
 };
 
 // Add the filter dates from the selected period
@@ -76,6 +83,7 @@ const init = () => {
     if (viewModel.initDone) return; // If already done, exit
     viewModel.initDone = true; // Mark as executed
     addFilterDatesFromPeriod(); // Add the filter dates from the selected period
+    loadLastMeasurement(); // Load the last measurement
     loadMeasurements(); // Load the measurements
 };
 
@@ -85,23 +93,40 @@ init(); // Call init function
 
 <template>
     <!-- Toolbar -->
-    <div>
-        <div class="row">
-            <div class="col-md-6 col-12">
-                <!-- Title -->
-                <div class="d-flex align-items-center justify-content-between h-100">
-                    <h3 class="mb-0"><i class="fa-solid fa-chart-line me-3"></i>Charts</h3>
+    <div class="row">
+        <div class="col-md-6 col-12">
+            <!-- Title -->
+            <div class="d-flex align-items-center justify-content-between h-100">
+                <h3 class="mb-0"><i class="fa-solid fa-chart-line me-3"></i>Charts</h3>
+            </div>
+        </div>
+        <div class="col-md-6 col-12 mt-md-0 mt-3">
+            <!-- Actions desktop -->
+            <div class="d-none d-md-block">
+                <div class="d-flex align-items-center justify-content-end">
+                    <!-- Button filter modal -->
+                    <button type="button" class="btn btn-secondary me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+
+                    <!-- Periods select -->
+                    <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
+                        <option value="D">Last day</option>
+                        <option value="W">Last week</option>
+                        <option value="M">Last month</option>
+                        <option value="Y">Last year</option>
+                    </select>
                 </div>
             </div>
-            <div class="col-md-6 col-12 mt-md-0 mt-3">
-                <!-- Actions desktop -->
-                <div class="d-none d-md-block">
-                    <div class="d-flex align-items-center justify-content-end">
-                        <!-- Button filter modal -->
-                        <button type="button" class="btn btn-secondary me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
 
+            <!-- Actions mobile -->
+            <div class="d-block d-md-none">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <!-- Button filter modal -->
+                        <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                    </div>
+                    <div class="col-6">
                         <!-- Periods select -->
-                        <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
+                        <select class="form-select w-100" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
                             <option value="D">Last day</option>
                             <option value="W">Last week</option>
                             <option value="M">Last month</option>
@@ -109,31 +134,15 @@ init(); // Call init function
                         </select>
                     </div>
                 </div>
-
-                <!-- Actions mobile -->
-                <div class="d-block d-md-none">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <!-- Button filter modal -->
-                            <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
-                        </div>
-                        <div class="col-6">
-                            <!-- Periods select -->
-                            <select class="form-select w-100" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
-                                <option value="D">Last day</option>
-                                <option value="W">Last week</option>
-                                <option value="M">Last month</option>
-                                <option value="Y">Last year</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- Real-time data cards -->
+    <CurrentDataCards />
+
     <!-- Responsive grid -->
-    <div class="mb-4">
+    <div class="mb-5">
         <div class="row">
             <!-- Temperature chart -->
             <div class="col-lg-6 col-12 mt-5">
@@ -153,6 +162,11 @@ init(); // Call init function
             <!-- Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
                 <GasLineChart />
+            </div>
+
+            <!-- PM1 chart -->
+            <div class="col-lg-6 col-12 mt-5">
+                <Pm1LineChart />
             </div>
 
             <!-- PM2.5 chart -->

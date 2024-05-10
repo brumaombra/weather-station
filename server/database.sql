@@ -6,6 +6,7 @@ CREATE TABLE measurements (
     humidity FLOAT NOT NULL,
     pressure FLOAT NOT NULL,
     gas FLOAT NOT NULL,
+    pm1 FLOAT NOT NULL,
     pm25 FLOAT NOT NULL,
     pm10 FLOAT NOT NULL
 );
