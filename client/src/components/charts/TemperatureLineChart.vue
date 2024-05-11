@@ -56,6 +56,6 @@ watch(() => ChartsStore.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 text-danger"></i>Temperature</h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 custom-red-text"></i>Temperature</h3>
     <canvas id="temperatureLineChart"></canvas>
 </template>

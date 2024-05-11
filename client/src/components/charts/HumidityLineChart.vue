@@ -56,6 +56,6 @@ watch(() => ChartsStore.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-droplet me-3 text-primary"></i>Humidity</h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-droplet me-3 custom-light-blue-text"></i>Humidity</h3>
     <canvas id="humidityLineChart"></canvas>
 </template>

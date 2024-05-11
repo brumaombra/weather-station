@@ -56,6 +56,6 @@ watch(() => ChartsStore.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 text-success"></i>PM1</h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 custom-grey-text"></i>PM1</h3>
     <canvas id="pm1LineChart"></canvas>
 </template>

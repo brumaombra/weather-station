@@ -43,6 +43,6 @@ watch(() => CorrelationsStore.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 text-danger"></i>Temperature vs Humidity<i class="fa-solid fa-droplet ms-3 text-primary"></i></h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 custom-red-text"></i>Temperature vs Humidity<i class="fa-solid fa-droplet ms-3 custom-light-blue-text"></i></h3>
     <canvas id="tempHumScatterChart"></canvas>
 </template>

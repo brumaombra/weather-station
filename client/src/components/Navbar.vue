@@ -22,11 +22,11 @@ if (window.innerWidth < 992) {
     <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary">
 		<div class="container">
 			<div>
-				<i class="fa-solid fa-cloud-sun-rain me-2 fs-4 text-primary"></i>
+				<i class="fa-solid fa-cloud-sun-rain me-2 fs-4 custom-blue-text"></i>
 				<a class="navbar-brand fw-bold" href="#">Weather Station</a>
 			</div>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
+				<i class="fa-solid fa-bars fs-2rem custom-grey-text"></i>
 			</button>
 			<div id="navbarSupportedContent" class="collapse navbar-collapse">
 				<!-- Views -->
@@ -48,13 +48,19 @@ if (window.innerWidth < 992) {
 				<!-- Login/Logout -->
 				<ul class="navbar-nav mb-2 mb-lg-0">
 					<li class="nav-item" v-if="!GlobalStore.adminToken">
-						<router-link to="/login"><button type="button" class="btn btn-primary close-navbar d-flex justify-content-center align-items-center"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button></router-link>
+						<router-link to="/login"><button type="button" class="btn custom-blue-background close-navbar d-flex justify-content-center align-items-center"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button></router-link>
 					</li>
 					<li class="nav-item" v-if="GlobalStore.adminToken">
-						<button type="button" class="btn btn-primary close-navbar d-flex justify-content-center align-items-center" @click="handleLogoutPress()"><i class="fa-solid fa-right-from-bracket me-2"></i>LOGOUT</button>
+						<button type="button" class="btn custom-blue-background close-navbar d-flex justify-content-center align-items-center" @click="handleLogoutPress()"><i class="fa-solid fa-right-from-bracket me-2"></i>LOGOUT</button>
 					</li>
 				</ul>
 			</div>
 		</div>
 	</nav>
 </template>
+
+<style scoped>
+	.navbar-toggler {
+		border: none;
+	}
+</style>

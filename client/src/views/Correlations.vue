@@ -95,7 +95,7 @@ init(); // Call init function
             <div class="d-none d-md-block">
                 <div class="d-flex align-items-center justify-content-end">
                     <!-- Button filter modal -->
-                    <button type="button" class="btn btn-secondary me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                    <button type="button" class="btn custom-grey-2-background me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
 
                     <!-- Periods select -->
                     <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
@@ -112,7 +112,7 @@ init(); // Call init function
                 <div class="row align-items-center">
                     <div class="col-6">
                         <!-- Button filter modal -->
-                        <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                        <button type="button" class="btn custom-grey-2-background w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
                     </div>
                     <div class="col-6">
                         <!-- Periods select -->
@@ -186,8 +186,8 @@ init(); // Call init function
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="handleApplyFilterPress()">APPLY</button>
+                    <button type="button" class="btn custom-grey-2-background" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="button" class="btn custom-blue-background" data-bs-dismiss="modal" @click="handleApplyFilterPress()">APPLY</button>
                 </div>
             </div>
         </div>

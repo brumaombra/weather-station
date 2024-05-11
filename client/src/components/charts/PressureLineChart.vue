@@ -56,6 +56,6 @@ watch(() => ChartsStore.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-gauge-high me-3 text-warning"></i>Pressure</h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-gauge-high me-3 custom-yellow-text"></i>Pressure</h3>
     <canvas id="pressureLineChart"></canvas>
 </template>
