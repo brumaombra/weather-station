@@ -1,15 +1,19 @@
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, defineProps } from 'vue';
 import Chart from 'chart.js/auto';
-import CorrelationsStore from '@/stores/correlations.js';
 import { setResponsiveChartSize } from '@/utils/utils.js';
+
+// Props
+const props = defineProps({
+    measurementsList: { type: Array, default: [] }
+});
 
 let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
     setResponsiveChartSize('tempGasScatterChart'); // Set the size of the chart
-    const measurements = CorrelationsStore.measurementsList?.results || []; // Measurements list
+    const measurements = props.measurementsList || []; // Measurements list
     const data = measurements.map(item => ({
         x: item.temperature,
         y: item.gas
@@ -37,7 +41,7 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => CorrelationsStore.measurementsList, () => {
+watch(() => props.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>

@@ -1,8 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
 
-/* Titles */
+/* Tags */
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
+}
+a {
+    text-decoration: none;
 }
 
 /* Color */
@@ -43,16 +46,6 @@ body,
     --bs-backdrop-opacity: 0.35;
 }
 
-/* Navbar */
-.navbar {
-    border-bottom: 1px solid #e9ecf0;
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 0px 20px;
-}
-.navbar-nav .nav-link.active,
-.navbar-nav .nav-link.show {
-    font-weight: 500;
-}
-
 /* Form */
 .form-label {
     font-weight: 600;
@@ -71,6 +64,17 @@ body,
     height: 46px;
     border-radius: 10px;
 }
+.btn.disabled {
+    opacity: .3;
+}
+
+.btn.disabled,
+.btn:disabled,
+fieldset:disabled .btn {
+    color: initial;
+    background-color: initial;
+    opacity: .3;
+}
 
 /* Cursor pointer */
 .cursor-pointer:hover {
@@ -82,7 +86,16 @@ body,
     margin-bottom: 2rem !important;
 }
 
+/* Checkbox */
+.form-check-input:checked {
+    background-color: #0984E3;
+    border-color: #0984E3;
+}
+
 /* Table */
+.table {
+    margin-bottom: 0;
+}
 .table>:not(caption)>*>* {
     padding: .8rem .5rem;
 }
@@ -91,6 +104,30 @@ body,
 }
 .table-striped>tbody>tr:nth-of-type(odd)>* {
     --bs-table-bg-type: #F8F9FA;
+}
+.column-id {
+    width: 100px;
+    min-width: 60px;
+}
+.column-icon {
+    width: 60px;
+    min-width: 40px;
+}
+.column-selection {
+    width: 60px;
+    min-width: 40px;
+}
+.column-timestamp {
+    min-width: 180px;
+}
+.column-measurements {
+    width: 130px;
+    min-width: 130px;
+    font-weight: 700;
+}
+.measurementUnit {
+    font-size: 14px;
+    font-weight: 400;
 }
 
 /******************* Custom color classes *******************/
@@ -133,6 +170,12 @@ body,
 }
 .custom-grey-2-text {
     color: #636C77;
+}
+.custom-grey-2-text:hover {
+    color: #636C77;
+}
+.custom-grey-2-text:active {
+    color: #636C77 !important;
 }
 
 /* Grey 3 */
@@ -187,6 +230,12 @@ body,
     color: white;
 }
 .custom-blue-background:active {
+    background-color: #0984E3 !important;
+    border: none;
+    color: white !important;
+}
+.custom-blue-background:disabled {
+    opacity: .5;
     background-color: #0984E3 !important;
     border: none;
     color: white !important;

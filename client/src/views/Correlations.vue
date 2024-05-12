@@ -20,7 +20,7 @@ const loadMeasurements = async () => {
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     try { // Try to get the data
         const results = await getMeasurements(params); // Get the aggregated measurements
-        CorrelationsStore.measurementsList = results; // Save the loaded measurements
+        viewModel.measurementsList = results; // Save the loaded measurements
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
@@ -133,32 +133,32 @@ init(); // Call init function
         <div class="row">
             <!-- Temperature/humidity chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <TempHumScatterChart />
+                <TempHumScatterChart :measurementsList="viewModel.measurementsList?.results" />
             </div>
 
             <!-- PM2.5/PM10 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <Pm25Pm10ScatterChart />
+                <Pm25Pm10ScatterChart :measurementsList="viewModel.measurementsList?.results" />
             </div>
 
             <!-- Pressure/Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <PressGasScatterChart />
+                <PressGasScatterChart :measurementsList="viewModel.measurementsList?.results" />
             </div>
 
             <!-- Temperature/Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <TempGasScatterChart />
+                <TempGasScatterChart :measurementsList="viewModel.measurementsList?.results" />
             </div>
 
             <!-- Temperature/PM1 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <TempPm1ScatterChart />
+                <TempPm1ScatterChart :measurementsList="viewModel.measurementsList?.results" />
             </div>
 
             <!-- Humidity/PM1 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <HumPm1ScatterChart />
+                <HumPm1ScatterChart :measurementsList="viewModel.measurementsList?.results" />
             </div>
         </div>
     </div>

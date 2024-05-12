@@ -28,7 +28,7 @@ import GlobalStore from '@/stores/global.js';
         justify-content: center;
         align-items: center;
         height: 100%;
-        color: rgb(13, 110, 253);
+        color: #0984E3;
     }
 
     .fullscreen-loader .spinner-container .spinner-border {

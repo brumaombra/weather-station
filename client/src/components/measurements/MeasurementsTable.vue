@@ -217,7 +217,7 @@ init(); // Call init function
                     <td class="column-measurements">{{ formatDecimal(item.pm1, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.pm25, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.pm10, 0) }} <span class="measurementUnit">µg/m³</span></td>
-                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square custom-grey-2-background fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
+                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square custom-grey-2-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
                     <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can custom-red-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
                 </tr>
             </tbody>
@@ -372,31 +372,3 @@ init(); // Call init function
         </div>
     </div>
 </template>
-
-<style scoped>
-    /* Table column classes */
-    .column-id {
-        width: 100px;
-        min-width: 70px;
-    }
-    .column-icon {
-        width: 60px;
-        min-width: 50px;
-    }
-    .column-selection {
-        width: 60px;
-        min-width: 50px;
-    }
-    .column-timestamp {
-        min-width: 180px;
-    }
-    .column-measurements {
-        width: 130px;
-        min-width: 130px;
-        font-weight: 700;
-    }
-    .measurementUnit {
-        font-size: 14px;
-        font-weight: 400;
-    }
-</style>

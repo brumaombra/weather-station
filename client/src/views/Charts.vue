@@ -22,7 +22,7 @@ const loadMeasurements = async () => {
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     try { // Try to get the data
         const results = await getAggregatedMeasurements(params); // Get the aggregated measurements
-        viewModel.measurementsList = results; // Save the loaded measurements
+        viewModel.aggregatedMeasurementsList = results; // Save the loaded measurements
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
@@ -139,44 +139,44 @@ init(); // Call init function
     </div>
 
     <!-- Real-time data cards -->
-    <CurrentDataCards />
+    <CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
 
     <!-- Responsive grid -->
     <div class="mb-5">
         <div class="row">
             <!-- Temperature chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <TemperatureLineChart />
+                <TemperatureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- Humidity chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <HumidityLineChart />
+                <HumidityLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- Pressure chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <PressureLineChart />
+                <PressureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <GasLineChart />
+                <GasLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- PM1 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <Pm1LineChart />
+                <Pm1LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- PM2.5 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <Pm25LineChart />
+                <Pm25LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- PM10 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <Pm10LineChart />
+                <Pm10LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
         </div>
     </div>
