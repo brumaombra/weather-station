@@ -1,16 +1,20 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
-#include <DHT.h>
+#include <Adafruit_BME680.h>
+#include <PMS.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include <esp_sleep.h>
 #include <utils.h>
 #include <AsyncMqttClient.h>
 
-#define DHTPIN 16 // DHT22 pin
-#define DHTTYPE DHT22 // Specify DHT type (DHT11, DHT22, DHT21, AM2301)
+// PIN
+#define PMS_TX_PIN 17 // PMS7003 TX pin
+#define PMS_RX_PIN 16 // PMS7003 RX pin
 
+// Global variables
 const char ssid[] = ""; // WiFi SSID
 const char password[] = ""; // WiFi password
 const char mqttUsername[] = ""; // MQTT user
@@ -21,15 +25,24 @@ const int mqttPort = 1883; // MQTT broker port
 RTC_DATA_ATTR bool setupDone = false; // First boot flag
 RTC_DATA_ATTR float temperatureAvg = 0; // Average temperature value
 RTC_DATA_ATTR float humidityAvg = 0; // Average humidity value
+RTC_DATA_ATTR float pressureAvg = 0; // Average pressure value
+RTC_DATA_ATTR float gasAvg = 0; // Average gas value
+RTC_DATA_ATTR float pm1Avg = 0; // Average PM1 value
+RTC_DATA_ATTR float pm25Avg = 0; // Average PM2.5 value
+RTC_DATA_ATTR float pm10Avg = 0; // Average PM10 value
 RTC_DATA_ATTR byte measurementsCount = 0; // Number of measurements taken
 byte measurementsBeforePublishing = 60; // Number of measurements before publishing
 unsigned long readingInterval = 60; // Reading interval in seconds
-const bool devMode = false; // Enable development mode
+const bool devMode = true; // Enable development mode
 bool mqttConnected = false; // MQTT connection status
 bool confirmationReceived = false; // Confirmation received 
 uint16_t lastPacketId = 0; // Last MQTT packet ID
 
-DHT dht(DHTPIN, DHTTYPE); // DHT object
+// Objects
+Adafruit_BME680 bme; // BME680 sensor
+HardwareSerial pmsSerial(1); // Create a serial object for PMS7003
+PMS pms(pmsSerial); // PMS object
+PMS::DATA data; // Sensor data
 AsyncMqttClient mqttClient; // MQTT client object
 
 // Connect to Wi-Fi
@@ -127,11 +140,11 @@ bool createJsonMeasurements(char* jsonBuffer, size_t bufferSize) {
 	JsonDocument doc; // Create the JSON
     doc["temperature"] = temperatureAvg; // Add the temperature value
 	doc["humidity"] = humidityAvg; // Add the humidity value
-	doc["pressure"] = humidityAvg; // Add the pressure value
-	doc["gas"] = humidityAvg; // Add the gas value
-	doc["pm1"] = humidityAvg; // Add the PM 1 value
-	doc["pm25"] = humidityAvg; // Add the PM 2.5 value
-	doc["pm10"] = humidityAvg; // Add the PM 10 value
+	doc["pressure"] = pressureAvg; // Add the pressure value
+	doc["gas"] = gasAvg; // Add the gas value
+	doc["pm1"] = pm1Avg; // Add the PM 1 value
+	doc["pm25"] = pm25Avg; // Add the PM 2.5 value
+	doc["pm10"] = pm10Avg; // Add the PM 10 value
 	size_t length = serializeJson(doc, jsonBuffer, bufferSize);
 	const bool result = length > 0 && length < bufferSize; // Check if the JSON is valid
 	if (!result) { if (devMode) Serial.println("Error while creating the JSON"); }
@@ -177,43 +190,75 @@ bool publishReadings() {
 	return dataPublished;
 }
 
-// Read and publish the temperature and humidity readings to the MQTT broker
-void readAndPublishReadings() {
-	const float humidity = dht.readHumidity(); // Read the humidity from the DHT sensor
-	const float temperature = dht.readTemperature(); // Read the temperature from the DHT sensor
-	if (isnan(humidity) || isnan(temperature)) { // Check if the readings are valid
-		if (devMode) Serial.println("Failed to read from DHT sensor!"); // Print the error
-		return;
+// Read from the BME sensor
+bool readBme() {
+	if (!bme.performReading()) { // try to read from the BME sensor
+		Serial.println("Failed to read from the BME sensor");
+		return false;
 	}
 
-	// Add the data
-	if (devMode) printMeasurement(humidity, temperature); // Print the readings
-	temperatureAvg += temperature; // Sum the new temperature reading
-	humidityAvg += humidity; // Sum the new humidity reading
+	// Save the data
+	temperatureAvg += bme.temperature;
+	humidityAvg += bme.humidity;
+	pressureAvg += bme.pressure;
+	gasAvg += bme.gas_resistance;
+	if (devMode) { // Print the readings
+		char tempString[100] = "";
+		sprintf(tempString, "Temperature: %.2f *C, Pressure: %.2f hPa, Humidity: %.2f %%, Gas: %.2f Ohms", bme.temperature, bme.pressure, bme.humidity, bme.gas_resistance);
+		Serial.println(tempString);
+	}
+	return true;
+}
+
+// Read from the PMS sensor
+bool readPms() {
+	pms.wakeUp(); // Wake up the sensor
+    delay(secondsToMilliseconds(30)); // Wait for the sensor to wake up
+    pms.requestRead(); // Request a reading
+	const unsigned long timeout = secondsToMilliseconds(10);
+	const unsigned long startTime = millis();
+	while (millis() - startTime < timeout) { // Wait for the reading to complete
+		if (pms.readUntil(data)) { // Try to read
+			pm1Avg += data.PM_AE_UG_1_0; // Sum the new PM1 reading
+			pm25Avg += data.PM_AE_UG_2_5; // Sum the new PM2.5 reading
+			pm10Avg += data.PM_AE_UG_10_0; // Sum the new PM10 reading
+			pms.sleep(); // Put the sensor to sleep
+			if (devMode) { // Print the readings
+				char tempString[100] = "";
+				sprintf(tempString, "PM1: %d, PM2.5: %d, PM10: %d", data.PM_AE_UG_1_0, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0);
+				Serial.println(tempString);
+			}
+			return true; // Reading was successful
+		}
+	}
+	return false; // Reading was not successful
+}
+
+// Read and publish the temperature and humidity readings to the MQTT broker
+void readAndPublishReadings() {
+	readPms(); // Read the PMS data
+	readBme(); // Read the BME data
 	measurementsCount++; // Increment the number of measurements taken
 	if (measurementsCount >= measurementsBeforePublishing) {
 		temperatureAvg /= measurementsCount; // Calculate the average temperature
 		humidityAvg /= measurementsCount; // Calculate the average humidity
+		pressureAvg /= measurementsCount; // Calculate the average pressure
+		gasAvg /= measurementsCount; // Calculate the average gas
+		pm1Avg /= measurementsCount; // Calculate the average PM1
+		pm25Avg /= measurementsCount; // Calculate the average PM2.5
+		pm10Avg /= measurementsCount; // Calculate the average PM10
 		checkWiFiConnection(); // Check if the Wi-Fi is still connected
 		checkMQTTConnection(); // Check if the MQTT is still connected
 		publishReadings(); // Publish the readings
 		temperatureAvg = 0; // Reset the temperature average
 		humidityAvg = 0; // Reset the humiduty average
+		pressureAvg = 0; // Reset the pressure average
+		gasAvg = 0; // Reset the gas average
+		pm1Avg = 0; // Reset the PM1 average
+		pm25Avg = 0; // Reset the PM2.5 average
+		pm10Avg = 0; // Reset the PM10 average
 		measurementsCount = 0; // Reset the number of measurements taken
 	}
-}
-
-// Initialize the serial
-bool initSerial() {
-	Serial.begin(115200); // Start the serial
-	while (!Serial) {;} // Wait for the serial to be ready
-	return true;
-}
-
-// Initialize the DHT sensor
-bool setupDHT() {
-	dht.begin();
-	return true;
 }
 
 // Enter deep sleep
@@ -224,10 +269,42 @@ void enterDeepSleep() {
   	esp_deep_sleep_start(); // Enter deep sleep
 }
 
+// Initialize the serial
+bool initSerial() {
+	Serial.begin(115200); // Start the serial
+	while (!Serial) {;} // Wait for the serial to be ready
+	return true;
+}
+
+// Initialize the BME sensor
+bool setupBme() {
+	if (!bme.begin()) { // Check if the sensor is connected
+		if (devMode) Serial.println("Could not find a valid BME680 sensor");
+		return false;
+	}
+	
+	// Setup the sensor
+	bme.setTemperatureOversampling(BME680_OS_8X);
+	bme.setHumidityOversampling(BME680_OS_2X);
+	bme.setPressureOversampling(BME680_OS_4X);
+	bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
+	bme.setGasHeater(320, 150); // 320°C per 150ms
+	return true;
+}
+
+// Initialize the PMS sensor
+bool setupPms() {
+	pmsSerial.begin(9600, SERIAL_8N1, PMS_RX_PIN, PMS_TX_PIN); // Initialize the serial
+    pms.passiveMode(); // Set the sensor to passive mode
+	return true;
+}
+
 // Setup
 void setup() {
+	Wire.begin();
 	if (devMode) initSerial(); // Initialize the serial
-	setupDHT(); // Initialize the DHT sensor
+	setupBme(); // Initialize the BME sensor
+	setupPms(); // Initialize the PMS sensor
 	if (!setupDone) { // Do only of first boot
 		setupDone = true; // Set the first boot flag
 		connectToWifi(); // Test the Wi-Fi connection

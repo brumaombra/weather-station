@@ -1,16 +1,20 @@
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, defineProps } from 'vue';
 import Chart from 'chart.js/auto';
-import ChartsStore from '@/stores/charts.js';
 import { formatTimestampChart } from '@/utils/formatter.js';
 import { setResponsiveChartSize } from '@/utils/utils.js';
+
+// Props
+const props = defineProps({
+    measurementsList: { type: Array, default: [] }
+});
 
 let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
     setResponsiveChartSize('humidityLineChart'); // Set the size of the chart
-    const measurements = ChartsStore.measurementsList?.results || []; // Measurements list
+    const measurements = props.measurementsList || []; // Measurements list
     const label = measurements.map(item => formatTimestampChart(item.date)); // Label
     const average = measurements.map(item => item.humidityAvg); // Average
     const max = measurements.map(item => item.humidityMax); // Max
@@ -50,12 +54,12 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => ChartsStore.measurementsList, () => {
+watch(() => props.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-droplet me-3 text-primary"></i>Humidity</h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-droplet me-3 custom-light-blue-text"></i>Humidity</h3>
     <canvas id="humidityLineChart"></canvas>
 </template>

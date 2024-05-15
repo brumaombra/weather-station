@@ -141,7 +141,7 @@ init(); // Call init function
             <div class="col-md-6 col-12">
                 <!-- Title -->
                 <div class="d-flex align-items-center justify-content-between h-100">
-                    <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge text-bg-secondary rounded-3 ms-3">{{ viewModel.measurementsList.count }}</span></h3>
+                    <h3 class="mb-0"><i class="fa-solid fa-table me-3"></i>Measurements<span class="badge custom-grey-2-background rounded-3 ms-3">{{ viewModel.measurementsList.count }}</span></h3>
                 </div>
             </div>
             <div class="col-md-6 col-12 mt-md-0 mt-3">
@@ -149,13 +149,13 @@ init(); // Call init function
                 <div class="d-none d-md-block">
                     <div class="d-flex align-items-center justify-content-end">
                         <!-- Buttons -->
-                        <button type="button" class="btn btn-danger me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.selectedElements.length > 0">
+                        <button type="button" class="btn custom-red-background me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.selectedElements.length > 0">
                             <i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE {{ viewModel.selectedElements.length }} ITEMS
                         </button>
-                        <button type="button" class="btn btn-secondary me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal">
+                        <button type="button" class="btn custom-grey-2-background me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal">
                             <i class="fa-solid fa-filter fs-5 me-2"></i>FILTER
                         </button>
-                        <button type="button" class="btn btn-secondary d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
+                        <button type="button" class="btn custom-grey-2-background d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
                             <i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH
                         </button>
                     </div>
@@ -166,17 +166,17 @@ init(); // Call init function
                     <!-- Buttons -->
                     <div class="row align-items-center">
                         <div class="col-12">
-                            <button type="button" class="btn btn-danger w-100 d-flex justify-content-center align-items-center mb-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.selectedElements.length > 0">
+                            <button type="button" class="btn custom-red-background w-100 d-flex justify-content-center align-items-center mb-2" data-bs-toggle="modal" data-bs-target="#confirmMassDeleteModal" v-if="viewModel.selectedElements.length > 0">
                                 <i class="fa-regular fa-trash-can fs-5 me-2"></i>DELETE {{ viewModel.selectedElements.length }} ITEMS
                             </button>
                         </div>
                         <div class="col-6">
-                            <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <button type="button" class="btn custom-grey-2-background w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fa-solid fa-filter fs-5 me-2"></i>FILTER
                             </button>
                         </div>
                         <div class="col-6">
-                            <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
+                            <button type="button" class="btn custom-grey-2-background w-100 d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
                                 <i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH
                             </button>
                         </div>
@@ -188,7 +188,7 @@ init(); // Call init function
 
     <!-- Table -->
     <div class="table-responsive mb-4">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped">
             <thead class="text-center">
                 <tr>
                     <th v-if="GlobalStore.adminToken"><input class="form-check-input table-checkbox cursor-pointer" type="checkbox" @change="handleSelectDeselectAllPress()" /></th>
@@ -217,8 +217,8 @@ init(); // Call init function
                     <td class="column-measurements">{{ formatDecimal(item.pm1, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.pm25, 0) }} <span class="measurementUnit">µg/m³</span></td>
                     <td class="column-measurements">{{ formatDecimal(item.pm10, 0) }} <span class="measurementUnit">µg/m³</span></td>
-                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square text-secondary fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
-                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can text-danger fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
+                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-pen-to-square custom-grey-2-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i></td>
+                    <td class="column-icon" v-if="GlobalStore.adminToken"><i class="fa-regular fa-trash-can custom-red-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i></td>
                 </tr>
             </tbody>
         </table>
@@ -226,7 +226,7 @@ init(); // Call init function
 
     <!-- Pagination -->
     <div class="d-flex mb-4 justify-content-center">
-        <button type="button" class="btn btn-secondary d-flex justify-content-center align-items-center" @click="handleLoadMorePress()" v-if="viewModel.measurementsList.results.length < viewModel.measurementsList.count">
+        <button type="button" class="btn custom-grey-2-background d-flex justify-content-center align-items-center" @click="handleLoadMorePress()" v-if="viewModel.measurementsList.results.length < viewModel.measurementsList.count">
             <i class="fa-solid fa-angles-down fs-5 cursor-pointer me-2"></i>LOAD MORE
         </button>
     </div>
@@ -280,8 +280,8 @@ init(); // Call init function
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="handleApplyFilterPress()">APPLY</button>
+                    <button type="button" class="btn custom-grey-2-background" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="button" class="btn custom-blue-background" data-bs-dismiss="modal" @click="handleApplyFilterPress()">APPLY</button>
                 </div>
             </div>
         </div>
@@ -298,8 +298,8 @@ init(); // Call init function
                     <p class="mb-0">Delete the selected measurements?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="handleMassDeletePress()">DELETE</button>
+                    <button type="button" class="btn custom-grey-2-background" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="button" class="btn custom-red-background" data-bs-dismiss="modal" @click="handleMassDeletePress()">DELETE</button>
                 </div>
             </div>
         </div>
@@ -316,8 +316,8 @@ init(); // Call init function
                     <p class="mb-0">Delete the measurement?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="handleDeleteItemPress()">DELETE</button>
+                    <button type="button" class="btn custom-grey-2-background" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="button" class="btn custom-red-background" data-bs-dismiss="modal" @click="handleDeleteItemPress()">DELETE</button>
                 </div>
             </div>
         </div>
@@ -365,38 +365,10 @@ init(); // Call init function
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="handleSaveEditPress()">SAVE</button>
+                    <button type="button" class="btn custom-grey-2-background" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="button" class="btn custom-blue-background" data-bs-dismiss="modal" @click="handleSaveEditPress()">SAVE</button>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-<style scoped>
-    /* Table column classes */
-    .column-id {
-        width: 100px;
-        min-width: 70px;
-    }
-    .column-icon {
-        width: 60px;
-        min-width: 50px;
-    }
-    .column-selection {
-        width: 60px;
-        min-width: 50px;
-    }
-    .column-timestamp {
-        min-width: 180px;
-    }
-    .column-measurements {
-        width: 130px;
-        min-width: 130px;
-        font-weight: 600;
-    }
-    .measurementUnit {
-        font-size: 14px;
-        font-weight: 400;
-    }
-</style>

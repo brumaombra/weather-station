@@ -1,15 +1,19 @@
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, defineProps } from 'vue';
 import Chart from 'chart.js/auto';
-import CorrelationsStore from '@/stores/correlations.js';
 import { setResponsiveChartSize } from '@/utils/utils.js';
+
+// Props
+const props = defineProps({
+    measurementsList: { type: Array, default: [] }
+});
 
 let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
     setResponsiveChartSize('pressGasScatterChart'); // Set the size of the chart
-    const measurements = CorrelationsStore.measurementsList?.results || []; // Measurements list
+    const measurements = props.measurementsList || []; // Measurements list
     const data = measurements.map(item => ({
         x: item.pressure,
         y: item.gas
@@ -37,12 +41,12 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => CorrelationsStore.measurementsList, () => {
+watch(() => props.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-gauge-high me-3 text-warning"></i>Pressure vs Gas<i class="fa-solid fa-smog ms-3 text-info"></i></h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-gauge-high me-3 custom-yellow-text"></i>Pressure vs Gas<i class="fa-solid fa-smog ms-3 custom-brown-text"></i></h3>
     <canvas id="pressGasScatterChart"></canvas>
 </template>

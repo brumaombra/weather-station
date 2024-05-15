@@ -41,7 +41,7 @@ const handleLoginPress = async () => {
             <input type="password" class="form-control" v-model="viewModel.password" @keyup.enter="handleLoginPress()" />
         </div>
         <div class="mb-3">
-            <button type="button" class="btn btn-primary d-flex justify-content-center align-items-center" :disabled="!viewModel.username || !viewModel.password" @click="handleLoginPress()"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button>
+            <button type="button" class="btn custom-blue-background d-flex justify-content-center align-items-center" :disabled="!viewModel.username || !viewModel.password" @click="handleLoginPress()"><i class="fa-solid fa-right-to-bracket me-2"></i>LOGIN</button>
         </div>
     </div>
 </template>

@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -177,18 +176,6 @@ const startHttpsServer = () => {
     // Start the HTTPS server
     https.createServer(httpsOptions, app).listen(port, () => {
         console.log(`Web server listening on HTTPS port ${port}`);
-    });
-
-    // Express app for the HTTP redirect
-    const httpApp = express();
-    httpApp.use((req, res) => {
-        const host = req.headers.host.replace(/:\d+$/, ''); // Remove the port from the host if present
-        res.redirect(301, `https://${host}${req.url}`); // Redirect to HTTPS with status code 301
-    });
-
-    // Start the HTTP server on port 80
-    http.createServer(httpApp).listen(80, () => {
-        console.log('HTTP server for redirection to HTTPS running on port 80');
     });
 };
 

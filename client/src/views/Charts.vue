@@ -22,7 +22,7 @@ const loadMeasurements = async () => {
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     try { // Try to get the data
         const results = await getAggregatedMeasurements(params); // Get the aggregated measurements
-        viewModel.measurementsList = results; // Save the loaded measurements
+        viewModel.aggregatedMeasurementsList = results; // Save the loaded measurements
         setBusy(false); // Busy off
     } catch(error) {
         setBusy(false); // Busy off
@@ -105,7 +105,7 @@ init(); // Call init function
             <div class="d-none d-md-block">
                 <div class="d-flex align-items-center justify-content-end">
                     <!-- Button filter modal -->
-                    <button type="button" class="btn btn-secondary me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                    <button type="button" class="btn custom-grey-2-background me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
 
                     <!-- Periods select -->
                     <select class="form-select w-auto" v-model="viewModel.periodSelect" @change="handlePeriodChange()">
@@ -122,7 +122,7 @@ init(); // Call init function
                 <div class="row align-items-center">
                     <div class="col-6">
                         <!-- Button filter modal -->
-                        <button type="button" class="btn btn-secondary w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
+                        <button type="button" class="btn custom-grey-2-background w-100 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter fs-5 me-2"></i>FILTER</button>
                     </div>
                     <div class="col-6">
                         <!-- Periods select -->
@@ -139,44 +139,44 @@ init(); // Call init function
     </div>
 
     <!-- Real-time data cards -->
-    <CurrentDataCards />
+    <CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
 
     <!-- Responsive grid -->
     <div class="mb-5">
         <div class="row">
             <!-- Temperature chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <TemperatureLineChart />
+                <TemperatureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- Humidity chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <HumidityLineChart />
+                <HumidityLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- Pressure chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <PressureLineChart />
+                <PressureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- Gas chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <GasLineChart />
+                <GasLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- PM1 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <Pm1LineChart />
+                <Pm1LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- PM2.5 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <Pm25LineChart />
+                <Pm25LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
 
             <!-- PM10 chart -->
             <div class="col-lg-6 col-12 mt-5">
-                <Pm10LineChart />
+                <Pm10LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
             </div>
         </div>
     </div>
@@ -204,8 +204,8 @@ init(); // Call init function
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="handleApplyFilterPress()">APPLY</button>
+                    <button type="button" class="btn custom-grey-2-background" data-bs-dismiss="modal">CANCEL</button>
+                    <button type="button" class="btn custom-blue-background" data-bs-dismiss="modal" @click="handleApplyFilterPress()">APPLY</button>
                 </div>
             </div>
         </div>

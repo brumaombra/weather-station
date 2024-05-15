@@ -1,16 +1,20 @@
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, defineProps } from 'vue';
 import Chart from 'chart.js/auto';
-import ChartsStore from '@/stores/charts.js';
 import { formatTimestampChart } from '@/utils/formatter.js';
 import { setResponsiveChartSize } from '@/utils/utils.js';
+
+// Props
+const props = defineProps({
+    measurementsList: { type: Array, default: [] }
+});
 
 let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
     setResponsiveChartSize('pm1LineChart'); // Set the size of the chart
-    const measurements = ChartsStore.measurementsList?.results || []; // Measurements list
+    const measurements = props.measurementsList || []; // Measurements list
     const label = measurements.map(item => formatTimestampChart(item.date)); // Label
     const average = measurements.map(item => item.pm1Avg); // Average
     const max = measurements.map(item => item.pm1Max); // Max
@@ -50,12 +54,12 @@ onMounted(() => {
 });
 
 // Watch the property for changes
-watch(() => ChartsStore.measurementsList, () => {
+watch(() => props.measurementsList, () => {
     createChart(); // Create the chart
 });
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 text-success"></i>PM1</h3>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 custom-grey-text"></i>PM1</h3>
     <canvas id="pm1LineChart"></canvas>
 </template>
