@@ -27,9 +27,6 @@ getToken(); // get the token
 </script>
 
 <template>
-	<!-- Navbar -->
-	<!-- <Navbar /> -->
-
 	<!-- Main container -->
 	<div>
 		<RouterView />

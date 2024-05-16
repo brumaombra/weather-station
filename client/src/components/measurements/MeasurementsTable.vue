@@ -1,4 +1,5 @@
 <script setup>
+import FilterModal from '@/components/measurements/FilterModal.vue';
 import GlobalStore from '@/stores/global.js';
 import MeasurementsStore from '@/stores/measurements.js';
 import { setBusy, showMessageDialog, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
@@ -13,7 +14,7 @@ const loadMeasurements = async loadNewPage => {
     let params = { // Query parameters
         orderField: viewModel.orderBy || 'timestamp',
         orderDirection: viewModel.orderDirection || 'desc',
-        limit: 25 // Default to 25
+        limit: 10 // Default to 25
     };
     if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
@@ -159,10 +160,10 @@ init(); // Call init function
                                 <button type="button" v-if="viewModel.selectedElements.length > 0" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
                                     <i class="fa-regular fa-trash-can"></i>Delete {{ viewModel.selectedElements.length }} items
                                 </button>
-                                <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                <button type="button" data-hs-overlay="#filterModal" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
                                     <i class="fa-solid fa-filter"></i>Filter
                                 </button>
-                                <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                <button type="button" @click="handleResetIconPress()" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
                                     <i class="fa-solid fa-arrows-rotate"></i>Refresh
                                 </button>
                             </div>
@@ -298,6 +299,9 @@ init(); // Call init function
         </div>
     </div>
 
+    <!-- Filter modal -->
+    <FilterModal />
+
     <!-- Toolbar -->
     <div class="mb-4">
         <div class="row">
@@ -395,7 +399,7 @@ init(); // Call init function
     </div>
 
     <!-- Filter modal -->
-    <div id="filterModal" class="modal fade" tabindex="-1">
+    <div id="filterModalB" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
