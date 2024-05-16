@@ -25,7 +25,7 @@ if (window.innerWidth < 992) {
 				<i class="fa-solid fa-cloud-sun-rain me-2 fs-4 text-white"></i>
 				<a class="navbar-brand fw-bold" href="#">Weather Station</a>
 			</div>
-			<button class="navbar-toggler mb-1 mt-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<i class="fa-solid fa-bars fs-2rem text-white"></i>
 			</button>
 			<div id="navbarSupportedContent" class="collapse navbar-collapse">
@@ -64,7 +64,7 @@ if (window.innerWidth < 992) {
 
 <style scoped>
 	.navbar {
-		box-shadow: rgba(17, 17, 26, 0.3) 0px 0px 25px;
+		box-shadow: rgba(17, 17, 26, 0.3) 0px 0px 20px;
 	}
 	.navbar-nav .nav-link.active,
 	.navbar-nav .nav-link.show {
