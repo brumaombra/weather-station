@@ -135,6 +135,169 @@ init(); // Call init function
 </script>
 
 <template>
+    <!-- Table card -->
+    <div class="flex flex-col">
+        <div class="-m-1.5 overflow-x-auto">
+            <div class="p-1.5 min-w-full inline-block align-middle">
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <!-- Header -->
+                    <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200">
+                        <!-- Title -->
+                        <div class="flex items-center">
+                            <div class="mr-5">
+                                <i class="fa-solid fa-table text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-800">Measurements</h2>
+                                <p class="text-sm text-gray-600">The list of all measurements taken by the station</p>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div>
+                            <div class="inline-flex gap-x-2">
+                                <button type="button" v-if="viewModel.selectedElements.length > 0" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                    <i class="fa-regular fa-trash-can"></i>Delete {{ viewModel.selectedElements.length }} items
+                                </button>
+                                <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                    <i class="fa-solid fa-filter"></i>Filter
+                                </button>
+                                <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                    <i class="fa-solid fa-arrows-rotate"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th v-if="GlobalStore.adminToken" scope="col" class="px-6 py-3 text-center">
+                                    <input type="checkbox" @change="handleSelectDeselectAllPress()" class="shrink-0 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">ID</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">Timestamp</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">Temperature</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">Humidity</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">Pressure</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">Gas</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">PM1</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">PM2.5</span>
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">PM10</span>
+                                </th>
+                                <th v-if="GlobalStore.adminToken"></th>
+                                <th v-if="GlobalStore.adminToken"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr v-for="item in viewModel.measurementsList.results">
+                                <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
+                                    <div class="ps-6 py-3">
+                                        <input type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" class="shrink-0 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ item.id }}</span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500">{{ formatTimestamp(item.timestamp) }}</span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pressure, 0) }} <span class="font-thin text-xs">hPa</span></span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.gas, 0) }} <span class="font-thin text-xs">ppm</span></span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                    </div>
+                                </td>
+                                <td class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                    </div>
+                                </td>
+                                <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <i class="fa-regular fa-pen-to-square custom-grey-2-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i>
+                                    </div>
+                                </td>
+                                <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
+                                    <div class="px-6 py-3 text-center">
+                                        <i class="fa-regular fa-trash-can custom-red-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Footer -->
+                    <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
+                        <div>
+                            <p class="text-sm text-gray-600">
+                                <span class="font-semibold text-gray-800">{{ viewModel.measurementsList.count }}</span> results
+                            </p>
+                        </div>
+                        <div>
+                            <div class="inline-flex gap-x-2">
+                                <button type="button" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
+                                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                                    Prev
+                                </button>
+                                <button type="button" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
+                                    Next
+                                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toolbar -->
     <div class="mb-4">
         <div class="row">

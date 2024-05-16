@@ -16,22 +16,6 @@ const router = createRouter({
         name: 'home',
         component: Home
     }, {
-        path: '/measurements',
-        name: 'measurements',
-        component: Measurements
-    }, {
-        path: '/charts',
-        name: 'charts',
-        component: Charts
-    }, {
-        path: '/correlations',
-        name: 'correlations',
-        component: Correlations
-    }, {
-        path: '/forecasts',
-        name: 'forecasts',
-        component: Forecasts
-    }, {
         path: '/login',
         name: 'login',
         component: Login
@@ -51,6 +35,10 @@ const router = createRouter({
             path: 'correlations',
             name: 'correlations',
             component: Correlations
+        }, {
+            path: 'forecasts',
+            name: 'forecasts',
+            component: Forecasts
         }]
     }, {
         path: '/:pathMatch(.*)*',

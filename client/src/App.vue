@@ -28,19 +28,19 @@ getToken(); // get the token
 
 <template>
 	<!-- Navbar -->
-	<Navbar />
+	<!-- <Navbar /> -->
 
 	<!-- Main container -->
-	<div class="container mt-md-5 mt-4">
+	<div>
 		<RouterView />
 	</div>
 
-	<!-- Message toast -->
-	<MessageToast />
+	<!-- Message toast
+	<MessageToast /> -->
 
-	<!-- Message dialog -->
-	<MessageDialog />
+	<!-- Message dialog
+	<MessageDialog /> -->
 
-	<!-- Busy -->
-	<Busy />
+	<!-- Busy
+	<Busy /> -->
 </template>
