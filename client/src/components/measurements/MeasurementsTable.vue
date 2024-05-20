@@ -1,5 +1,7 @@
 <script setup>
 import FilterModal from '@/components/measurements/FilterModal.vue';
+import EditModal from '@/components/measurements/EditModal.vue';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import GlobalStore from '@/stores/global.js';
 import MeasurementsStore from '@/stores/measurements.js';
 import { setBusy, showMessageDialog, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
@@ -99,7 +101,7 @@ const handleDeleteItemPress = async () => {
 };
 
 // Reset button pressed
-const handleResetIconPress = () => {
+const handleRefreshPress = () => {
     loadMeasurements(); // Load the measurements
 };
 
@@ -150,20 +152,20 @@ init(); // Call init function
                             </div>
                             <div>
                                 <h2 class="text-xl font-semibold text-gray-800">Measurements</h2>
-                                <p class="text-sm text-gray-600">The list of all measurements taken by the station</p>
+                                <p class="text-sm text-gray-600">The list of all the measurements taken by the station</p>
                             </div>
                         </div>
 
                         <!-- Buttons -->
                         <div>
                             <div class="inline-flex gap-x-2">
-                                <button type="button" v-if="viewModel.selectedElements.length > 0" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                <button type="button" v-if="viewModel.selectedElements.length > 0" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
                                     <i class="fa-regular fa-trash-can"></i>Delete {{ viewModel.selectedElements.length }} items
                                 </button>
-                                <button type="button" data-hs-overlay="#filterModal" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                <button type="button" data-hs-overlay="#filterModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
                                     <i class="fa-solid fa-filter"></i>Filter
                                 </button>
-                                <button type="button" @click="handleResetIconPress()" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
+                                <button type="button" @click="handleRefreshPress()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800">
                                     <i class="fa-solid fa-arrows-rotate"></i>Refresh
                                 </button>
                             </div>
@@ -262,12 +264,12 @@ init(); // Call init function
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <i class="fa-regular fa-pen-to-square custom-grey-2-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#editModal" @click="saveItemReference(item)"></i>
+                                        <i class="fa-regular fa-pen-to-square custom-grey-2-text fs-5 cursor-pointer" data-hs-overlay="#editModal" @click="saveItemReference(item)"></i>
                                     </div>
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <i class="fa-regular fa-trash-can custom-red-text fs-5 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" @click="saveItemReference(item)"></i>
+                                        <i class="fa-regular fa-trash-can custom-red-text fs-5 cursor-pointer" data-hs-overlay="#confirmDeleteModal" @click="saveItemReference(item)"></i>
                                     </div>
                                 </td>
                             </tr>
@@ -300,7 +302,13 @@ init(); // Call init function
     </div>
 
     <!-- Filter modal -->
-    <FilterModal />
+    <FilterModal @apply="handleApplyFilterPress" />
+
+    <!-- Edit modal -->
+    <EditModal @save="handleSaveEditPress" />
+
+    <!-- Confirm delete modal -->
+    <ConfirmDialog id="confirmDeleteModal" message="Delete the measurement?" @confirm="handleSaveEditPress" />
 
     <!-- Toolbar -->
     <div class="mb-4">
@@ -322,7 +330,7 @@ init(); // Call init function
                         <button type="button" class="btn custom-grey-2-background me-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#filterModal">
                             <i class="fa-solid fa-filter fs-5 me-2"></i>FILTER
                         </button>
-                        <button type="button" class="btn custom-grey-2-background d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
+                        <button type="button" class="btn custom-grey-2-background d-flex justify-content-center align-items-center" @click="handleRefreshPress()">
                             <i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH
                         </button>
                     </div>
@@ -343,7 +351,7 @@ init(); // Call init function
                             </button>
                         </div>
                         <div class="col-6">
-                            <button type="button" class="btn custom-grey-2-background w-100 d-flex justify-content-center align-items-center" @click="handleResetIconPress()">
+                            <button type="button" class="btn custom-grey-2-background w-100 d-flex justify-content-center align-items-center" @click="handleRefreshPress()">
                                 <i class="fa-solid fa-arrows-rotate fs-5 me-2"></i>REFRESH
                             </button>
                         </div>
