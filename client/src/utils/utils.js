@@ -19,11 +19,11 @@ export const showToast = (message, type, time) => {
 };
 
 // Show the message dialog
-export const showMessageDialog = (message, type) => {
+export const showMessageDialog = (message, type, title) => {
+    GlobalStore.dialog.title = message;
     GlobalStore.dialog.message = message;
     GlobalStore.dialog.type = type;
-    const modal = new bootstrap.Modal(document.getElementById('globalMessageDialog'));
-    modal.show(); // Open the dialog
+    document.getElementById("globalMessageDialogButton").click();
 };
 
 // Convert days in milliseconds

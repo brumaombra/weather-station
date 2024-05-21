@@ -13,14 +13,14 @@ const emit = defineEmits(['save']);
     <div id="editModal" class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto">
         <div class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
             <div class="relative flex flex-col bg-white border shadow-sm rounded-xl overflow-hidden dark:bg-neutral-900 dark:border-neutral-800">
-                <div class="p-4 sm:p-10 overflow-y-auto">
-                    <!-- Title -->
-                    <div class="mb-6 text-center">
-                        <h3 class="mb-2 text-xl font-bold text-gray-800 dark:text-neutral-200">Filter</h3>
-                        <p class="text-gray-500 dark:text-neutral-500">Filter and order the measurements</p>
-                    </div>
+                <!-- Title -->
+                <div class="flex items-center py-4 px-4 border-b dark:border-neutral-800">
+                    <i class="fa-regular fa-pen-to-square me-2"></i>
+                    <h3 class="font-bold text-gray-800 dark:text-neutral-200">Edit</h3>
+                </div>
 
-                    <!-- Content -->
+                <!-- Content -->
+                <div class="p-6 overflow-y-auto">
                     <div class="space-y-4">
                         <form>
                             <!-- Timestamp -->
@@ -32,7 +32,7 @@ const emit = defineEmits(['save']);
                             <!-- Temperature -->
                             <div class="mb-4 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">Temperature</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.timestamp" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <input type="number" v-model="viewModel.tempMeasurement.temperature" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
                             </div>
 
                             <!-- Humidity -->
@@ -66,7 +66,7 @@ const emit = defineEmits(['save']);
                             </div>
 
                             <!-- PM10 -->
-                            <div class="mb-4 sm:mb-5">
+                            <div class="mb-2 sm:mb-2">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">PM10</label>
                                 <input type="number" v-model="viewModel.tempMeasurement.pm10" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
                             </div>
