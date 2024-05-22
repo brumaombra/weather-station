@@ -156,7 +156,7 @@ init(); // Call init function
                                 <i class="fa-solid fa-table text-xl"></i>
                             </div>
                             <div>
-                                <h2 class="text-xl font-semibold text-gray-800">Measurements</h2>
+                                <h2 class="text-xl font-bold text-gray-800">Measurements</h2>
                                 <p class="text-sm text-gray-600">The list of all the measurements taken by the station</p>
                             </div>
                         </div>
@@ -164,13 +164,13 @@ init(); // Call init function
                         <!-- Buttons -->
                         <div>
                             <div class="inline-flex gap-x-2">
-                                <button type="button" v-if="viewModel.selectedElements.length > 0" data-hs-overlay="#confirmMassDeleteModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-700 disabled:opacity-50 disabled:pointer-events-none">
+                                <button type="button" v-if="viewModel.selectedElements.length > 0" data-hs-overlay="#confirmMassDeleteModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-700 disabled:opacity-50 disabled:pointer-events-none">
                                     <i class="fa-regular fa-trash-can"></i>Delete {{ viewModel.selectedElements.length }} items
                                 </button>
-                                <button id="testXXX" type="button" data-hs-overlay="#filterModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                <button id="testXXX" type="button" data-hs-overlay="#filterModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
                                     <i class="fa-solid fa-filter"></i>Filter
                                 </button>
-                                <button type="button" @click="handleRefreshPress()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                <button type="button" @click="handleRefreshPress()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
                                     <i class="fa-solid fa-arrows-rotate"></i>Refresh
                                 </button>
                             </div>
@@ -182,7 +182,7 @@ init(); // Call init function
                         <thead class="bg-gray-50">
                             <tr>
                                 <th v-if="GlobalStore.adminToken" scope="col" class="px-6 py-3 text-center">
-                                    <input type="checkbox" @change="handleSelectDeselectAllPress()" class="shrink-0 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+                                    <input type="checkbox" @change="handleSelectDeselectAllPress()" class="shrink-0 w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center">
                                     <span class="text-xs font-semibold uppercase tracking-wide text-gray-800">ID</span>
@@ -219,7 +219,7 @@ init(); // Call init function
                             <tr v-for="item in viewModel.measurementsList.results">
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
                                     <div class="ps-6 py-3">
-                                        <input type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" class="shrink-0 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+                                        <input type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" class="shrink-0 w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
@@ -268,13 +268,13 @@ init(); // Call init function
                                     </div>
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <i class="fa-regular fa-pen-to-square custom-grey-2-text fs-5 cursor-pointer" data-hs-overlay="#editModal" @click="saveItemReference(item)"></i>
+                                    <div class="px-4 py-3 text-center">
+                                        <i class="fa-regular fa-pen-to-square custom-grey-2-text text-lg cursor-pointer" data-hs-overlay="#editModal" @click="saveItemReference(item)"></i>
                                     </div>
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <i class="fa-regular fa-trash-can custom-red-text fs-5 cursor-pointer" data-hs-overlay="#confirmDeleteModal" @click="saveItemReference(item)"></i>
+                                    <div class="px-4 py-3 text-center">
+                                        <i class="fa-regular fa-trash-can custom-red-text text-lg cursor-pointer" data-hs-overlay="#confirmDeleteModal" @click="saveItemReference(item)"></i>
                                     </div>
                                 </td>
                             </tr>
@@ -285,18 +285,16 @@ init(); // Call init function
                     <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
                         <div>
                             <p class="text-sm text-gray-600">
-                                <span class="font-semibold text-gray-800">{{ viewModel.measurementsList.count }}</span> results
+                                <span class="font-bold text-gray-800">{{ viewModel.measurementsList.count }}</span> results
                             </p>
                         </div>
                         <div>
                             <div class="inline-flex gap-x-2">
                                 <button type="button" @click="previousPagePress" :disabled="viewModel.offset === 0" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
-                                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                                    Prev
+                                    <i class="fa-solid fa-chevron-left ms-1"></i>Prev
                                 </button>
                                 <button type="button" @click="nextPagePress" :disabled="viewModel.measurementsList?.results?.length < viewModel.limit" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none">
-                                    Next
-                                    <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                    Next<i class="fa-solid fa-chevron-right me-1"></i>
                                 </button>
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue';
 import Measurements from '@/views/Measurements.vue';
-import Charts from '@/views/Charts.vue';
+import Charts from '@/views/dashboard/Charts.vue';
 import Forecasts from '@/views/Forecasts.vue';
 import Correlations from '@/views/Correlations.vue';
 import Login from '@/views/Login.vue';

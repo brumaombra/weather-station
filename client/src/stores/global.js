@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 
 export default reactive({
-    adminToken: "sdfd", // Admin token
+    adminToken: "", // Admin token
     busy: false, // Global busy state
     toast: { // Message toast data
         visible: false,
