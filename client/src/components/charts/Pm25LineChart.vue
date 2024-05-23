@@ -1,51 +1,37 @@
 <script setup>
-import { onMounted, watch, defineProps } from 'vue';
-// import Chart from 'chart.js/auto';
+import { onMounted, watch, ref } from 'vue';
 import { formatTimestampChart } from '@/utils/formatter.js';
-import { setResponsiveChartSize } from '@/utils/utils.js';
+import LineChart from '@/stores/chartConfigs/lineChart.js';
 
 // Props
 const props = defineProps({
     measurementsList: { type: Array, default: [] }
 });
 
-let chart = null; // The chart element
+// Chart data
+const options = ref(LineChart); // Options
+const series = ref([]); // Data
 
 // Create the chart
 const createChart = () => {
-    setResponsiveChartSize('pm25LineChart'); // Set the size of the chart
     const measurements = props.measurementsList || []; // Measurements list
-    const label = measurements.map(item => formatTimestampChart(item.date)); // Label
+    const labels = measurements.map(item => formatTimestampChart(item.date)); // Label
     const average = measurements.map(item => item.pm25Avg); // Average
     const max = measurements.map(item => item.pm25Max); // Max
     const min = measurements.map(item => item.pm25Min); // Mix
-    const parameters = { // Chart parameters
-        type: 'line',
-        data: {
-            labels: label,
-            datasets: [{
-                label: 'Average',
-                data: average,
-                borderColor: 'rgb(32, 191, 107)',
-                tension: 0.5
-            }, {
-                label: 'Max',
-                data: max,
-                borderColor: 'rgb(220, 53, 69, 0.2)',
-                tension: 0.5
-            }, {
-                label: 'Min',
-                data: min,
-                borderColor: 'rgb(13, 110, 253, 0.2)',
-                tension: 0.5
-            }]
-        }
-    };
 
-    // Create chart
-    const chartDom = document.getElementById('pm25LineChart'); // Get the DOM element
-    if (chart) chart.destroy(); // Destroy the current chart
-    chart = new Chart(chartDom, parameters); // Create the chart
+    // Set chart data
+    options.value.xaxis.categories = labels;
+    series.value = [{
+        name: 'Average',
+        data: average
+    }, {
+        name: 'Max',
+        data: max
+    }, {
+        name: 'Min',
+        data: min
+    }];
 };
 
 // On mounted event
@@ -60,6 +46,23 @@ watch(() => props.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 custom-grey-2-text"></i>PM2.5</h3>
-    <canvas id="pm25LineChart"></canvas>
+    <div class="p-4 md:p-5 min-h-[410px] flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-3">
+            <div>
+                <h2 class="text-sm text-gray-500 dark:text-neutral-500 mb-2">PM2.5</h2>
+                <p class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">21.0 °C</p>
+            </div>
+            <div>
+                <span class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-teal-100 text-teal-800 dark:bg-teal-500/10 dark:text-teal-500">
+                    <i class="fa-solid fa-arrow-up-long"></i>25%
+                </span>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div>
+            <apexchart type="line" :options="options" :series="series"></apexchart>
+        </div>
+    </div>
 </template>

@@ -1,109 +1,16 @@
 <script setup>
 import { onMounted, watch, ref } from 'vue';
 import { formatTimestampChart } from '@/utils/formatter.js';
+import LineChart from '@/stores/chartConfigs/lineChart.js';
 
 // Props
 const props = defineProps({
     measurementsList: { type: Array, default: [] }
 });
 
-// Chart options
-const options = ref({
-    chart: {
-        height: 300,
-        type: 'area',
-        toolbar: {
-            show: false
-        }, zoom: {
-            enabled: false
-        }
-    }, legend: {
-        show: false
-    }, dataLabels: {
-        enabled: false
-    }, stroke: {
-        curve: 'smooth',
-        width: 2
-    }, grid: {
-        strokeDashArray: 2
-    }, xaxis: {
-        type: 'category',
-        tickPlacement: 'on',
-        axisBorder: {
-            show: false
-        }, axisTicks: {
-            show: false
-        }, crosshairs: {
-            stroke: {
-              dashArray: 0
-            }, dropShadow: {
-              show: false
-            }
-        }, tooltip: {
-            enabled: false
-        }, labels: {
-            style: {
-                colors: '#9ca3af',
-                fontSize: '13px',
-                fontFamily: 'Inter, ui-sans-serif',
-                fontWeight: 400
-            }, formatter: (title) => {
-                let t = title;
-                return t;
-            }
-        }
-    }, yaxis: {
-        labels: {
-            align: 'left',
-            minWidth: 0,
-            maxWidth: 140,
-            style: {
-                colors: '#9ca3af',
-                fontSize: '13px',
-                fontFamily: 'Inter, ui-sans-serif',
-                fontWeight: 400
-            }, formatter: (value) => value >= 1000 ? `${value / 1000}k` : value
-        }
-    }, tooltip: {
-        x: {
-            format: 'MMMM yyyy'
-        }, y: {
-            formatter: (value) => `${value >= 1000 ? `${value / 1000}k` : value}`
-        }
-    }, responsive: [{
-        breakpoint: 568,
-        options: {
-            chart: {
-                height: 300
-            }, labels: {
-                style: {
-                    colors: '#9ca3af',
-                    fontSize: '11px',
-                    fontFamily: 'Inter, ui-sans-serif',
-                    fontWeight: 400
-                },
-                offsetX: -2,
-                formatter: (title) => title.slice(0, 3)
-            }, yaxis: {
-                labels: {
-                    align: 'left',
-                    minWidth: 0,
-                    maxWidth: 140,
-                    style: {
-                        colors: '#9ca3af',
-                        fontSize: '11px',
-                        fontFamily: 'Inter, ui-sans-serif',
-                        fontWeight: 400
-                    },
-                    formatter: (value) => value >= 1000 ? `${value / 1000}k` : value
-                }
-            }
-        }
-    }]
-});
-
 // Chart data
-const series = ref([]);
+const options = ref(LineChart); // Options
+const series = ref([]); // Data
 
 // Create the chart
 const createChart = () => {

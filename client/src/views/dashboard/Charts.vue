@@ -7,6 +7,7 @@ import Pm1LineChart from '@/components/charts/Pm1LineChart.vue';
 import Pm25LineChart from '@/components/charts/Pm25LineChart.vue';
 import Pm10LineChart from '@/components/charts/Pm10LineChart.vue';
 import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
+import FilterModal from '@/components/charts/FilterModal.vue';
 import ChartsStore from '@/stores/charts.js';
 import { getAggregatedMeasurements, setBusy, showMessageDialog, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
@@ -56,8 +57,6 @@ const addFilterDatesFromPeriod = () => {
             break;
     }
 
-	days = 365;
-
     // Create the start and end dates
     const pastDate = new Date();
     pastDate.setDate(pastDate.getDate() - days); // Tot days ago
@@ -94,6 +93,30 @@ init(); // Call init function
 </script>
 
 <template>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-5">
+        <!-- Left -->
+        <div>
+            <h2 class="font-bold text-2xl">Charts<i class="fa-solid fa-chart-line text-xl leading-none ms-3"></i></h2>
+        </div>
+
+        <!-- Right -->
+        <div>
+            <!-- Button filter modal -->
+            <button type="button" data-hs-overlay="#filterModal" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 me-2">
+                <i class="fa-solid fa-filter fs-5"></i>Filter
+            </button>
+
+            <!-- Periods select -->
+            <select class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800" v-model="viewModel.periodSelect" @change="handlePeriodChange">
+                <option value="D">Last day</option>
+                <option value="W">Last week</option>
+                <option value="M">Last month</option>
+                <option value="Y">Last year</option>
+            </select>
+        </div>
+    </div>
+
 	<!-- Real-time data cards -->
 	<div class="mb-6">
 		<CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
@@ -105,6 +128,27 @@ init(); // Call init function
 		<div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
 			<!-- Temperature chart -->
 			<TemperatureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+
+            <!-- Humidity chart -->
+			<HumidityLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+
+            <!-- Pressure chart -->
+			<PressureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+
+            <!-- Gas chart -->
+			<GasLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+
+            <!-- PM1 chart -->
+			<Pm1LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+
+            <!-- PM2.5 chart -->
+			<Pm25LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+
+            <!-- PM10 chart -->
+			<Pm10LineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
 		</div>
 	</div>
+
+    <!-- Filter modal -->
+    <FilterModal @apply="handleApplyFilterPress" />
 </template>
