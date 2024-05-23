@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, watch, defineProps } from 'vue';
-import Chart from 'chart.js/auto';
+// import Chart from 'chart.js/auto';
 import { formatTimestampChart } from '@/utils/formatter.js';
 import { setResponsiveChartSize } from '@/utils/utils.js';
 

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, watch, defineProps } from 'vue';
-// import Chart from 'chart.js/auto';
+import Chart from 'chart.js/auto';
 import { formatTimestampChart } from '@/utils/formatter.js';
 import { setResponsiveChartSize } from '@/utils/utils.js';
 
@@ -13,12 +13,12 @@ let chart = null; // The chart element
 
 // Create the chart
 const createChart = () => {
-    setResponsiveChartSize('pm25LineChart'); // Set the size of the chart
+    setResponsiveChartSize('temperatureLineChart'); // Set the size of the chart
     const measurements = props.measurementsList || []; // Measurements list
     const label = measurements.map(item => formatTimestampChart(item.date)); // Label
-    const average = measurements.map(item => item.pm25Avg); // Average
-    const max = measurements.map(item => item.pm25Max); // Max
-    const min = measurements.map(item => item.pm25Min); // Mix
+    const average = measurements.map(item => item.temperatureAvg); // Average
+    const max = measurements.map(item => item.temperatureMax); // Max
+    const min = measurements.map(item => item.temperatureMin); // Mix
     const parameters = { // Chart parameters
         type: 'line',
         data: {
@@ -43,7 +43,7 @@ const createChart = () => {
     };
 
     // Create chart
-    const chartDom = document.getElementById('pm25LineChart'); // Get the DOM element
+    const chartDom = document.getElementById('temperatureLineChart'); // Get the DOM element
     if (chart) chart.destroy(); // Destroy the current chart
     chart = new Chart(chartDom, parameters); // Create the chart
 };
@@ -60,6 +60,6 @@ watch(() => props.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-hill-rockslide me-3 custom-grey-2-text"></i>PM2.5</h3>
-    <canvas id="pm25LineChart"></canvas>
+    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 custom-red-text"></i>Temperature</h3>
+    <canvas id="temperatureLineChart"></canvas>
 </template>

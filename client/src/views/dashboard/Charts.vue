@@ -1,96 +1,110 @@
+<script setup>
+import TemperatureLineChart from '@/components/charts/TemperatureLineChart.vue';
+import HumidityLineChart from '@/components/charts/HumidityLineChart.vue';
+import PressureLineChart from '@/components/charts/PressureLineChart.vue';
+import GasLineChart from '@/components/charts/GasLineChart.vue';
+import Pm1LineChart from '@/components/charts/Pm1LineChart.vue';
+import Pm25LineChart from '@/components/charts/Pm25LineChart.vue';
+import Pm10LineChart from '@/components/charts/Pm10LineChart.vue';
+import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
+import ChartsStore from '@/stores/charts.js';
+import { getAggregatedMeasurements, setBusy, showMessageDialog, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
+import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
+
+// View model
+const viewModel = ChartsStore;
+
+// Load the measurements
+const loadMeasurements = async () => {
+    setBusy(true); // Busy on
+    const params = {};
+    if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
+    if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
+    try { // Try to get the data
+        const results = await getAggregatedMeasurements(params); // Get the aggregated measurements
+        viewModel.aggregatedMeasurementsList = results; // Save the loaded measurements
+        setBusy(false); // Busy off
+    } catch(error) {
+        setBusy(false); // Busy off
+        const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
+        showMessageDialog(newError.message, 'error'); // Show toast
+        throw newError; // Throw the error
+    }
+};
+
+// Load the last measurement
+const loadLastMeasurement = async () => {
+    const result = await getLastMeasurement(); // Get the last measurement
+    viewModel.lastMeasurement = result; // Save the measurement
+};
+
+// Add the filter dates from the selected period
+const addFilterDatesFromPeriod = () => {
+    let days = 1; // Number of days to filter
+    switch (viewModel.periodSelect) {
+        case 'D':
+            days = 1;
+            break;
+        case 'W':
+            days = 7;
+            break;
+        case 'M':
+            days = 30;
+            break;
+        case 'Y':
+            days = 365;
+            break;
+    }
+
+	days = 365;
+
+    // Create the start and end dates
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - days); // Tot days ago
+    const startDate = days === 1 ? pastDate : getMaxAndMinFromDate(pastDate).minDate; // Get the date at 00:00
+    viewModel.startDate = formatJsDateToIsoStringDate(startDate, true); // Set formatted start date (If 1 day include time)
+};
+
+// When period select changed
+const handlePeriodChange = event => {
+    addFilterDatesFromPeriod(); // Add the filter dates from the selected period
+    loadMeasurements(); // Load the measurements
+};
+
+// Handle filter dialog button "apply"
+const handleApplyFilterPress = () => {
+    const startDate = getMaxAndMinFromDate(viewModel.dialogFilter.startDate).minDate; // Get the date at 00:00
+    const endDate = getMaxAndMinFromDate(viewModel.dialogFilter.endDate).maxDate; // Get the date at 23:59
+    if (startDate) viewModel.startDate = formatJsDateToIsoStringDate(startDate, true); // Apply start date
+    if (endDate) viewModel.endDate = formatJsDateToIsoStringDate(endDate, true); // Apply end date
+    loadMeasurements(); // Load measurements
+};
+
+// Init function
+const init = () => {
+    if (viewModel.initDone) return; // If already done, exit
+    viewModel.initDone = true; // Mark as executed
+    addFilterDatesFromPeriod(); // Add the filter dates from the selected period
+    loadLastMeasurement(); // Load the last measurement
+    loadMeasurements(); // Load the measurements
+};
+
+init(); // Call init function
+
+</script>
+
 <template>
-    <!-- Grid -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-      <!-- Card -->
-      <div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
-        <div class="p-4 md:p-5">
-          <div class="flex items-center gap-x-2">
-            <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-neutral-500">
-              Total users
-            </p>
-            <div class="hs-tooltip">
-              <div class="hs-tooltip-toggle">
-                <svg class="flex-shrink-0 size-4 text-gray-500 dark:text-neutral-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-                <span class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-neutral-700" role="tooltip">
-                  The number of daily users
-                </span>
-              </div>
-            </div>
-          </div>
+	<!-- Real-time data cards -->
+	<div class="mb-6">
+		<CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
+	</div>
 
-          <div class="mt-1 flex items-center gap-x-2">
-            <h3 class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">
-              72,540
-            </h3>
-            <span class="flex items-center gap-x-1 text-green-600">
-              <svg class="inline-block size-4 self-center" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-              <span class="inline-block text-sm">
-                1.7%
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-      <!-- End Card -->
-
-      <!-- Card -->
-      <div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
-        <div class="p-4 md:p-5">
-          <div class="flex items-center gap-x-2">
-            <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-neutral-500">
-              Sessions
-            </p>
-          </div>
-
-          <div class="mt-1 flex items-center gap-x-2">
-            <h3 class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">
-              29.4%
-            </h3>
-          </div>
-        </div>
-      </div>
-      <!-- End Card -->
-
-      <!-- Card -->
-      <div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
-        <div class="p-4 md:p-5">
-          <div class="flex items-center gap-x-2">
-            <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-neutral-500">
-              Avg. Click Rate
-            </p>
-          </div>
-
-          <div class="mt-1 flex items-center gap-x-2">
-            <h3 class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">
-              56.8%
-            </h3>
-            <span class="flex items-center gap-x-1 text-red-600">
-              <svg class="inline-block size-4 self-center" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
-              <span class="inline-block text-sm">
-                1.7%
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-      <!-- End Card -->
-
-      <!-- Card -->
-      <div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
-        <div class="p-4 md:p-5">
-          <div class="flex items-center gap-x-2">
-            <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-neutral-500">
-              Pageviews
-            </p>
-          </div>
-
-          <div class="mt-1 flex items-center gap-x-2">
-            <h3 class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">
-              92,913
-            </h3>
-          </div>
-        </div>
-      </div>
-      <!-- End Card -->
-    </div>
+	<!-- Charts -->
+	<div>
+		<h5 class="mb-3">Charts</h5>
+		<div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
+			<!-- Temperature chart -->
+			<TemperatureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+		</div>
+	</div>
 </template>

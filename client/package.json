@@ -13,11 +13,12 @@
     "@capacitor/cli": "^6.0.0",
     "@capacitor/core": "^6.0.0",
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "apexcharts": "^3.49.1",
     "bootstrap": "^5.3.3",
-    "chart.js": "^4.4.2",
     "preline": "^2.1.0",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vue3-apexcharts": "^1.5.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
