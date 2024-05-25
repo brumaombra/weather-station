@@ -9,7 +9,6 @@ const props = defineProps({
 
 <template>
     <!-- Grid -->
-	<h5 class="mb-3">Real-time data</h5>
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
 		<!-- Card temperature -->
 		<div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">

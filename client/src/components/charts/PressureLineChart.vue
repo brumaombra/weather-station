@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, watch } from 'vue';
 import { formatTimestampChart } from '@/utils/formatter.js';
-import LineChart from '@/stores/chartConfigs/lineChart.js';
+import LineChartOptions from '@/stores/chartConfigs/lineChart.js';
 
 // Props
 const props = defineProps({
@@ -9,20 +9,20 @@ const props = defineProps({
 });
 
 // Chart data
-const options = ref(LineChart); // Options
-const series = ref([]); // Data
+const options = LineChartOptions;
 
 // Create the chart
 const createChart = () => {
     const measurements = props.measurementsList || []; // Measurements list
+    if (measurements.length === 0) return; // Exit if empty
     const labels = measurements.map(item => formatTimestampChart(item.date)); // Label
     const average = measurements.map(item => item.pressureAvg); // Average
     const max = measurements.map(item => item.pressureMax); // Max
     const min = measurements.map(item => item.pressureMin); // Mix
 
     // Set chart data
-    options.value.xaxis.categories = labels;
-    series.value = [{
+    options.xaxis.categories = labels;
+    options.series = [{
         name: 'Average',
         data: average
     }, {
@@ -62,7 +62,7 @@ watch(() => props.measurementsList, () => {
 
         <!-- Chart -->
         <div>
-            <apexchart type="line" :options="options" :series="series"></apexchart>
+            <apexchart type="line" :options="options" :series="options.series"></apexchart>
         </div>
     </div>
 </template>

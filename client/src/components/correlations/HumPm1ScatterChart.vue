@@ -1,38 +1,24 @@
 <script setup>
-import { onMounted, watch, defineProps } from 'vue';
-// import Chart from 'chart.js/auto';
-import { setResponsiveChartSize } from '@/utils/utils.js';
+import { onMounted, watch } from 'vue';
+import ScatterChartOptions from '@/stores/chartConfigs/scatterChart.js';
 
 // Props
 const props = defineProps({
     measurementsList: { type: Array, default: [] }
 });
 
-let chart = null; // The chart element
+// Chart options
+const options = ScatterChartOptions;
 
 // Create the chart
 const createChart = () => {
-    setResponsiveChartSize('humPm1ScatterChart'); // Set the size of the chart
     const measurements = props.measurementsList || []; // Measurements list
-    const data = measurements.map(item => ({
-        x: item.humidity,
-        y: item.pm1
-    }));
-    const parameters = { // Chart parameters
-        type: 'scatter',
-        data: {
-            datasets: [{
-                label: 'Humidity vs PM1',
-                data: data,
-                backgroundColor: 'rgba(255, 99, 132, 1)'
-            }]
-        }
-    };
-
-    // Create chart
-    const chartDom = document.getElementById('humPm1ScatterChart'); // Get the DOM element
-    if (chart) chart.destroy(); // Destroy the current chart
-    chart = new Chart(chartDom, parameters); // Create the chart
+    if (measurements.length === 0) return; // Exit if empty
+    const data = measurements.map(item => ([item.humidity, item.pm1]));
+    options.series = [{ // Set chart data
+        name: 'Correlation',
+        data: data
+    }];
 };
 
 // On mounted event
@@ -47,6 +33,17 @@ watch(() => props.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-droplet me-3 custom-light-blue-text"></i>Humidity vs PM1<i class="fa-solid fa-hill-rockslide ms-3 custom-grey-text"></i></h3>
-    <canvas id="humPm1ScatterChart"></canvas>
+    <div class="p-4 md:p-5 min-h-[410px] flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-3">
+            <div>
+                <h2 class="text-sm text-gray-500 dark:text-neutral-500">Humidity/PM1</h2>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div>
+            <apexchart type="scatter" :options="options" :series="options.series"></apexchart>
+        </div>
+    </div>
 </template>

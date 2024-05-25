@@ -4,7 +4,7 @@ import Login from '@/views/Login.vue';
 import Dashboard from '@/views/dashboard/Dashboard.vue';
 import Measurements from '@/views/dashboard/Measurements.vue';
 import Charts from '@/views/dashboard/Charts.vue';
-import Forecasts from '@/views/Forecasts.vue';
+import Forecasts from '@/views/dashboard/Forecasts.vue';
 import Correlations from '@/views/dashboard/Correlations.vue';
 import NotFound from '@/views/NotFound.vue';
 

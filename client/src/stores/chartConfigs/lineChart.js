@@ -1,4 +1,7 @@
+import { formatUnitNumber } from '@/utils/formatter.js';
+
 export default {
+    series: [],
     chart: {
         height: 300,
         type: 'area',
@@ -26,9 +29,9 @@ export default {
             show: false
         }, crosshairs: {
             stroke: {
-              dashArray: 0
+                dashArray: 0
             }, dropShadow: {
-              show: false
+                show: false
             }
         }, tooltip: {
             enabled: false
@@ -38,28 +41,20 @@ export default {
                 fontSize: '13px',
                 fontFamily: 'Inter, ui-sans-serif',
                 fontWeight: 400
-            }, formatter: (title) => {
-                let t = title;
-                return t;
+            }, formatter: title => {
+                return title;
             }
         }
     }, yaxis: {
         labels: {
-            align: 'left',
-            minWidth: 0,
-            maxWidth: 140,
             style: {
                 colors: '#9ca3af',
                 fontSize: '13px',
                 fontFamily: 'Inter, ui-sans-serif',
                 fontWeight: 400
-            }, formatter: (value) => value >= 1000 ? `${value / 1000}k` : value
-        }
-    }, tooltip: {
-        x: {
-            format: 'MMMM yyyy'
-        }, y: {
-            formatter: (value) => `${value >= 1000 ? `${value / 1000}k` : value}`
+            }, formatter: val => {
+                return formatUnitNumber(val);
+            }
         }
     }, responsive: [{
         breakpoint: 568,

@@ -28,3 +28,16 @@ export const formatDecimal = (number, decimal) => {
     const decimals = typeof number === 'number' ? decimal : 2;
     return number.toFixed(decimals); // Round number
 };
+
+// Format number to K, M, B
+export const formatUnitNumber = num => {
+    if (num >= 1e9) {
+        return (num / 1e9).toFixed(1) + 'B';
+    } if (num >= 1e6) {
+        return (num / 1e6).toFixed(1) + 'M';
+    } else if (num >= 1e3) {
+        return (num / 1e3).toFixed(1) + 'k';
+    } else {
+        return num.toFixed(1);
+    }
+};

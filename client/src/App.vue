@@ -33,9 +33,6 @@ getToken(); // get the token
 	<!-- Generic message modal -->
     <MessageDialog />
 
-	<!-- Message toast
-	<MessageToast /> -->
-
 	<!-- Busy -->
 	<Busy />
 </template>
