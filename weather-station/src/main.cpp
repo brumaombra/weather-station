@@ -31,9 +31,9 @@ RTC_DATA_ATTR float pm1Avg = 0; // Average PM1 value
 RTC_DATA_ATTR float pm25Avg = 0; // Average PM2.5 value
 RTC_DATA_ATTR float pm10Avg = 0; // Average PM10 value
 RTC_DATA_ATTR byte measurementsCount = 0; // Number of measurements taken
-byte measurementsBeforePublishing = 60; // Number of measurements before publishing
-unsigned long readingInterval = 60; // Reading interval in seconds
-const bool devMode = true; // Enable development mode
+const byte measurementsBeforePublishing = 6; // Number of measurements before publishing
+const unsigned long readingInterval = 600; // Reading interval in seconds
+const bool devMode = false; // Enable development mode
 bool mqttConnected = false; // MQTT connection status
 bool confirmationReceived = false; // Confirmation received 
 uint16_t lastPacketId = 0; // Last MQTT packet ID
@@ -192,7 +192,7 @@ bool publishReadings() {
 
 // Read from the BME sensor
 bool readBme() {
-	if (!bme.performReading()) { // try to read from the BME sensor
+	if (!bme.performReading()) { // Try to read from the BME sensor
 		Serial.println("Failed to read from the BME sensor");
 		return false;
 	}
@@ -204,7 +204,7 @@ bool readBme() {
 	gasAvg += bme.gas_resistance;
 	if (devMode) { // Print the readings
 		char tempString[100] = "";
-		sprintf(tempString, "Temperature: %.2f *C, Pressure: %.2f hPa, Humidity: %.2f %%, Gas: %.2f Ohms", bme.temperature, bme.pressure, bme.humidity, bme.gas_resistance);
+		sprintf(tempString, "Temperature: %.2f *C, Pressure: %lu hPa, Humidity: %.2f %%, Gas: %lu Ohms", bme.temperature, bme.pressure, bme.humidity, bme.gas_resistance);
 		Serial.println(tempString);
 	}
 	return true;
@@ -225,7 +225,7 @@ bool readPms() {
 			pms.sleep(); // Put the sensor to sleep
 			if (devMode) { // Print the readings
 				char tempString[100] = "";
-				sprintf(tempString, "PM1: %d, PM2.5: %d, PM10: %d", data.PM_AE_UG_1_0, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0);
+				sprintf(tempString, "PM1: %u, PM2.5: %u, PM10: %u", data.PM_AE_UG_1_0, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0);
 				Serial.println(tempString);
 			}
 			return true; // Reading was successful
