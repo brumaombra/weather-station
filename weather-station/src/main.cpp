@@ -198,13 +198,13 @@ bool readBme() {
 	}
 
 	// Save the data
-	temperatureAvg += bme.temperature;
-	humidityAvg += bme.humidity;
-	pressureAvg += bme.pressure;
-	gasAvg += bme.gas_resistance;
+	temperatureAvg += bme.temperature; // Temperature in °C
+	humidityAvg += bme.humidity; // Humidity in %
+	pressureAvg += bme.pressure / 100; // Pressure in hPa
+	gasAvg += bme.gas_resistance / 1000; // Gas in kOhms
 	if (devMode) { // Print the readings
 		char tempString[100] = "";
-		sprintf(tempString, "Temperature: %.2f *C, Pressure: %lu hPa, Humidity: %.2f %%, Gas: %lu Ohms", bme.temperature, bme.pressure, bme.humidity, bme.gas_resistance);
+		sprintf(tempString, "Temperature: %.2f *C, Pressure: %lu hPa, Humidity: %.2f %%, Gas: %lu Ohms", bme.temperature, bme.pressure / 100, bme.humidity, bme.gas_resistance / 1000);
 		Serial.println(tempString);
 	}
 	return true;
