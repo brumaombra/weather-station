@@ -269,12 +269,12 @@ init(); // Call init function
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
                                     <div class="px-4 py-3 text-center">
-                                        <i class="fa-regular fa-pen-to-square custom-grey-2-text text-lg cursor-pointer" data-hs-overlay="#editModal" @click="saveItemReference(item)"></i>
+                                        <i class="fa-regular fa-pen-to-square text-lg cursor-pointer text-gray-500" data-hs-overlay="#editModal" @click="saveItemReference(item)"></i>
                                     </div>
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
                                     <div class="px-4 py-3 text-center">
-                                        <i class="fa-regular fa-trash-can custom-red-text text-lg cursor-pointer" data-hs-overlay="#confirmDeleteModal" @click="saveItemReference(item)"></i>
+                                        <i class="fa-regular fa-trash-can text-lg cursor-pointer text-red-500" data-hs-overlay="#confirmDeleteModal" @click="saveItemReference(item)"></i>
                                     </div>
                                 </td>
                             </tr>

@@ -13,13 +13,13 @@ import GlobalStore from '@/stores/global.js';
                 <div class="p-4 sm:p-10 overflow-y-auto">
                     <div class="flex gap-x-4 md:gap-x-7">
                         <!-- Error icon -->
-                        <span v-if="GlobalStore.dialog.type === 'error'" class="flex-shrink-0 inline-flex justify-center items-center size-[46px] sm:w-[62px] sm:h-[62px] rounded-full border-4 border-red-50 bg-red-100 text-red-500 flex justify-center items-center">
-                            <i class="fa-solid fa-circle-exclamation custom-red-text text-xl" ></i>
+                        <span v-if="GlobalStore.dialog.type === 'error'" class="flex-shrink-0 inline-flex justify-center items-center size-[46px] sm:w-[62px] sm:h-[62px] rounded-full border-4 border-red-50 bg-red-100 text-red-500">
+                            <i class="fa-solid fa-circle-exclamation text-red-500 text-xl" ></i>
                         </span>
 
                         <!-- Success icon -->
-                        <span v-if="GlobalStore.dialog.type === 'success'" class="flex-shrink-0 inline-flex justify-center items-center size-[46px] sm:w-[62px] sm:h-[62px] rounded-full border-4 border-green-50 bg-green-100 text-green-500 flex justify-center items-center">
-                            <i class="fa-solid fa-circle-check text-success text-xl"></i>
+                        <span v-if="GlobalStore.dialog.type === 'success'" class="flex-shrink-0 inline-flex justify-center items-center size-[46px] sm:w-[62px] sm:h-[62px] rounded-full border-4 border-green-50 bg-green-100 text-green-500">
+                            <i class="fa-solid fa-circle-check text-green-500 text-xl"></i>
                         </span>
 
                         <!-- Text -->

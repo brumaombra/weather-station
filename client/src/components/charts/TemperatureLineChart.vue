@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, watch } from 'vue';
 import { formatTimestampChart } from '@/utils/formatter.js';
+import { getPercentageDifference } from '@/utils/utils.js';
 import LineChartOptions from '@/stores/chartConfigs/lineChart.js';
 
 // Props
@@ -10,6 +11,7 @@ const props = defineProps({
 
 // Chart data
 const options = LineChartOptions;
+let percentage = 0; // Percentage difference
 
 // Create the chart
 const createChart = () => {
@@ -32,6 +34,9 @@ const createChart = () => {
         name: 'Min',
         data: min
     }];
+
+    // Calculate the difference
+    percentage = getPercentageDifference(measurements[0]?.temperatureAvg, measurements[measurements.length - 1]?.temperatureAvg);
 };
 
 // On mounted event
@@ -50,12 +55,14 @@ watch(() => props.measurementsList, () => {
         <!-- Header -->
         <div class="flex justify-between items-center mb-3">
             <div>
-                <h2 class="text-sm text-gray-500 dark:text-neutral-500 mb-2">Temperature</h2>
-                <p class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">21.0 °C</p>
+                <h2 class="text-sm text-gray-500 dark:text-neutral-500">Temperature</h2>
             </div>
             <div>
-                <span class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-teal-100 text-teal-800 dark:bg-teal-500/10 dark:text-teal-500">
-                    <i class="fa-solid fa-arrow-up-long"></i>25%
+                <span v-if="percentage >= 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-teal-100 text-teal-800 dark:bg-teal-500/10 dark:text-teal-500">
+                    <i class="fa-solid fa-arrow-up"></i>{{ Math.abs(percentage) }} %
+                </span>
+                <span v-if="percentage < 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-red-100 text-red-900 dark:bg-red-800 dark:text-red-100">
+                    <i class="fa-solid fa-arrow-down"></i>{{ Math.abs(percentage) }} %
                 </span>
             </div>
         </div>

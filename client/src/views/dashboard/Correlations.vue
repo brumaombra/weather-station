@@ -71,7 +71,7 @@ const handleApplyFilterPress = () => {
     loadMeasurements(); // Load measurements
 };
 
-// Add the events to the select components
+/* Add the events to the select components
 const addSelectEvents = async() => {
     const { HSSelect } = await import("preline/preline");
     const periodSelect = HSSelect.getInstance("#periodSelect");
@@ -80,12 +80,13 @@ const addSelectEvents = async() => {
         handlePeriodChange(); // Fire event
     });
 };
+*/
 
 // Init function
 const init = () => {
     if (viewModel.initDone) return; // If already done, exit
     viewModel.initDone = true; // Mark as executed
-    addSelectEvents(); // Add the events to the select components
+    // addSelectEvents(); // Add the events to the select components
     addFilterDatesFromPeriod(); // Add the filter dates from the selected period
     loadMeasurements(); // Load the measurements
 };
@@ -108,7 +109,7 @@ init(); // Call init function
                 <i class="fa-solid fa-filter fs-5"></i>Filter
             </button>
 
-            <!-- Periods select -->
+            <!-- Periods select
             <select id="periodSelect" class="hidden" data-hs-select='{
                 "placeholder": "Select option...",
                 "toggleTag": "<button type=\"button\" class=\"w-[135px]\"></button>",
@@ -118,6 +119,14 @@ init(); // Call init function
                 "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"hidden hs-selected:block\"><svg class=\"flex-shrink-0 size-3.5 text-blue-600 dark:text-blue-500\" xmlns=\"http:.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"/></svg></span></div>",
                 "extraMarkup": "<div class=\"absolute top-1/2 end-3 -translate-y-1/2\"><svg class=\"flex-shrink-0 size-3.5 text-gray-500 dark:text-neutral-500\" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 15 5 5 5-5\"/><path d=\"m7 9 5-5 5 5\"/></svg></div>"
                 }'>
+                <option value="D">Last day</option>
+                <option value="W">Last week</option>
+                <option value="M">Last month</option>
+                <option value="Y">Last year</option>
+            </select> -->
+
+            <!-- Periods select -->
+            <select v-model="viewModel.periodSelect" @change="handlePeriodChange" class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
                 <option value="D">Last day</option>
                 <option value="W">Last week</option>
                 <option value="M">Last month</option>
