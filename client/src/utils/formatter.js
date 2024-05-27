@@ -31,6 +31,7 @@ export const formatDecimal = (number, decimal) => {
 
 // Format number to K, M, B
 export const formatUnitNumber = num => {
+    if (typeof num !== 'number') return; // If no data, exit
     if (num >= 1e9) {
         return (num / 1e9).toFixed(1) + 'B';
     } if (num >= 1e6) {

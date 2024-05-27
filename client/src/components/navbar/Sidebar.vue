@@ -11,6 +11,11 @@
         <nav class="hs-accordion-group p-6 w-full flex flex-col flex-wrap" data-hs-accordion-always-open>
             <ul class="space-y-1.5">
                 <li>
+					<router-link to="/dashboard/snapshot" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100" active-class="bg-gray-100">
+                        <i class="fa-solid fa-camera text-base"></i>Snapshot
+					</router-link>
+				</li>
+                <li>
 					<router-link to="/dashboard/measurements" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100" active-class="bg-gray-100">
 						<i class="fa-solid fa-table text-base"></i>Measurements
 					</router-link>

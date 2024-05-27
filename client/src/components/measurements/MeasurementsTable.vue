@@ -167,7 +167,7 @@ init(); // Call init function
                                 <button type="button" v-if="viewModel.selectedElements.length > 0" data-hs-overlay="#confirmMassDeleteModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-700 disabled:opacity-50 disabled:pointer-events-none">
                                     <i class="fa-regular fa-trash-can"></i>Delete {{ viewModel.selectedElements.length }} items
                                 </button>
-                                <button id="testXXX" type="button" data-hs-overlay="#filterModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                                <button type="button" data-hs-overlay="#filterModal" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
                                     <i class="fa-solid fa-filter"></i>Filter
                                 </button>
                                 <button type="button" @click="handleRefreshPress()" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
