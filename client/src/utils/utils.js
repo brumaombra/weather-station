@@ -2,6 +2,11 @@ import GlobalStore from '@/stores/global.js';
 
 const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://bruma.cloud:3000';
 
+// Clone an object
+export const cloneObject = obj => {
+    return JSON.parse(JSON.stringify(obj));
+};
+
 // Set the busy state of the app
 export const setBusy = busy => {
     if (GlobalStore.busy === busy) return; // Exit if it's already equal

@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, reactive } from 'vue';
+import { cloneObject } from '@/utils/utils.js';
 import ScatterChartOptions from '@/stores/chartConfigs/scatterChart.js';
 
 // Props
@@ -8,7 +9,7 @@ const props = defineProps({
 });
 
 // Chart options
-const options = ScatterChartOptions;
+const options = reactive(cloneObject(ScatterChartOptions));
 
 // Create the chart
 const createChart = () => {

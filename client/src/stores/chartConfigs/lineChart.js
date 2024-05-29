@@ -12,7 +12,7 @@ export default {
         }
     }, colors: ['#20bf6b', '#dc3545', '#0d6efd'],
     legend: {
-        show: false
+        show: true
     }, dataLabels: {
         enabled: false
     }, stroke: {
@@ -41,18 +41,19 @@ export default {
                 fontSize: '13px',
                 fontFamily: 'Inter, ui-sans-serif',
                 fontWeight: 400
-            }, formatter: title => {
+            }, formatter: title => { // It doesn't work :|
                 return title;
             }
         }
     }, yaxis: {
+        decimalsInFloat: 1,
         labels: {
             style: {
                 colors: '#9ca3af',
                 fontSize: '13px',
                 fontFamily: 'Inter, ui-sans-serif',
                 fontWeight: 400
-            }, formatter: val => {
+            }, formatter: val => { // It doesn't work :|
                 return formatUnitNumber(val);
             }
         }

@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, reactive } from 'vue';
 import { formatTimestampChart } from '@/utils/formatter.js';
-import { getPercentageDifference } from '@/utils/utils.js';
+import { getPercentageDifference, cloneObject } from '@/utils/utils.js';
 import LineChartOptions from '@/stores/chartConfigs/lineChart.js';
 
 // Props
@@ -10,7 +10,7 @@ const props = defineProps({
 });
 
 // Chart data
-const options = LineChartOptions;
+const options = reactive(cloneObject(LineChartOptions));
 let percentage = 0; // Percentage difference
 
 // Create the chart
