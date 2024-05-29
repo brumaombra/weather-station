@@ -22,16 +22,18 @@ export const formatJsDateToIsoStringDate = (date, includeTime) => {
     return includeTime ? date.toISOString() : date.toISOString().split('T')[0]; // Format date as a string
 };
 
-// Decimal formatter
+/* Decimal formatter
 export const formatDecimal = (number, decimal) => {
     if (typeof number !== 'number') return; // If no data, exit
     const decimals = typeof number === 'number' ? decimal : 2;
     return number.toFixed(decimals); // Round number
 };
+*/
 
 // Format number to K, M, B
-export const formatUnitNumber = num => {
+export const formatUnitNumber = (num, decimal) => {
     if (typeof num !== 'number') return; // If no data, exit
+    const decimals = typeof num === 'number' ? decimal : 2;
     if (num >= 1e9) {
         return (num / 1e9).toFixed(1) + 'B';
     } if (num >= 1e6) {
@@ -39,6 +41,6 @@ export const formatUnitNumber = num => {
     } else if (num >= 1e3) {
         return (num / 1e3).toFixed(1) + 'k';
     } else {
-        return num.toFixed(1);
+        return num.toFixed(decimals);
     }
 };

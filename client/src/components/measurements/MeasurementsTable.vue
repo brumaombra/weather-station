@@ -5,7 +5,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import GlobalStore from '@/stores/global.js';
 import MeasurementsStore from '@/stores/measurements.js';
 import { setBusy, showMessageDialog, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
-import { formatDecimal, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
+import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
 const viewModel = MeasurementsStore;
@@ -234,37 +234,37 @@ init(); // Call init function
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatUnitNumber(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatUnitNumber(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pressure, 0) }} <span class="font-thin text-xs">hPa</span></span>
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatUnitNumber(item.pressure, 1) }} <span class="font-thin text-xs">hPa</span></span>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.gas, 0) }} <span class="font-thin text-xs">ppm</span></span>
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatUnitNumber(item.gas, 1) }} <span class="font-thin text-xs">kOhm</span></span>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatUnitNumber(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatUnitNumber(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 font-bold">{{ formatDecimal(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        <span class="text-sm text-gray-500 font-bold">{{ formatUnitNumber(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
                                     </div>
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">

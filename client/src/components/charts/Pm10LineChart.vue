@@ -58,7 +58,7 @@ watch(() => props.measurementsList, () => {
                 <h2 class="text-sm text-gray-500 dark:text-neutral-500">PM10</h2>
             </div>
             <div>
-                <span v-if="percentage >= 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-teal-100 text-teal-800 dark:bg-teal-500/10 dark:text-teal-500">
+                <span v-if="percentage >= 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100">
                     <i class="fa-solid fa-arrow-up"></i>{{ Math.abs(percentage) }} %
                 </span>
                 <span v-if="percentage < 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-red-100 text-red-900 dark:bg-red-800 dark:text-red-100">

@@ -174,11 +174,21 @@ const createQueryGetLastMeasurement = () => {
     return query;
 };
 
+// Create the query to get last week measurement from the database
+const createQueryGetLastWeekMeasurement = () => {
+    const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Get the last week
+    let query = knex('measurements').select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
+    query = query.whereRaw('timestamp <= ?', [lastWeek]); // Add start date
+    console.log(query.toString()); // Log the query
+    return query;
+};
+
 // Get the last measurement from the database
 export const getLastMeasurement = async () => {
     try {
-        const result = await executeQueryWithReconnection(() => createQueryGetLastMeasurement()); // Execute the query
-        return result; // Return the results and the number of results
+        const lastMeasurement = await executeQueryWithReconnection(() => createQueryGetLastMeasurement()); // Execute the query
+        const lastWeekMeasurement = await executeQueryWithReconnection(() => createQueryGetLastWeekMeasurement()); // Execute the query
+        return { ...lastMeasurement, lastWeek: { ...lastWeekMeasurement } };
     } catch (error) {
         const newError = new Error('Error while reading the measurement', { cause: error }); // Save the old error to the stack
         console.error(newError); // Log the error
