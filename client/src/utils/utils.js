@@ -2,6 +2,11 @@ import GlobalStore from '@/stores/global.js';
 
 const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://bruma.cloud:3000';
 
+// Clone an object
+export const cloneObject = obj => {
+    return JSON.parse(JSON.stringify(obj));
+};
+
 // Set the busy state of the app
 export const setBusy = busy => {
     if (GlobalStore.busy === busy) return; // Exit if it's already equal
@@ -19,11 +24,11 @@ export const showToast = (message, type, time) => {
 };
 
 // Show the message dialog
-export const showMessageDialog = (message, type) => {
+export const showMessageDialog = (message, type, title) => {
+    GlobalStore.dialog.title = message;
     GlobalStore.dialog.message = message;
     GlobalStore.dialog.type = type;
-    const modal = new bootstrap.Modal(document.getElementById('globalMessageDialog'));
-    modal.show(); // Open the dialog
+    document.getElementById("globalMessageDialogButton").click();
 };
 
 // Convert days in milliseconds
@@ -41,7 +46,15 @@ export const getMaxAndMinFromDate = date => {
     return { minDate, maxDate };
 };
 
-// Set the size of the chart
+// Get percentage difference between two numbers
+export const getPercentageDifference = (start, end) => {
+    if (typeof start !== 'number' || typeof end !== 'number') return 0; // If no data, exit
+    let percentageDifference = 100 * Math.abs((start - end) / ((start + end) / 2));
+    if (start > end) percentageDifference = 0 - percentageDifference;
+    return percentageDifference.toFixed(0); // Return the percentage difference
+};
+
+/* Set the size of the chart
 export const setResponsiveChartSize = chartId => {
     if (window.innerWidth < 992) { // Only if mobile
         const chartDom = document.getElementById(chartId); // Get the DOM element
@@ -49,9 +62,10 @@ export const setResponsiveChartSize = chartId => {
         chartDom.height = 600; // Set the height of the canvas
     }
 };
+*/
 
 // Login attempt
-export const loginAttempt = async (username, password) => {
+export const loginAttempt = async (username, password, rememberMe) => {
     try {
         const response = await fetch(`${devUrl}/api/login`, {
             method: 'POST',
@@ -60,7 +74,7 @@ export const loginAttempt = async (username, password) => {
         });
         const data = await response.json(); // Get the data
         if (data.status === 'OK') { // Success
-            localStorage.setItem('adminToken', data.token); // Save the token to local storage
+            if (rememberMe) localStorage.setItem('adminToken', data.token); // Save the token to local storage if needed
             GlobalStore.adminToken = data.token; // Set the token in the global store
             return data;
         } else { // Error

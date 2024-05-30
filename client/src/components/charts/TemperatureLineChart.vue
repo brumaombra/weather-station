@@ -1,51 +1,42 @@
 <script setup>
-import { onMounted, watch, defineProps } from 'vue';
-import Chart from 'chart.js/auto';
+import { onMounted, watch, reactive } from 'vue';
 import { formatTimestampChart } from '@/utils/formatter.js';
-import { setResponsiveChartSize } from '@/utils/utils.js';
+import { getPercentageDifference, cloneObject } from '@/utils/utils.js';
+import LineChartOptions from '@/stores/chartConfigs/lineChart.js';
 
 // Props
 const props = defineProps({
     measurementsList: { type: Array, default: [] }
 });
 
-let chart = null; // The chart element
+// Chart data
+const options = reactive(cloneObject(LineChartOptions));
+let percentage = 0; // Percentage difference
 
 // Create the chart
 const createChart = () => {
-    setResponsiveChartSize('temperatureLineChart'); // Set the size of the chart
     const measurements = props.measurementsList || []; // Measurements list
-    const label = measurements.map(item => formatTimestampChart(item.date)); // Label
+    if (measurements.length === 0) return; // Exit if empty
+    const labels = measurements.map(item => formatTimestampChart(item.date)); // Label
     const average = measurements.map(item => item.temperatureAvg); // Average
     const max = measurements.map(item => item.temperatureMax); // Max
     const min = measurements.map(item => item.temperatureMin); // Mix
-    const parameters = { // Chart parameters
-        type: 'line',
-        data: {
-            labels: label,
-            datasets: [{
-                label: 'Average',
-                data: average,
-                borderColor: 'rgb(32, 191, 107)',
-                tension: 0.5
-            }, {
-                label: 'Max',
-                data: max,
-                borderColor: 'rgb(220, 53, 69, 0.2)',
-                tension: 0.5
-            }, {
-                label: 'Min',
-                data: min,
-                borderColor: 'rgb(13, 110, 253, 0.2)',
-                tension: 0.5
-            }]
-        }
-    };
 
-    // Create chart
-    const chartDom = document.getElementById('temperatureLineChart'); // Get the DOM element
-    if (chart) chart.destroy(); // Destroy the current chart
-    chart = new Chart(chartDom, parameters); // Create the chart
+    // Set chart data
+    options.xaxis.categories = labels;
+    options.series = [{
+        name: 'Average',
+        data: average
+    }, {
+        name: 'Max',
+        data: max
+    }, {
+        name: 'Min',
+        data: min
+    }];
+
+    // Calculate the difference
+    percentage = getPercentageDifference(measurements[0]?.temperatureAvg, measurements[measurements.length - 1]?.temperatureAvg);
 };
 
 // On mounted event
@@ -60,6 +51,25 @@ watch(() => props.measurementsList, () => {
 </script>
 
 <template>
-    <h3 class="mb-4 ms-3"><i class="fa-solid fa-temperature-half me-3 custom-red-text"></i>Temperature</h3>
-    <canvas id="temperatureLineChart"></canvas>
+    <div class="p-4 md:p-5 min-h-[410px] flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-3">
+            <div>
+                <h2 class="text-sm text-gray-500 dark:text-neutral-500">Temperature</h2>
+            </div>
+            <div>
+                <span v-if="percentage >= 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100">
+                    <i class="fa-solid fa-arrow-up"></i>{{ Math.abs(percentage) }} %
+                </span>
+                <span v-if="percentage < 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-red-100 text-red-900 dark:bg-red-800 dark:text-red-100">
+                    <i class="fa-solid fa-arrow-down"></i>{{ Math.abs(percentage) }} %
+                </span>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div>
+            <apexchart type="line" :options="options" :series="options.series"></apexchart>
+        </div>
+    </div>
 </template>

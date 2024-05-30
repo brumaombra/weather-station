@@ -1,24 +1,40 @@
 <script setup>
-import GlobalStore from '@/stores/global.js';
+import GlobalStore from '@/stores/global.js'; 
 </script>
 
 <template>
-    <div id="globalMessageDialog" class="modal fade" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">
-                        <i class="fa-solid fa-circle-check me-2 text-success" v-if="GlobalStore.dialog.type === 'success'"></i>
-                        <i class="fa-solid fa-circle-exclamation me-2 custom-red-text" v-if="GlobalStore.dialog.type === 'error'"></i>
-                        {{ GlobalStore.dialog.type === 'success' ? 'Success' : 'Error' }}
-                    </h1>
+    <!-- Invisible button -->
+    <button id="globalMessageDialogButton" type="button" data-hs-overlay="#globalMessageDialog" class="hidden"></button>
+
+    <!-- Modal -->
+    <div id="globalMessageDialog" class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto">
+        <div class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all md:max-w-2xl md:w-full m-3 md:mx-auto">
+            <div class="relative flex flex-col bg-white border shadow-sm rounded-xl overflow-hidden">
+                <div class="p-4 sm:p-10 overflow-y-auto">
+                    <div class="flex gap-x-4 md:gap-x-7">
+                        <!-- Error icon -->
+                        <span v-if="GlobalStore.dialog.type === 'error'" class="flex-shrink-0 inline-flex justify-center items-center size-[46px] sm:w-[62px] sm:h-[62px] rounded-full border-4 border-red-50 bg-red-100 text-red-500">
+                            <i class="fa-solid fa-circle-exclamation text-red-500 text-xl" ></i>
+                        </span>
+
+                        <!-- Success icon -->
+                        <span v-if="GlobalStore.dialog.type === 'success'" class="flex-shrink-0 inline-flex justify-center items-center size-[46px] sm:w-[62px] sm:h-[62px] rounded-full border-4 border-green-50 bg-green-100 text-green-500">
+                            <i class="fa-solid fa-circle-check text-green-500 text-xl"></i>
+                        </span>
+
+                        <!-- Text -->
+                        <div class="grow">
+                            <h3 class="mb-2 text-xl font-bold text-gray-800">{{ GlobalStore.dialog.title }}</h3>
+                            <p class="text-gray-500">{{ GlobalStore.dialog.message }}</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p class="mb-0">{{ GlobalStore.dialog.message }}</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" v-if="GlobalStore.dialog.type === 'success'">CLOSE</button>
-                    <button type="button" class="btn custom-red-background" data-bs-dismiss="modal" v-if="GlobalStore.dialog.type === 'error'">CLOSE</button>
+
+                <!-- Footer -->
+                <div class="flex justify-end items-center gap-x-2 py-3 px-4 bg-gray-50 border-t">
+                    <button type="button" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none" data-hs-overlay="#globalMessageDialog">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
