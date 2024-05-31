@@ -32,7 +32,7 @@ watch(() => props.lastMeasurement, () => {
 
 <template>
     <!-- Grid -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 		<!-- Card temperature -->
 		<div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
 			<div class="p-4 md:p-5 flex gap-x-4 items-center">

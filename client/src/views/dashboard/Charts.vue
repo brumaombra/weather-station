@@ -106,9 +106,9 @@ init(); // Call init function
 
 <template>
     <!-- Header -->
-    <div class="flex justify-between items-center mb-5">
+    <div class="md:flex justify-between items-center mb-5">
         <!-- Left -->
-        <div>
+        <div class="mb-3 md:mb-0">
             <h2 class="font-bold text-2xl">Charts<i class="fa-solid fa-chart-line text-xl ms-3"></i></h2>
         </div>
 
