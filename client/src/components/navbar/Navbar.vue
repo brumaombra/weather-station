@@ -3,18 +3,18 @@ import ProfileAvatar from '@/components/navbar/ProfileAvatar.vue';
 </script>
 
 <template>
-    <header class="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white border-b text-sm py-2.5 sm:py-4 lg:ps-64">
+    <header class="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white border-b text-sm py-2.5 sm:py-4 lg:ps-64 dark:bg-neutral-800 dark:border-neutral-500">
         <nav class="flex basis-full items-center w-full mx-auto px-4 sm:px-6">
             <div class="me-5 lg:me-0 lg:hidden">
                 <div class="flex items-center">
                     <!-- Hamburger -->
-                    <button type="button" class="py-1 px-3 flex justify-center items-center me-4 gap-x-1.5 text-xs rounded-lg border border-gray-200 bg-white text-gray-400 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800" data-hs-overlay="#application-sidebar" aria-controls="application-sidebar" aria-label="Sidebar">
+                    <button type="button" data-hs-overlay="#application-sidebar" class="py-1 px-3 flex justify-center items-center me-4 gap-x-1.5 text-xs rounded-lg border border-gray-200 bg-white text-gray-400 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-neutral-700 dark:text-neutral-200">
                         <i class="fa-solid fa-bars text-base"></i>
                     </button>
 
                     <!-- Logo -->
-                    <div class="flex items-center justify-center text-xl font-bold whitespace-nowrap">
-                        Weather Station<i class="fa-solid fa-cloud-sun-rain ms-2 fs-4 text-blue-600"></i>
+                    <div class="flex items-center justify-center text-xl font-bold whitespace-nowrap dark:text-neutral-200">
+                        Weather Station<i class="fa-solid fa-cloud-sun-rain ms-2 text-blue-600"></i>
                     </div>
                 </div>
             </div>

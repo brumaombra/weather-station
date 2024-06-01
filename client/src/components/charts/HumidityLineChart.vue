@@ -51,11 +51,11 @@ watch(() => props.measurementsList, () => {
 </script>
 
 <template>
-    <div class="p-4 md:p-5 flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
+    <div class="p-4 md:p-5 flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-500">
         <!-- Header -->
         <div class="flex justify-between items-center mb-3">
             <div>
-                <h2 class="text-sm text-gray-500 dark:text-neutral-500">Humidity</h2>
+                <h2 class="text-sm text-gray-500 dark:text-neutral-200">Humidity</h2>
             </div>
             <div>
                 <span v-if="percentage >= 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100">
