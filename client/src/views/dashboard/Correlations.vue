@@ -96,16 +96,16 @@ init(); // Call init function
 
 <template>
     <!-- Header -->
-    <div class="flex justify-between items-center mb-5">
+    <div class="md:flex justify-between items-center mb-5">
         <!-- Left -->
-        <div>
-            <h2 class="font-bold text-2xl">Correlations<i class="fa-solid fa-magnifying-glass-chart text-xl ms-3"></i></h2>
+        <div class="mb-3 md:mb-0">
+            <h2 class="font-bold text-2xl dark:text-neutral-200">Correlations<i class="fa-solid fa-magnifying-glass-chart text-xl ms-3"></i></h2>
         </div>
 
         <!-- Right -->
         <div class="flex items-center">
             <!-- Button filter modal -->
-            <button type="button" data-hs-overlay="#filterModal" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 me-2">
+            <button type="button" data-hs-overlay="#filterModal" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-500 dark:text-neutral-200 dark:hover:bg-neutral-700 me-2">
                 <i class="fa-solid fa-filter fs-5"></i>Filter
             </button>
 
@@ -126,7 +126,7 @@ init(); // Call init function
             </select> -->
 
             <!-- Periods select -->
-            <select v-model="viewModel.periodSelect" @change="handlePeriodChange" class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+            <select v-model="viewModel.periodSelect" @change="handlePeriodChange" class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-500 dark:text-neutral-200">
                 <option value="D">Last day</option>
                 <option value="W">Last week</option>
                 <option value="M">Last month</option>
@@ -137,7 +137,7 @@ init(); // Call init function
 
 	<!-- Charts -->
 	<div>
-		<h5 class="font-bold mb-3">Charts</h5>
+		<h5 class="font-bold mb-3 dark:text-neutral-200">Charts</h5>
 		<div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
 			<!-- Temperature/PM1 chart -->
 			<TempPm1ScatterChart :measurementsList="viewModel.measurementsList?.results" />

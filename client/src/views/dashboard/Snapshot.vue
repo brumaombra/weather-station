@@ -78,25 +78,25 @@ init(); // Call init function
     <!-- Header -->
     <div class="flex justify-between items-center mb-5">
         <div>
-            <h2 class="font-bold text-2xl">Snapshot<i class="fa-solid fa-camera text-xl ms-3"></i></h2>
+            <h2 class="font-bold text-2xl dark:text-neutral-200">Snapshot<i class="fa-solid fa-camera text-xl ms-3"></i></h2>
         </div>
     </div>
 
     <!-- Real-time data cards -->
 	<div class="mb-6">
-        <h5 class="font-bold mb-3">Real-time data</h5>
+        <h5 class="font-bold mb-3 dark:text-neutral-200">Real-time data</h5>
 		<CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
 	</div>
 
     <!-- Measurements table -->
 	<div class="mb-6">
-        <h5 class="font-bold mb-3">Measurements list</h5>
+        <h5 class="font-bold mb-3 dark:text-neutral-200">Measurements list</h5>
 		<MeasurementsTable :measurementsList="viewModel.measurementsListTable" />
 	</div>
 
     <!-- Charts -->
 	<div class="mb-6">
-		<h5 class="font-bold mb-3">Charts</h5>
+		<h5 class="font-bold mb-3 dark:text-neutral-200">Charts</h5>
 		<div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
 			<!-- Temperature chart -->
 			<TemperatureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
@@ -114,7 +114,7 @@ init(); // Call init function
 
     <!-- Correlations -->
 	<div>
-		<h5 class="font-bold mb-3">Correlations</h5>
+		<h5 class="font-bold mb-3 dark:text-neutral-200">Correlations</h5>
 		<div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
             <!-- Temperature/humidity chart -->
             <TempHumScatterChart :measurementsList="viewModel.measurementsList?.results" />

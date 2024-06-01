@@ -48,6 +48,7 @@ export default {
     }, yaxis: {
         decimalsInFloat: 1,
         labels: {
+            align: 'left',
             style: {
                 colors: '#9ca3af',
                 fontSize: '13px',
@@ -58,31 +59,32 @@ export default {
             }
         }
     }, responsive: [{
-        breakpoint: 568,
+        breakpoint: 640,
         options: {
             chart: {
                 height: 300
             }, labels: {
+                offsetX: -2,
                 style: {
                     colors: '#9ca3af',
                     fontSize: '11px',
                     fontFamily: 'Inter, ui-sans-serif',
                     fontWeight: 400
-                },
-                offsetX: -2,
-                formatter: (title) => title.slice(0, 3)
+                }, formatter: title => { // It doesn't work :|
+                    return title;
+                }
             }, yaxis: {
+                decimalsInFloat: 1,
                 labels: {
                     align: 'left',
-                    minWidth: 0,
-                    maxWidth: 140,
                     style: {
                         colors: '#9ca3af',
                         fontSize: '11px',
                         fontFamily: 'Inter, ui-sans-serif',
                         fontWeight: 400
-                    },
-                    formatter: (value) => value >= 1000 ? `${value / 1000}k` : value
+                    }, formatter: val => { // It doesn't work :|
+                        return formatUnitNumber(val);
+                    }
                 }
             }
         }

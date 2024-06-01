@@ -4,7 +4,7 @@
         <header class="mb-auto flex justify-center z-50 w-full mt-7">
             <!-- Logo -->
             <div class="flex items-center justify-center text-3xl font-bold text-gray-600">
-                Weather Station<i class="fa-solid fa-cloud-sun-rain ms-2 fs-4 text-blue-600"></i>
+                Weather Station<i class="fa-solid fa-cloud-sun-rain ms-2 text-blue-600"></i>
             </div>
         </header>
 
