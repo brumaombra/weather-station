@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken';
 import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getLastMeasurement, getUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
 import { createTempHumCorrelationData } from '../ml/temperatureHumidity.js';
-import { trainTimeTempModel } from '../ml/timeTemperature.js';
+import { trainModel } from '../ml/anomalyDetection.js';
 dotenv.config(); // Load the .env file
 
 const app = express();
@@ -89,7 +89,7 @@ app.get('/api/aggregatedMeasurements', async (req, res) => {
 // Get the last measurement
 app.get('/api/lastMeasurement', async (req, res) => {
     try {
-        // await trainTimeTempModel();
+        // await trainModel();
         const measurement = await getLastMeasurement(); // Get the last measurement from the database
         res.json({ status: 'OK', data: measurement }); // Send the response
     } catch (error) {

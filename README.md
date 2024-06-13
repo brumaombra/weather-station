@@ -16,13 +16,13 @@ Here's some pictures:
 
 ## The Web Interface
 
-![The snapshot section of the dashboard](./documents/weather_station_snapshot_section.png)
+![The snapshot section of the dashboard](./docs/weather_station_snapshot_section.png)
 
-![The correlations section of the dashboard](./documents/weather_station_correlations_section.png)
+![The correlations section of the dashboard](./docs/weather_station_correlations_section.png)
 
 ## The Weather Station Prototype
 
-![The weather station prototype](./documents/weather_station_prototype.jpg)
+![The weather station prototype](./docs/weather_station_prototype.jpg)
 
 # Technologies
 
