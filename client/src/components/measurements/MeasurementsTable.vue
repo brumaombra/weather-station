@@ -234,37 +234,79 @@ init(); // Call init function
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
+                                        <div v-if="item.temperatureAnomaly === 0">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
+                                        </div>
+                                        <div v-if="item.temperatureAnomaly === 1">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
+                                        <div v-if="item.humidityAnomaly === 0">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
+                                        </div>
+                                        <div v-if="item.humidityAnomaly === 1">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pressure, 1) }} <span class="font-thin text-xs">hPa</span></span>
+                                        <div v-if="item.pressureAnomaly === 0">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pressure, 1) }} <span class="font-thin text-xs">hPa</span></span>
+                                        </div>
+                                        <div v-if="item.pressureAnomaly === 1">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pressure, 1) }} <span class="font-thin text-xs">hPa</span></span>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.gas, 1) }} <span class="font-thin text-xs">kOhm</span></span>
+                                        <div v-if="item.gasAnomaly === 0">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.gas, 1) }} <span class="font-thin text-xs">kOhm</span></span>
+                                        </div>
+                                        <div v-if="item.gasAnomaly === 1">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.gas, 1) }} <span class="font-thin text-xs">kOhm</span></span>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        <div v-if="item.pm1Anomaly === 0">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        </div>
+                                        <div v-if="item.pm1Anomaly === 1">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        <div v-if="item.pm25Anomaly === 0">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        </div>
+                                        <div v-if="item.pm25Anomaly === 1">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        <div v-if="item.pm10Anomaly === 0">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                        </div>
+                                        <div v-if="item.pm10Anomaly === 1">
+                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
                                     </div>
                                 </td>
                                 <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">

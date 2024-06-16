@@ -5,6 +5,7 @@ import fs from 'fs';
 import bcrypt from 'bcrypt';
 import { addMeasurement, getMqttUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
+import { anomalyDetection } from '../ml/anomalyDetection.js';
 
 const aedesInstance = aedes();
 
@@ -73,8 +74,10 @@ const addNewMeasurement = async payload => {
         const parsedPayload = JSON.parse(payload); // Parse the JSON data
         const validation = validateNewMeasurementData(parsedPayload); // Validate the data
         if (!validation.isValid) throw new Error('Invalid data'); // Throw an error if the data is invalid
-        await addMeasurement(validation.data); // Add the measurement to the DB
+        const measurement = addAnomalyValues(validation.data); // Add the anomaly data
+        await addMeasurement(measurement); // Add the measurement to the DB
         console.log('New measurement added successfully!'); // Log the success
+        await anomalyDetection(); // Mark the anomalies on the DB
     } catch (error) {
         console.error('Error while adding the measurement!', error); // Log the error
     }

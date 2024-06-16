@@ -1,92 +1,88 @@
-import * as tf from '@tensorflow/tfjs';
-import { getMeasurements } from '../db/sql.js';
+import { getMeasurements, updateMeasurement } from '../db/sql.js';
 
-let trainedModel;
-
-// Create the model
-const createModel = inputShape => {
-    const model = tf.sequential();
-
-    // Encoder and decoder layers
-    model.add(tf.layers.dense({ units: 16, activation: 'relu', inputShape: inputShape }));
-    model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
-    model.add(tf.layers.dense({ units: 4, activation: 'relu' }));
-    model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
-    model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
-    model.add(tf.layers.dense({ units: inputShape, activation: 'tanh' }));
-    return model
+// Mean and standard deviation of every measurement
+const measurementsStats = {
+    temperature: {},
+    humidity: {},
+    pressure: {},
+    gas: {},
+    pm1: {},
+    pm25: {},
+    pm10: {}
 };
 
-// Z-Score normalization
-const zScoreNormalize = tensor => {
-    const mean = tensor.mean();
-    const std = tensor.sub(mean).square().mean().sqrt();
-    const normalizedTensor = tensor.sub(mean).div(std);
-    return normalizedTensor;
+const threshold = 2; // Z-score threshold for anomaly detection
+
+// Calculate the mean and the standard deviation
+const calculateMeanAndStd = values => {
+    const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
+    const std = Math.sqrt(values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / values.length);
+    return { mean, std };
 };
 
-// Format the data
-const formatData = data => {
-    const XData = data.map(item => [ // Format the data
-        item.temperature,
-        item.humidity,
-        item.pressure,
-        item.gas,
-        item.pm1,
-        item.pm25,
-        item.pm10
-    ]);
-
-    // Create the tensor and normalize the data
-    const X = tf.tensor2d(XData);
-    const XNorm = zScoreNormalize(X); // Normalize the data
-    return { XNorm, inputShape: X.shape[1] };
+// Calculate the Z-score
+const calculateZScore = (value, mean, std) => {
+    return (value - mean) / std;
 };
 
-// Split the data into training and test sets
-const spitData = (X, trainPercentage = 0.8) => {
-    const trainSize = Math.floor(X.shape[0] * trainPercentage); // Calculate the training size (80%)
-    const XTrain = X.slice(0, trainSize); // Create the train set
-    const XTest = X.slice(trainSize); // Create the test set
-    return { XTrain, XTest };
+// Check if a measurement is an anomaly
+const isAnomaly = (value, mean, std) => {
+    let zScore = calculateZScore(value, mean, std);
+    return Math.abs(zScore) > threshold;
 };
 
-// Format and split data
-const formatAndSplitData = data => {
-    if (!data) throw new Error('Data not provided');
-    const { XNorm, inputShape } = formatData(data); // Format the data
-    const { XTrain, XTest } = spitData(XNorm, 0.8); // Spit the data
-    return { XTrain, XTest, inputShape: inputShape };
+// Calculate the stats for every feature
+const calculateStats = measurements => {
+    measurementsStats.temperature = calculateMeanAndStd(measurements.map(item => item.temperature));
+    measurementsStats.humidity = calculateMeanAndStd(measurements.map(item => item.humidity));
+    measurementsStats.pressure = calculateMeanAndStd(measurements.map(item => item.pressure));
+    measurementsStats.gas = calculateMeanAndStd(measurements.map(item => item.gas));
+    measurementsStats.pm1 = calculateMeanAndStd(measurements.map(item => item.pm1));
+    measurementsStats.pm25 = calculateMeanAndStd(measurements.map(item => item.pm25));
+    measurementsStats.pm10 = calculateMeanAndStd(measurements.map(item => item.pm10));
 };
 
-// Train the model
-export const trainModel = async () => {
+// Mark the anomalies in the database
+const markAnomalies = async measurements => {
+    let measurement;
+    for (let item of measurements) {
+        measurement = {}; // Start from a clean object
+        measurement.temperatureAnomaly = isAnomaly(item.temperature, measurementsStats.temperature.mean, measurementsStats.temperature.std);
+        measurement.humidityAnomaly = isAnomaly(item.humidity, measurementsStats.humidity.mean, measurementsStats.humidity.std);
+        measurement.pressureAnomaly = isAnomaly(item.pressure, measurementsStats.pressure.mean, measurementsStats.pressure.std);
+        measurement.gasAnomaly = isAnomaly(item.gas, measurementsStats.gas.mean, measurementsStats.gas.std);
+        measurement.pm1Anomaly = isAnomaly(item.pm1, measurementsStats.pm1.mean, measurementsStats.pm1.std);
+        measurement.pm25Anomaly = isAnomaly(item.pm25, measurementsStats.pm25.mean, measurementsStats.pm25.std);
+        measurement.pm10Anomaly = isAnomaly(item.pm10, measurementsStats.pm10.mean, measurementsStats.pm10.std);
+        await updateMeasurement(item.id, measurement); // Update the measurement in the database
+    }
+};
+
+// Execute the anomaly detection batch
+export const anomalyDetection = async () => {
     const measurements = await getMeasurements(); // Get the measurements from the database
-    if (!measurements?.results?.length > 0) throw new Error('Measurements not found'); // Check if the measurements are found
-    const { XTrain, XTest, inputShape } = formatAndSplitData(measurements.results); // Format the training data and the labels
-    const model = createModel(inputShape); // Create the model
-    model.compile({ optimizer: 'adam', loss: 'meanSquaredError', metrics: ['accuracy'] }); // Compile the model
-    await model.fit(XTrain, XTrain, { // Train the model
-        epochs: 25,
-        batchSize: 64,
-        shuffle: false,
-        validationData: [XTest, XTest],
-        callbacks: {
-            onEpochEnd: (epoch, logs) => {
-                console.log(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
-            }
-        }
-    });
-    trainedModel = model; // Save the model
+    if (!measurements?.results?.length > 0) throw new Error('Measurements not found');
+    if (measurements.length % 24 === 0) { // Only every 24 measurements
+        calculateStats(measurements.results); // Calculate the stats for every feature
+        await markAnomalies(measurements.results); // Mark the anomalies in the database
+    }
 };
 
-// Detect the anomaly
-export const detectAnomaly = data => {
-    if (!trainedModel) throw new Error('Model not trained');
-    if (!data) throw new Error('Data not provided');
-    const XTest = formatData(data).XNorm; // Format the data
-    const reconstructed = trainedModel.predict(XTest);
-    const error = tf.losses.meanSquaredError(XTest, reconstructed); // Calculate the mean squared error
-    error.print(); // Print the reconstruction error
-    return error.dataSync()[0]; // Return the first element of the error array
+// Add the anomaly values to the measurement
+export const addAnomalyValues = async measurement => {
+    if (!measurementsStats.temperature?.mean) { // If empty, calculate the stats
+        const measurements = await getMeasurements(); // Get the measurements from the database
+        if (!measurements?.results?.length > 0) return measurement;
+        calculateStats(measurements.results); // Calculate the stats
+    }
+
+    // Add the anomaly values
+    measurement.temperatureAnomaly = isAnomaly(measurement.temperature, measurementsStats.temperature.mean, measurementsStats.temperature.std);
+    measurement.humidityAnomaly = isAnomaly(measurement.humidity, measurementsStats.humidity.mean, measurementsStats.humidity.std);
+    measurement.pressureAnomaly = isAnomaly(measurement.pressure, measurementsStats.pressure.mean, measurementsStats.pressure.std);
+    measurement.gasAnomaly = isAnomaly(measurement.gas, measurementsStats.gas.mean, measurementsStats.gas.std);
+    measurement.pm1Anomaly = isAnomaly(measurement.pm1, measurementsStats.pm1.mean, measurementsStats.pm1.std);
+    measurement.pm25Anomaly = isAnomaly(measurement.pm25, measurementsStats.pm25.mean, measurementsStats.pm25.std);
+    measurement.pm10Anomaly = isAnomaly(measurement.pm10, measurementsStats.pm10.mean, measurementsStats.pm10.std);
+    return measurement;
 };
