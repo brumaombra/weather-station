@@ -2,6 +2,15 @@ import GlobalStore from '@/stores/global.js';
 
 const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://bruma.cloud:3000';
 
+// Custom error class
+export class CustomError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'CustomError';
+        this.isCustom = true;
+    }
+}
+
 // Clone an object
 export const cloneObject = obj => {
     return JSON.parse(JSON.stringify(obj));
@@ -73,17 +82,16 @@ export const loginAttempt = async (username, password, rememberMe) => {
             body: JSON.stringify({ username, password })
         });
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
+        if (response.ok) { // Success
             if (rememberMe) localStorage.setItem('adminToken', data.token); // Save the token to local storage if needed
             GlobalStore.adminToken = data.token; // Set the token in the global store
             return data;
         } else { // Error
-            throw new Error(data.message || 'Error while logging in');
+            throw new CustomError(data.message || 'Error while logging in');
         }
     } catch (error) {
-        const newError = new Error('Error while logging in', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while logging in');
     }
 };
 

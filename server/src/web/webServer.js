@@ -41,16 +41,16 @@ app.post('/api/login', async (req, res) => {
         if (user && await bcrypt.compare(password, user.password)) {
             const secret = process.env.TOKEN_SECRET; // Get the secret from the environment variable
             const token = jwt.sign({ userId: user.id }, secret, { expiresIn: '1h' }); // Create the token
-            res.json({ status: 'OK', token: token }); // Success, send the token
+            res.json({ token: token }); // Success, send the token
         } else {
             const errorMessage = 'Wrong username or password'; // Error message
             console.error(errorMessage); // Log the error
-            res.status(400).json({ status: 'KO', message: errorMessage }); // Send the error message
+            res.status(400).json({ message: errorMessage }); // Send the error message
         }
     } catch (error) {
         const errorMessage = 'Error while logging in';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message
+        res.status(500).json({ message: errorMessage }); // Send the error message
     }
 });
 

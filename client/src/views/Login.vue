@@ -16,14 +16,12 @@ const handleLoginPress = async () => {
     if (!username || !password) return; // If no username or password, exit
     try { // Try to log in
         setBusy(true); // Busy on
-        const result = await loginAttempt(username, password, viewModel.rememberMe);
+        await loginAttempt(username, password, viewModel.rememberMe);
         setBusy(false); // Busy off
         window.location.href = '/'; // Redirect
     } catch(error) {
         setBusy(false); // Busy off
-        const newError = new Error('Error while logging in', { cause: error }); // Save the old error to the stack
-        showMessageDialog(newError.message, 'error'); // Show toast
-        throw newError; // Throw the error
+        showMessageDialog(error.message || 'Error while logging in', 'error'); // Show dialog
     }
 };
 </script>
