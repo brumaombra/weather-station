@@ -9,8 +9,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getLastMeasurement, getUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
-import { createTempHumCorrelationData } from '../ml/temperatureHumidity.js';
-import { trainTimeTempModel } from '../ml/timeTemperature.js';
+// import { createTempHumCorrelationData } from '../ml/temperatureHumidity.js';
 dotenv.config(); // Load the .env file
 
 const app = express();
@@ -42,22 +41,22 @@ app.post('/api/login', async (req, res) => {
         if (user && await bcrypt.compare(password, user.password)) {
             const secret = process.env.TOKEN_SECRET; // Get the secret from the environment variable
             const token = jwt.sign({ userId: user.id }, secret, { expiresIn: '1h' }); // Create the token
-            res.json({ status: 'OK', token: token }); // Success, send the token
+            res.json({ token: token }); // Success, send the token
         } else {
             const errorMessage = 'Wrong username or password'; // Error message
             console.error(errorMessage); // Log the error
-            res.status(400).json({ status: 'KO', message: errorMessage }); // Send the error message
+            res.status(400).json({ message: errorMessage }); // Send the error message
         }
     } catch (error) {
         const errorMessage = 'Error while logging in';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message
+        res.status(500).json({ message: errorMessage }); // Send the error message
     }
 });
 
 // Validate the token
 app.get('/api/validateToken', verifyToken, (req, res) => {
-    res.json({ status: 'OK', message: 'Authorized' }); // Return the message
+    res.json({ message: 'Authorized' }); // Return the message
 });
 
 // Get the measurements
@@ -65,11 +64,11 @@ app.get('/api/measurements', async (req, res) => {
     try {
         const params = req.query; // Query parameters
         const measurements = await getMeasurements(params); // Get the measurements from the database
-        res.json({ status: 'OK', data: measurements }); // Send the response
+        res.json(measurements); // Send the response
     } catch (error) {
         const errorMessage = 'Error while reading the measurements';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+        res.status(500).json({ message: errorMessage }); // Send the error message with status
     }
 });
 
@@ -78,24 +77,23 @@ app.get('/api/aggregatedMeasurements', async (req, res) => {
     try {
         const params = req.query; // Query parameters
         const measurements = await getAggregatedDailyMeasurements(params); // Get the measurements from the database
-        res.json({ status: 'OK', data: measurements }); // Send the response
+        res.json(measurements); // Send the response
     } catch (error) {
         const errorMessage = 'Error while reading the measurements';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+        res.status(500).json({ message: errorMessage }); // Send the error message with status
     }
 });
 
 // Get the last measurement
 app.get('/api/lastMeasurement', async (req, res) => {
     try {
-        // await trainTimeTempModel();
         const measurement = await getLastMeasurement(); // Get the last measurement from the database
-        res.json({ status: 'OK', data: measurement }); // Send the response
+        res.json(measurement); // Send the response
     } catch (error) {
         const errorMessage = 'Error while reading the measurement';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+        res.status(500).json({ message: errorMessage }); // Send the error message with status
     }
 });
 
@@ -106,11 +104,11 @@ app.post('/api/measurements', async (req, res) => {
         const validation = validateNewMeasurementData(newMeasurement); // Validate the data
         if (!validation.isValid) return res.status(400).json({ message: 'Invalid data' }); // If the data is invalid, return 400
         const result = await addMeasurement(validation.data); // Add the measurement to the database
-        res.json({ status: 'OK', data: result }); // Send the response
+        res.json(result); // Send the response
     } catch (error) {
         const errorMessage = 'Error while adding the measurement';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+        res.status(500).json({ message: errorMessage }); // Send the error message with status
     }
 });
 
@@ -123,11 +121,11 @@ app.put('/api/measurements/:id', verifyToken, async (req, res) => {
         const validation = validateNewMeasurementData(newMeasurement); // Validate the data
         if (!validation.isValid) return res.status(400).json({ message: 'Invalid data' }); // If the data is invalid, return 400
         const result = await updateMeasurement(id, validation.data); // Add the measurement to the database
-        res.json({ status: 'OK', data: result }); // Send the response
+        res.json(result); // Send the response
     } catch (error) {
         const errorMessage = 'Error while updating the measurement';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+        res.status(500).json({ message: errorMessage }); // Send the error message with status
     }
 });
 
@@ -137,15 +135,15 @@ app.delete('/api/measurements', verifyToken, async (req, res) => {
         const { idList } = req.body; // Get the ID list from the request body
         if (!idList || !Array.isArray(idList) || idList.length === 0) return res.status(400).json({ message: 'Invalid data, expected an array of ids' }); // If not an array, return error
         const result = await deleteMeasurements(idList); // Delete the measurements from the database
-        res.json({ status: 'OK', data: result }); // Send the response
+        res.json(result); // Send the response
     } catch (error) {
         const errorMessage = 'Error while deleting the measurement';
         console.error(errorMessage, error); // Log the error
-        res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
+        res.status(500).json({ message: errorMessage }); // Send the error message with status
     }
 });
 
-// Get the humidity/temperature correlation
+/* Get the humidity/temperature correlation
 app.get('/api/correlation/temperatureHumidity', async (req, res) => {
     try {
         const data = await createTempHumCorrelationData(); // Create the data
@@ -156,6 +154,7 @@ app.get('/api/correlation/temperatureHumidity', async (req, res) => {
         res.status(500).json({ status: 'KO', message: errorMessage }); // Send the error message with status
     }
 });
+*/
 
 // Middleware for handling exceptions and errors globally
 app.use((err, req, res, next) => {

@@ -2,6 +2,15 @@ import GlobalStore from '@/stores/global.js';
 
 const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://bruma.cloud:3000';
 
+// Custom error class
+export class CustomError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'CustomError';
+        this.isCustom = true;
+    }
+}
+
 // Clone an object
 export const cloneObject = obj => {
     return JSON.parse(JSON.stringify(obj));
@@ -54,16 +63,6 @@ export const getPercentageDifference = (start, end) => {
     return percentageDifference.toFixed(0); // Return the percentage difference
 };
 
-/* Set the size of the chart
-export const setResponsiveChartSize = chartId => {
-    if (window.innerWidth < 992) { // Only if mobile
-        const chartDom = document.getElementById(chartId); // Get the DOM element
-        chartDom.width = 800; // Set the width of the canvas
-        chartDom.height = 600; // Set the height of the canvas
-    }
-};
-*/
-
 // Login attempt
 export const loginAttempt = async (username, password, rememberMe) => {
     try {
@@ -73,17 +72,16 @@ export const loginAttempt = async (username, password, rememberMe) => {
             body: JSON.stringify({ username, password })
         });
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
+        if (response.ok) { // Success
             if (rememberMe) localStorage.setItem('adminToken', data.token); // Save the token to local storage if needed
             GlobalStore.adminToken = data.token; // Set the token in the global store
             return data;
         } else { // Error
-            throw new Error(data.message || 'Error while logging in');
+            throw new CustomError(data.message || 'Error while logging in');
         }
     } catch (error) {
-        const newError = new Error('Error while logging in', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while logging in');
     }
 };
 
@@ -102,17 +100,16 @@ export const validateSession = async () => {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
+        if (response.ok) { // Success
             GlobalStore.adminToken = token; // Set the token in the global store
             return data;
         } else { // Error
             logout(); // Logout the user
-            throw new Error(data.message || 'Error while validating the token');
+            throw new CustomError(data.message || 'Error while validating the token');
         }
     } catch (error) {
-        const newError = new Error('Error while validating the token', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while validating the token');
     }
 };
 
@@ -122,15 +119,14 @@ export const getMeasurements = async params => {
         const query = params ? `?${new URLSearchParams(params)}` : ''; // Get the query parameters
         const response = await fetch(`${devUrl}/api/measurements${query}`); // Get the response
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
-            return data.data;
+        if (response.ok) { // Success
+            return data;
         } else { // Error
-            throw new Error(data.message || 'Error while reading the measurements');
+            throw new CustomError(data.message || 'Error while reading the measurements');
         }
     } catch (error) {
-        const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while reading the measurements');
     }
 };
 
@@ -140,15 +136,14 @@ export const getAggregatedMeasurements = async params => {
         const query = params ? `?${new URLSearchParams(params)}` : ''; // Get the query parameters
         const response = await fetch(`${devUrl}/api/aggregatedMeasurements${query}`); // Get the response
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
-            return data.data;
+        if (response.ok) { // Success
+            return data;
         } else { // Error
-            throw new Error(data.message || 'Error while reading the measurements');
+            throw new CustomError(data.message || 'Error while reading the measurements');
         }
     } catch (error) {
-        const newError = new Error('Error while reading the measurements', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while reading the measurements');
     }
 };
 
@@ -157,15 +152,14 @@ export const getLastMeasurement = async () => {
     try {
         const response = await fetch(`${devUrl}/api/lastMeasurement`); // Get the response
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
-            return data.data;
+        if (response.ok) { // Success
+            return data;
         } else { // Error
-            throw new Error(data.message || 'Error while reading the measurement');
+            throw new CustomError(data.message || 'Error while reading the measurement');
         }
     } catch (error) {
-        const newError = new Error('Error while reading the measurement', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while reading the measurement');
     }
 };
 
@@ -179,15 +173,14 @@ export const updateMeasurement = async measurement => {
             body: JSON.stringify(measurement)
         });
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
-            return data.data;
+        if (response.ok) { // Success
+            return data;
         } else { // Error
-            throw new Error(data.message || 'Error while updating the measurements');
+            throw new CustomError(data.message || 'Error while updating the measurement');
         }
     } catch (error) {
-        const newError = new Error('Error while updating the measurements', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while updating the measurement');
     }
 };
 
@@ -200,15 +193,14 @@ export const addMeasurement = async measurement => {
             body: JSON.stringify(measurement)
         });
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
-            return data.data;
+        if (response.ok) { // Success
+            return data;
         } else { // Error
-            throw new Error(data.message || 'Error while adding the measurement');
+            throw new CustomError(data.message || 'Error while adding the measurement');
         }
     } catch (error) {
-        const newError = new Error('Error while adding the measurement', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while adding the measurement');
     }
 };
 
@@ -222,19 +214,18 @@ export const deleteMeasurements = async idList => {
             body: JSON.stringify({ idList: idList })
         });
         const data = await response.json(); // Get the data
-        if (data.status === 'OK') { // Success
-            return data.data;
+        if (response.ok) { // Success
+            return data;
         } else { // Error
-            throw new Error(data.message || 'Error while deleting the measurements');
+            throw new CustomError(data.message || 'Error while deleting the measurement');
         }
     } catch (error) {
-        const newError = new Error('Error while deleting the measurements', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error(error); // Log the error
+        throw error.isCustom ? error : new CustomError('Error while deleting the measurement');
     }
 };
 
-// Get the temperature and humidity correlation data
+/* Get the temperature and humidity correlation data
 export const getTempHumCorrData = async () => {
     try {
         const response = await fetch(`${devUrl}/api/correlation/temperatureHumidity`); // Get the response
@@ -250,3 +241,4 @@ export const getTempHumCorrData = async () => {
         throw newError; // Throw the error
     }
 };
+*/

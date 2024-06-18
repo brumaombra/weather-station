@@ -1,6 +1,4 @@
-This project is deployed on Aruba Cloud. You can check it out at the following address: http://85.235.149.166:3000
-
-Some reminders and tips for Aruba Cloud:
+This project is deployed on Aruba Cloud. Some reminders and tips for Aruba Cloud:
 
 - Choose a VPS that supports IPv4.
 - Install NVM to manage the latest version of Node.js.
