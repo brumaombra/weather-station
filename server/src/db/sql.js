@@ -88,6 +88,8 @@ const createQueryGetMeasurements = params => {
     if (params.offset) query = query.offset(params.offset); // Offset
     if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
+    if (params.measurementType === 'ano') query = query.where('temperatureAnomaly', true).orWhere('humidityAnomaly', true).orWhere('pressureAnomaly', true).orWhere('gasAnomaly', true).orWhere('pm1Anomaly', true).orWhere('pm25Anomaly', true).orWhere('pm10Anomaly', true);
+    if (params.measurementType === 'nor') query = query.where('temperatureAnomaly', false).where('humidityAnomaly', false).where('pressureAnomaly', false).where('gasAnomaly', false).where('pm1Anomaly', false).where('pm25Anomaly', false).where('pm10Anomaly', false);
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -97,6 +99,8 @@ const createQueryGetMeasurementsCount = params => {
     let query = knex('measurements').count('id as count').first(); // Count the number of rows in the measurements table
     if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
+    if (params.measurementType === 'ano') query = query.where('temperatureAnomaly', true).orWhere('humidityAnomaly', true).orWhere('pressureAnomaly', true).orWhere('gasAnomaly', true).orWhere('pm1Anomaly', true).orWhere('pm25Anomaly', true).orWhere('pm10Anomaly', true);
+    if (params.measurementType === 'nor') query = query.where('temperatureAnomaly', false).where('humidityAnomaly', false).where('pressureAnomaly', false).where('gasAnomaly', false).where('pm1Anomaly', false).where('pm25Anomaly', false).where('pm10Anomaly', false);
     console.log(query.toString()); // Log the query
     return query;
 };

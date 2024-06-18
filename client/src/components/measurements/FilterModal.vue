@@ -50,11 +50,21 @@ const emit = defineEmits(['apply']);
                             </div>
 
                             <!-- Order direction -->
-                            <div>
+                            <div class="mb-4 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-neutral-200">Order direction</label>
                                 <select v-model="viewModel.dialogFilter.orderDirection" class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-500 dark:text-neutral-200 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
                                     <option value="asc">Ascending</option>
                                     <option value="desc">Descending</option>
+                                </select>
+                            </div>
+
+                            <!-- Measurements type -->
+                            <div>
+                                <label class="block mb-2 text-sm font-medium dark:text-neutral-200">Measurements type</label>
+                                <select v-model="viewModel.dialogFilter.measurementType" class="py-3 px-4 pe-9 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-500 dark:text-neutral-200 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <option value="all">All</option>
+                                    <option value="ano">Anomalous</option>
+                                    <option value="nor">Normal</option>
                                 </select>
                             </div>
                         </form>

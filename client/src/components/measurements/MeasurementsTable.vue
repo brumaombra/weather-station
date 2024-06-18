@@ -4,7 +4,7 @@ import EditModal from '@/components/measurements/EditModal.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import GlobalStore from '@/stores/global.js';
 import MeasurementsStore from '@/stores/measurements.js';
-import { setBusy, showMessageDialog, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate } from '@/utils/utils.js';
+import { setBusy, showMessageDialog, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate, CustomError } from '@/utils/utils.js';
 import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model
@@ -16,6 +16,7 @@ const loadMeasurements = async () => {
     let params = { // Query parameters
         orderField: viewModel.orderBy || 'timestamp',
         orderDirection: viewModel.orderDirection || 'desc',
+        measurementType: viewModel.measurementType || 'all',
         limit: viewModel.limit, // Extraction limit
         offset: viewModel.offset // Offset for pagination
     };
@@ -23,26 +24,27 @@ const loadMeasurements = async () => {
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
     try { // Try to get the measurements
         const results = await getMeasurements(params); // Get the measurements
-        viewModel.measurementsList = results; // Update the data            
+        viewModel.measurementsList = results; // Update the data
         handleTableSelectionChange(); // Check if selected
         setBusy(false); // Busy off
-    } catch(error) {
+    } catch (error) {
         setBusy(false); // Busy off
-        const newError = new Error('Error while loading the measurements', { cause: error }); // Save the old error to the stack
-        showMessageDialog(newError.message, 'error'); // Show toast
-        throw newError; // Throw the error
+        const customError = error.isCustom ? error.message : 'Error while loading the measurements';
+        showMessageDialog(customError, 'error'); // Show toast
+        throw error.isCustom ? error : new CustomError(customError); // Throw the error
     }
 };
 
 // The filter dialog button "apply"
-const handleApplyFilterPress = () => {
+const handleApplyFilterPress = async () => {
     viewModel.orderBy = viewModel.dialogFilter.orderBy; // Apply order by
     viewModel.orderDirection = viewModel.dialogFilter.orderDirection; // Apply order direction
+    viewModel.measurementType = viewModel.dialogFilter.measurementType; // Apply measurement type
     const startDate = getMaxAndMinFromDate(viewModel.dialogFilter.startDate).minDate; // Get the date at 00:00
     const endDate = getMaxAndMinFromDate(viewModel.dialogFilter.endDate).maxDate; // Get the date at 23:59
     if (startDate) viewModel.startDate = formatJsDateToIsoStringDate(startDate, true); // Apply start date
     if (endDate) viewModel.endDate = formatJsDateToIsoStringDate(endDate, true); // Apply end date
-    loadMeasurements(); // Load measurements
+    await loadMeasurements(); // Load measurements
 };
 
 // Select all table items
@@ -70,14 +72,14 @@ const handleSaveEditPress = async () => {
     delete newData.timestamp; // Remove timestamp
     delete newData.selected; // Remove selected flag
     try { // Try to get the measurements
-        const result = await updateMeasurement(newData); // Update the data
-        loadMeasurements(); // Load the measurements
+        await updateMeasurement(newData); // Update the data
         showMessageDialog('Changes successfully saved!', 'success'); // Show toast
+        await loadMeasurements(); // Load the measurements
     } catch(error) {
         setBusy(false); // Busy off
-        const newError = new Error('Error while saving the changes', { cause: error }); // Save the old error to the stack
-        showMessageDialog(newError.message, 'error'); // Show toast
-        throw newError; // Throw the error
+        const customError = error.isCustom ? error.message : 'Error while saving the changes';
+        showMessageDialog(customError, 'error'); // Show toast
+        throw error.isCustom ? error : new CustomError(customError); // Throw the error
     }
 };
 
@@ -86,20 +88,19 @@ const handleDeleteItemPress = async () => {
     try {
         setBusy(true); // Busy on
         const results = await deleteMeasurements([viewModel.tempMeasurement.id]);
-        loadMeasurements(); // Load the measurements
         showMessageDialog('Measurement deleted successfully!', 'success'); // Show toast
-        setBusy(false); // Busy off
+        await loadMeasurements(); // Load the measurements
     } catch(error) {
         setBusy(false); // Busy off
-        const newError = new Error('Error while deleting the measurement', { cause: error }); // Save the old error to the stack
-        showMessageDialog(newError.message, 'error'); // Show toast
-        throw newError; // Throw the error
+        const customError = error.isCustom ? error.message : 'Error while deleting the measurement';
+        showMessageDialog(customError, 'error'); // Show toast
+        throw error.isCustom ? error : new CustomError(customError); // Throw the error
     }
 };
 
 // Reset button pressed
-const handleRefreshPress = () => {
-    loadMeasurements(); // Load the measurements
+const handleRefreshPress = async () => {
+    await loadMeasurements(); // Load the measurements
 };
 
 // Delete selected button pressed
@@ -108,35 +109,34 @@ const handleMassDeletePress = async () => {
         setBusy(true); // Busy on
         const selectedIds = viewModel.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
         const results = await deleteMeasurements(selectedIds); // Call mass delete
-        loadMeasurements(); // Load the measurements
         showMessageDialog(`${results} measurements deleted successfully!`, 'success'); // Show toast
-        setBusy(false); // Busy off
+        await loadMeasurements(); // Load the measurements
     } catch(error) {
         setBusy(false); // Busy off
-        const newError = new Error('Error while deleting the measurements', { cause: error }); // Save the old error to the stack
-        showMessageDialog(newError.message, 'error'); // Show toast
-        throw newError; // Throw the error
+        const customError = error.isCustom ? error.message : 'Error while deleting the measurements';
+        showMessageDialog(customError, 'error'); // Show toast
+        throw error.isCustom ? error : new CustomError(customError); // Throw the error
     }
 };
 
 // Go to previous page
-const previousPagePress = () => {
+const previousPagePress = async () => {
     viewModel.offset -= viewModel.limit; // Increase offset
     if (viewModel.offset < 0) viewModel.offset = 0; // Force 0 if negative
-    loadMeasurements(); // Load measurements
+    await loadMeasurements(); // Load the measurements
 };
 
 // Go to next page
-const nextPagePress = () => {
+const nextPagePress = async () => {
     if (viewModel.measurementsList?.results?.length >= viewModel.limit) viewModel.offset += viewModel.limit; // Increase
-    loadMeasurements(); // Load measurements
+    await loadMeasurements(); // Load the measurements
 };
 
 // Init function
-const init = () => {
+const init = async () => {
     if (viewModel.initTableDone) return; // If already done, exit
     viewModel.initTableDone = true; // Mark as executed
-    loadMeasurements(); // Load the measurements
+    await loadMeasurements(); // Load the measurements
 };
 
 init(); // Call init function
