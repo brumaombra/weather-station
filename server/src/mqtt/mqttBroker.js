@@ -74,7 +74,7 @@ const addNewMeasurement = async payload => {
         const parsedPayload = JSON.parse(payload); // Parse the JSON data
         const validation = validateNewMeasurementData(parsedPayload); // Validate the data
         if (!validation.isValid) throw new Error('Invalid data'); // Throw an error if the data is invalid
-        const measurement = addAnomalyValues(validation.data); // Add the anomaly data
+        const measurement = await addAnomalyValues(validation.data); // Add the anomaly data
         await addMeasurement(measurement); // Add the measurement to the DB
         console.log('New measurement added successfully!'); // Log the success
         await anomalyDetection(); // Mark the anomalies on the DB
