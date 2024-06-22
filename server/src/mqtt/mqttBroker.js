@@ -5,7 +5,7 @@ import fs from 'fs';
 import bcrypt from 'bcrypt';
 import { addMeasurement, getMqttUser } from '../db/sql.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
-import { anomalyDetection } from '../ml/anomalyDetection.js';
+import { anomalyDetection, addAnomalyValues } from '../ml/anomalyDetection.js';
 
 const aedesInstance = aedes();
 
