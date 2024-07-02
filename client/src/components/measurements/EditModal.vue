@@ -30,45 +30,80 @@ const emit = defineEmits(['save']);
                             </div>
 
                             <!-- Temperature -->
-                            <div class="mb-4 sm:mb-5">
+                            <div class="mb-2 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">Temperature</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.temperature" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <div class="flex">
+                                    <input type="number" v-model="viewModel.tempMeasurement.temperature" class="py-3 px-4 block w-full border border-gray-200 rounded-l-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <span class="px-4 inline-flex items-center min-w-fit rounded-e-lg border border-s-0 border-gray-200 bg-gray-50 text-sm dark:bg-neutral-700 dark:border-neutral-700">
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">°C</span>
+                                    </span>
+                                </div>
                             </div>
 
                             <!-- Humidity -->
-                            <div class="mb-4 sm:mb-5">
+                            <div class="mb-2 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">Humidity</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.humidity" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <div class="flex">
+                                    <input type="number" v-model="viewModel.tempMeasurement.humidity" class="py-3 px-4 block w-full border border-gray-200 rounded-l-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <span class="px-4 inline-flex items-center min-w-fit rounded-e-lg border border-s-0 border-gray-200 bg-gray-50 text-sm dark:bg-neutral-700 dark:border-neutral-700">
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">%</span>
+                                    </span>
+                                </div>
                             </div>
 
                             <!-- Pressure -->
-                            <div class="mb-4 sm:mb-5">
+                            <div class="mb-2 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">Pressure</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.pressure" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <div class="flex">
+                                    <input type="number" v-model="viewModel.tempMeasurement.pressure" class="py-3 px-4 block w-full border border-gray-200 rounded-l-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <span class="px-4 inline-flex items-center min-w-fit rounded-e-lg border border-s-0 border-gray-200 bg-gray-50 text-sm dark:bg-neutral-700 dark:border-neutral-700">
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">hPa</span>
+                                    </span>
+                                </div>
                             </div>
 
                             <!-- Gas -->
-                            <div class="mb-4 sm:mb-5">
+                            <div class="mb-2 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">Gas</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.gas" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <div class="flex">
+                                    <input type="number" v-model="viewModel.tempMeasurement.gas" class="py-3 px-4 block w-full border border-gray-200 rounded-l-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <span class="px-4 inline-flex items-center min-w-fit rounded-e-lg border border-s-0 border-gray-200 bg-gray-50 text-sm dark:bg-neutral-700 dark:border-neutral-700">
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">kOhm</span>
+                                    </span>
+                                </div>
                             </div>
 
                             <!-- PM1 -->
-                            <div class="mb-4 sm:mb-5">
+                            <div class="mb-2 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">PM1</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.pm1" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <div class="flex">
+                                    <input type="number" v-model="viewModel.tempMeasurement.pm1" class="py-3 px-4 block w-full border border-gray-200 rounded-l-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <span class="px-4 inline-flex items-center min-w-fit rounded-e-lg border border-s-0 border-gray-200 bg-gray-50 text-sm dark:bg-neutral-700 dark:border-neutral-700">
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">µg/m³</span>
+                                    </span>
+                                </div>
                             </div>
 
                             <!-- PM2.5 -->
-                            <div class="mb-4 sm:mb-5">
+                            <div class="mb-2 sm:mb-5">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">PM2.5</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.pm25" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <div class="flex">
+                                    <input type="number" v-model="viewModel.tempMeasurement.pm25" class="py-3 px-4 block w-full border border-gray-200 rounded-l-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <span class="px-4 inline-flex items-center min-w-fit rounded-e-lg border border-s-0 border-gray-200 bg-gray-50 text-sm dark:bg-neutral-700 dark:border-neutral-700">
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">µg/m³</span>
+                                    </span>
+                                </div>
                             </div>
-
+                            
                             <!-- PM10 -->
                             <div class="mb-2 sm:mb-2">
                                 <label class="block mb-2 text-sm font-medium dark:text-white">PM10</label>
-                                <input type="number" v-model="viewModel.tempMeasurement.pm10" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                <div class="flex">
+                                    <input type="number" v-model="viewModel.tempMeasurement.pm10" class="py-3 px-4 block w-full border border-gray-200 rounded-l-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <span class="px-4 inline-flex items-center min-w-fit rounded-e-lg border border-s-0 border-gray-200 bg-gray-50 text-sm dark:bg-neutral-700 dark:border-neutral-700">
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">µg/m³</span>
+                                    </span>
+                                </div>
                             </div>
                         </form>
                     </div>
