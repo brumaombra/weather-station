@@ -167,7 +167,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../public', 'index.html'));
 });
 
-// Start the HTTPS server
+/* Start the HTTPS server
 const startHttpsServer = () => {
     const httpsOptions = { // Load the SSL certificate
         key: fs.readFileSync('/etc/letsencrypt/live/bruma.cloud/privkey.pem'),
@@ -179,15 +179,21 @@ const startHttpsServer = () => {
         console.log(`Web server listening on HTTPS port ${port}`);
     });
 };
+*/
 
 // Initialize the web server
 export const initWebServer = () => {
     try {
-        startHttpsServer(); // Start the HTTPS server
-    } catch (error) {
-        console.error('Error while starting the HTTPS server, starting the HTTP server...');
         app.listen(port, () => { // Start the server without HTTPS
             console.log(`Web server listening on port ${port}`);
         });
+        // startHttpsServer(); // Start the HTTPS server
+    } catch (error) {
+        console.error('Error while starting the web server...');
+        /*
+        app.listen(port, () => { // Start the server without HTTPS
+            console.log(`Web server listening on port ${port}`);
+        });
+        */
     }
 };

@@ -1,6 +1,6 @@
 import GlobalStore from '@/stores/global.js';
 
-const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://bruma.cloud:3000';
+const devUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://station.bruma.cloud';
 
 // Custom error class
 export class CustomError extends Error {
