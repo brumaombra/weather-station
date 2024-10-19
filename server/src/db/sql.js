@@ -4,7 +4,7 @@ import { dateIsYesterday } from '../utils/utils.js';
 
 // Load environment variables
 dotenv.config(); // Load the .env file
-if (!process.env.MYSQL_IP) console.error('Error while reading the environment variables');
+if (!process.env.MYSQL_IP || process.env.MYSQL_IP === 'undefined') console.error('Error while reading the environment variables');
 
 let knex; // Declare the global variable for the Knex library
 
