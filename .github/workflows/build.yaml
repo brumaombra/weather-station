@@ -55,7 +55,7 @@ jobs:
       - name: Deploy app via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: ftp.bruma.cloud
+          server: 85.235.149.166
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./  # Local project directory
