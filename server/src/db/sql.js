@@ -21,6 +21,11 @@ export const initMySqlDatabase = async () => {
     try { // Test the connection
         await knex.raw('SELECT 1'); // Execute the query correctly
         console.log('Successfully connected to the database');
+        console.log(`IP: ${process.env.MYSQL_IP}`);
+        console.log(`Port: ${process.env.MYSQL_PORT}`);
+        console.log(`User: ${process.env.MYSQL_USER}`);
+        console.log(`Database: ${process.env.MYSQL_DATABASE_NAME}`);
+        console.log(`Password: ${process.env.MYSQL_PASSWORD}`);
     } catch (error) {
         const newError = new Error('Error while connecting to the database', { cause: error }); // Save the old error to the stack
         console.error(newError); // Log the error
