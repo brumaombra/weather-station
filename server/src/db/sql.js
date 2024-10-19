@@ -1,7 +1,10 @@
 import dotenv from 'dotenv';
 import knexLib from 'knex';
 import { dateIsYesterday } from '../utils/utils.js';
+
+// Load environment variables
 dotenv.config(); // Load the .env file
+if (!process.env.MYSQL_IP) console.error('Error while reading the environment variables');
 
 let knex; // Declare the global variable for the Knex library
 
@@ -23,11 +26,6 @@ export const initMySqlDatabase = async () => {
         console.log('Successfully connected to the database');
     } catch (error) {
         const newError = new Error('Error while connecting to the database', { cause: error }); // Save the old error to the stack
-        console.log(`IP: ${process.env.MYSQL_IP}`);
-        console.log(`Port: ${process.env.MYSQL_PORT}`);
-        console.log(`User: ${process.env.MYSQL_USER}`);
-        console.log(`Database: ${process.env.MYSQL_DATABASE_NAME}`);
-        console.log(`Password: ${process.env.MYSQL_PASSWORD}`);
         console.error(newError); // Log the error
         throw newError; // Throw the error
     }
