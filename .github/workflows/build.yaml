@@ -1,4 +1,4 @@
-name: Build and Deploy App
+name: Build and Deploy App 🚀
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build ⛏
+    name: Build and Deploy ⛏🚀
     runs-on: ubuntu-latest
     steps:
       # Checkout code
@@ -37,29 +37,15 @@ jobs:
       - name: Move dist folder to public
         run: mkdir -p server/public && mv client/dist/* server/public
       
-      # Commit and push Vue.js build
-      - name: Commit and push Vue.js build
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: 'server/public'
-          message: 'Commit Vue.js build'
-          push: true
-          default_author: github_actions
-  
-  deploy:
-    name: Deploy 🚀
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       # Upload files via FTP
       - name: Deploy app via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: 85.235.149.166
+          server: ${{ secrets.SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./  # Local project directory
-          server-dir: ./root/projects/weather-station/
-          protocol: ftp  # Protocol
-          exclude: |
-            .env  # Esclude environmental variables
+          local-dir: ./server/ # Local project directory
+          server-dir: /var/www/weather-station/
+          protocol: ftp # Protocol
+          exclude: | # Exclude files
+            .env
