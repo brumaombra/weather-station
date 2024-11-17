@@ -4,7 +4,8 @@ import EditModal from '@/components/measurements/EditModal.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import GlobalStore from '@/stores/global.js';
 import MeasurementsStore from '@/stores/measurements.js';
-import { setBusy, showMessageDialog, deleteMeasurements, updateMeasurement, getMeasurements, getMaxAndMinFromDate, CustomError } from '@/utils/utils.js';
+import { setBusy, showMessageDialog, getMaxAndMinFromDate, CustomError } from '@/utils/utils.js';
+import { deleteMeasurements, updateMeasurement, getMeasurements } from '@/utils/webRequests.js';
 import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model

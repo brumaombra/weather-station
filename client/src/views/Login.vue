@@ -1,6 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
-import { setBusy, showMessageDialog, loginAttempt } from '@/utils/utils.js';
+import { setBusy, showMessageDialog } from '@/utils/utils.js';
+import { loginAttempt } from '@/utils/webRequests.js';
 
 // View model
 const viewModel = reactive({
@@ -19,7 +20,7 @@ const handleLoginPress = async () => {
         await loginAttempt(username, password, viewModel.rememberMe);
         setBusy(false); // Busy off
         window.location.href = '/'; // Redirect
-    } catch(error) {
+    } catch (error) {
         setBusy(false); // Busy off
         showMessageDialog(error.message || 'Error while logging in', 'error'); // Show dialog
     }
@@ -39,12 +40,15 @@ const handleLoginPress = async () => {
         <div class="w-full max-w-md mx-auto mt-9">
             <div>
                 <!-- Card -->
-                <div class="bg-white md:rounded-xl md:border md:border-gray-200 md:shadow-sm dark:bg-neutral-800 dark:border-none">
+                <div
+                    class="bg-white md:rounded-xl md:border md:border-gray-200 md:shadow-sm dark:bg-neutral-800 dark:border-none">
                     <div class="p-4 sm:p-7">
                         <!-- Title -->
                         <div class="text-center">
-                            <h1 class="block text-2xl font-bold text-gray-800 dark:text-neutral-200"><i class="fa-solid fa-right-to-bracket me-3"></i>Login</h1>
-                            <p class="mt-2 text-sm text-gray-600 dark:text-neutral-400">Login to get the full functionalities</p>
+                            <h1 class="block text-2xl font-bold text-gray-800 dark:text-neutral-200"><i
+                                    class="fa-solid fa-right-to-bracket me-3"></i>Login</h1>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-neutral-400">Login to get the full
+                                functionalities</p>
                         </div>
 
                         <!-- Form -->
@@ -54,19 +58,24 @@ const handleLoginPress = async () => {
                                     <!-- Username -->
                                     <div>
                                         <label class="block text-sm mb-2 dark:text-neutral-200">Username</label>
-                                        <input type="text" v-model="viewModel.username" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-500 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" required>
+                                        <input type="text" v-model="viewModel.username"
+                                            class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-500 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                                            required>
                                     </div>
 
                                     <!-- Password -->
                                     <div>
                                         <label class="block text-sm mb-2 dark:text-neutral-200">Username</label>
-                                        <input type="password" v-model="viewModel.password" class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-500 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" required>
+                                        <input type="password" v-model="viewModel.password"
+                                            class="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-500 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                                            required>
                                     </div>
-                                    
+
                                     <!-- Checkbox -->
                                     <div class="flex items-center">
                                         <div class="flex">
-                                            <input type="checkbox" v-model="viewModel.rememberMe" class="shrink-0 mt-0.5 cursor-pointer border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-500 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                                            <input type="checkbox" v-model="viewModel.rememberMe"
+                                                class="shrink-0 mt-0.5 cursor-pointer border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-500 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
                                         </div>
                                         <div class="ms-3">
                                             <label class="text-sm dark:text-neutral-200">Remember me</label>
@@ -74,7 +83,8 @@ const handleLoginPress = async () => {
                                     </div>
 
                                     <!-- Login button -->
-                                    <button @click="handleLoginPress" class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-extrabold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">Login</button>
+                                    <button @click="handleLoginPress"
+                                        class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-extrabold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">Login</button>
                                 </div>
                             </div>
                         </div>

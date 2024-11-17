@@ -9,7 +9,8 @@ import Pm10LineChart from '@/components/charts/Pm10LineChart.vue';
 import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
 import FilterModal from '@/components/charts/FilterModal.vue';
 import ChartsStore from '@/stores/charts.js';
-import { getAggregatedMeasurements, setBusy, showMessageDialog, getMaxAndMinFromDate, getLastMeasurement } from '@/utils/utils.js';
+import { setBusy, showMessageDialog, getMaxAndMinFromDate } from '@/utils/utils.js';
+import { getAggregatedMeasurements, getLastMeasurement } from '@/utils/webRequests.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model

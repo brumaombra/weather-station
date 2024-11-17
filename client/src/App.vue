@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router';
-import { setBusy, validateSession } from './utils/utils';
+import { setBusy } from './utils/utils.js';
+import { validateSession } from '@/utils/webRequests.js';
 import MessageDialog from '@/components/MessageDialog.vue';
 import Busy from '@/components/Busy.vue';
 
