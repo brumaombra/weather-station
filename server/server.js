@@ -1,12 +1,16 @@
-import { startMqttBroker } from './src/mqtt/mqttBroker.js';
-import { initWebServer } from './src/web/webServer.js';
 import { initMySqlDatabase } from './src/db/sql.js';
+import { startMqttBroker } from './src/mqtt/mqttBroker.js';
+import { startWebServer } from './src/web/webServer.js';
 
 // Initialize the services
-const initServices = () => {
-    startMqttBroker(false); // Start the MQTT Broker
-    initWebServer(); // Start the web server
-    initMySqlDatabase(); // Initialize the MySQL database
+const initServices = async () => {
+    try {
+        await initMySqlDatabase(); // Initialize the MySQL database
+        await startMqttBroker(); // Start the MQTT Broker
+        await startWebServer(); // Start the web server
+    } catch (error) {
+        console.error('Error initializing services:', error.message);
+    }
 };
 
 initServices(); // Initialize the services

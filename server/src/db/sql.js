@@ -1,34 +1,61 @@
-import dotenv from 'dotenv';
 import knexLib from 'knex';
 import { dateIsYesterday } from '../utils/utils.js';
-
-// Load environment variables
+import dotenv from 'dotenv';
 dotenv.config(); // Load the .env file
-if (!process.env.MYSQL_IP) console.error('Error while reading the environment variables');
 
-let knex; // Declare the global variable for the Knex library
+let knex; // Global variable for the Knex library
+const MAX_RETRY_ATTEMPTS = 5; // Maximum number of retry attempts for reconnection
+const tableNamesPrefix = 'weatherStation_'; // Prefix for the table names
+
+// Check the required environment variables
+const checkRequiredEnvVariables = () => {
+    const requiredEnvVariables = ['MYSQL_IP', 'MYSQL_PORT', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE_NAME'];
+    const missingEnvVariables = requiredEnvVariables.filter(variable => !process.env[variable]);
+    if (missingEnvVariables.length) { // Check if there are missing environment variables
+        const errorMessage = `Missing environment variables: ${missingEnvVariables.join(', ')}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage);
+    }
+};
 
 // Initialize the MySQL database
 export const initMySqlDatabase = async () => {
-    knex = knexLib({ // Initialize the Knex library
-        client: 'mysql',
-        connection: {
-            host: process.env.MYSQL_IP,
-            port: process.env.MYSQL_PORT,
-            user: process.env.MYSQL_USER,
-            password: process.env.MYSQL_PASSWORD,
-            database: process.env.MYSQL_DATABASE_NAME
-        }
-    });
+    try {
+        checkRequiredEnvVariables(); // Check the required environment variables
 
-    try { // Test the connection
-        await knex.raw('SELECT 1'); // Execute the query correctly
+        // Initialize the Knex library
+        knex = knexLib({
+            client: 'mysql',
+            connection: {
+                host: process.env.MYSQL_IP,
+                port: process.env.MYSQL_PORT,
+                user: process.env.MYSQL_USER,
+                password: process.env.MYSQL_PASSWORD,
+                database: process.env.MYSQL_DATABASE_NAME,
+                timezone: 'UTC', // Set the timezone to UTC
+                timeout: 60000, // 60 second timeout
+                typeCast: typeCast // Format the values after reading them from the database
+            }, pool: {
+                min: 2, // Minimum number of connections
+                max: 10 // Maximum number of connections
+            }
+        });
+
+        // Test the connection
+        await knex.raw('SELECT 1');
         console.log('Successfully connected to the database');
     } catch (error) {
-        const newError = new Error('Error while connecting to the database', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error('Error while connecting to the database', error);
+        throw error; // Throw the error
     }
+};
+
+// Format the values after reading them from the database
+const typeCast = (field, next) => {
+    if (field.type === 'TINY' && field.length === 1) { // Convert TINYINT(1) to boolean
+        return field.string() === '1';
+    }
+    return next();
 };
 
 // Destroy the connection to the database
@@ -37,15 +64,30 @@ const destroyConnection = async () => {
         await knex.destroy(); // Destroy the connection to the database
         console.log('Connection to the database closed');
     } catch (error) {
-        const newError = new Error('Error while closing the connection to the database', { cause: error }); // Save the old error to the stack
-        console.error(newError); // Log the error
-        throw newError; // Throw the error
+        console.error('Error while closing the connection to the database', error);
+        throw error; // Throw the error
+    }
+};
+
+// Execute a query with reconnection handling
+const executeQueryWithReconnection = async (queryFunction, retryCount = 0) => {
+    try {
+        return await queryFunction(); // try to execute the query
+    } catch (error) {
+        const isConnectionError = error.message.includes('ECONNRESET') || error.cause?.message?.includes('ECONNRESET');
+        if (isConnectionError && retryCount < MAX_RETRY_ATTEMPTS) { // Check if the error is a connection error
+            console.error(`Connection to MySQL database lost, reconnection attempt ${retryCount + 1} of ${MAX_RETRY_ATTEMPTS}...`);
+            await destroyConnection(); // Destroy the connection to the database
+            await initMySqlDatabase(); // Reconnect to the database
+            return executeQueryWithReconnection(queryFunction, retryCount + 1); // Retry the query
+        }
+        throw error; // Rethrow the error
     }
 };
 
 // Create the query to get the user from the database
 const createQueryGetUser = username => {
-    const query = knex('users').where({ username }).first(); // Create the query to get the user
+    const query = knex(`${tableNamesPrefix}users`).where({ username }).first(); // Create the query to get the user
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -65,7 +107,7 @@ export const getUser = async username => {
 
 // Create the query to get the MQTT user from the database
 const createQueryGetMqttUser = username => {
-    const query = knex('mqttUsers').where({ username }).first(); // Create the query to get the user
+    const query = knex(`${tableNamesPrefix}mqttUsers`).where({ username }).first(); // Create the query to get the user
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -85,7 +127,7 @@ export const getMqttUser = async username => {
 
 // Create the query to get the measurements from the database
 const createQueryGetMeasurements = params => {
-    let query = knex('measurements').select('*'); // Select all columns from the measurements table
+    let query = knex(`${tableNamesPrefix}measurements`).select('*'); // Select all columns from the measurements table
     query = query.orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc'); // Add order filter
     if (params.limit) query = query.limit(params.limit); // Limit
     if (params.offset) query = query.offset(params.offset); // Offset
@@ -99,7 +141,7 @@ const createQueryGetMeasurements = params => {
 
 // Create the query to get the number of measurements from the database
 const createQueryGetMeasurementsCount = params => {
-    let query = knex('measurements').count('id as count').first(); // Count the number of rows in the measurements table
+    let query = knex(`${tableNamesPrefix}measurements`).count('id as count').first(); // Count the number of rows in the measurements table
     if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
     if (params.measurementType === 'ano') query = query.where('temperatureAnomaly', true).orWhere('humidityAnomaly', true).orWhere('pressureAnomaly', true).orWhere('gasAnomaly', true).orWhere('pm1Anomaly', true).orWhere('pm25Anomaly', true).orWhere('pm10Anomaly', true);
@@ -124,7 +166,7 @@ export const getMeasurements = async params => {
 
 // Create the query to get the aggregated measurements from the database
 const createQueryGetAggregatedDailyMeasurements = params => {
-    let query = knex('measurements').select(knex.raw('DATE(timestamp) as date')); // Select the date column
+    let query = knex(`${tableNamesPrefix}measurements`).select(knex.raw('DATE(timestamp) as date')); // Select the date column
     query = query.avg('temperature as temperatureAvg').min('temperature as temperatureMin').max('temperature as temperatureMax'); // Add temperature data
     query = query.avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax'); // Add humidity data
     query = query.avg('pressure as pressureAvg').min('pressure as pressureMin').max('pressure as pressureMax'); // Add pressure data
@@ -142,7 +184,7 @@ const createQueryGetAggregatedDailyMeasurements = params => {
 
 // Create the query to get the aggregated measurements from the database
 const createQueryGetAggregatedDailyMeasurementsSingle = params => {
-    let query = knex('measurements').select('timestamp as date'); // Select the date column
+    let query = knex(`${tableNamesPrefix}measurements`).select('timestamp as date'); // Select the date column
     query = query.select('temperature as temperatureAvg').select('temperature as temperatureMin').select('temperature as temperatureMax'); // Add temperature data
     query = query.select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax'); // Add humidity data
     query = query.select('pressure as pressureAvg').select('pressure as pressureMin').select('pressure as pressureMax'); // Add pressure data
@@ -176,7 +218,7 @@ export const getAggregatedDailyMeasurements = async params => {
 
 // Create the query to get the last measurement from the database
 const createQueryGetLastMeasurement = () => {
-    const query = knex('measurements').select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
+    const query = knex(`${tableNamesPrefix}measurements`).select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -184,7 +226,7 @@ const createQueryGetLastMeasurement = () => {
 // Create the query to get last week measurement from the database
 const createQueryGetLastWeekMeasurement = () => {
     const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Get the last week
-    let query = knex('measurements').select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
+    let query = knex(`${tableNamesPrefix}measurements`).select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
     query = query.whereRaw('timestamp <= ?', [lastWeek]); // Add start date
     console.log(query.toString()); // Log the query
     return query;
@@ -205,7 +247,7 @@ export const getLastMeasurement = async () => {
 
 // Create the query to get the aggregated measurements from the database
 const createQueryUpdateMeasurements = (id, newData) => {
-    const query = knex('measurements').where('id', id).update(newData); // Create the query
+    const query = knex(`${tableNamesPrefix}measurements`).where('id', id).update(newData); // Create the query
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -224,7 +266,7 @@ export const updateMeasurement = async (id, newData) => {
 
 // Create the query to delete the measurement from the database
 const createQueryDeleteMeasurements = idList => {
-    const query = knex('measurements').whereIn('id', idList).delete(); // Create the query
+    const query = knex(`${tableNamesPrefix}measurements`).whereIn('id', idList).delete(); // Create the query
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -243,7 +285,7 @@ export const deleteMeasurements = async idList => {
 
 // Create the query to add a measurement to the database
 const createQueryAddMeasurement = measurement => {
-    const query = knex('measurements').insert(measurement); // Create the query
+    const query = knex(`${tableNamesPrefix}measurements`).insert(measurement); // Create the query
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -257,26 +299,5 @@ export const addMeasurement = async measurement => {
         const newError = new Error('Error while adding the measurement', { cause: error }); // Save the old error to the stack
         console.error(newError); // Log the error
         throw newError; // Throw the error
-    }
-};
-
-// Execute a query with reconnection handling
-const executeQueryWithReconnection = async queryFunction => {
-    try {
-        return await queryFunction(); // try to execute the query
-    } catch (error) {
-        const isConnectionError = error.message.includes('ECONNRESET') || error.cause?.message?.includes('ECONNRESET');
-        if (isConnectionError) { // Check if the error is a connection error
-            console.error('Connection to MySQL database lost, reconnecting...');
-            try { // Handle the reconnection
-                await destroyConnection(); // Destroy the connection to the database
-                await initMySqlDatabase(); // Try to reconnect to the database
-                return await queryFunction(); // Execute the query again
-            } catch (reconnectionError) {
-                throw reconnectionError;
-            }
-        } else {
-            throw error; // Rethrow the error
-        }
     }
 };

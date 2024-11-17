@@ -1,5 +1,5 @@
 -- Table for the measurements
-CREATE TABLE measurements (
+CREATE TABLE weatherStation_measurements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     temperature FLOAT NOT NULL,
@@ -19,14 +19,14 @@ CREATE TABLE measurements (
 );
 
 -- Table for the users to manage the measurements
-CREATE TABLE users (
+CREATE TABLE weatherStation_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
 
 -- Table for the MQTT users
-CREATE TABLE mqttUsers (
+CREATE TABLE weatherStation_mqttUsers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
