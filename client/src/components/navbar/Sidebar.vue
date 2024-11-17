@@ -30,11 +30,11 @@
 						<i class="fa-solid fa-magnifying-glass-chart text-base"></i>Correlations
 					</router-link>
 				</li>
-                <li>
+                <!-- <li>
 					<router-link to="/dashboard/forecasts" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700">
 						<i class="fa-solid fa-mask text-base"></i>Forecasts
 					</router-link>
-				</li>
+				</li> -->
             </ul>
         </nav>
     </div>

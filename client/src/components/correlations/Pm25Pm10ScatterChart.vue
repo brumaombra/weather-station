@@ -44,7 +44,7 @@ watch(() => props.measurementsList, () => {
 
         <!-- Chart -->
         <div>
-            <apexchart type="scatter" :options="options" :series="options.series"></apexchart>
+            <apexchart :key="props.measurementsList.length" type="scatter" :options="options" :series="options.series"></apexchart>
         </div>
     </div>
 </template>

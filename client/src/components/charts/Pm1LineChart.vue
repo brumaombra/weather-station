@@ -69,7 +69,7 @@ watch(() => props.measurementsList, () => {
 
         <!-- Chart -->
         <div>
-            <apexchart type="line" :options="options" :series="options.series"></apexchart>
+            <apexchart :key="props.measurementsList.length" type="line" :options="options" :series="options.series"></apexchart>
         </div>
     </div>
 </template>
