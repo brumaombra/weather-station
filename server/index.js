@@ -1,6 +1,6 @@
 import { initMySqlDatabase } from './src/db/sql.js';
-import { startMqttBroker } from './src/mqtt/mqttBroker.js';
-import { startWebServer } from './src/web/webServer.js';
+import { startMqttBroker } from './src/mqtt/broker.js';
+import { startWebServer } from './src/web/server.js';
 
 // Initialize the services
 const initServices = async () => {

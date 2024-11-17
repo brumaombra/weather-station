@@ -66,7 +66,7 @@ export const getPercentageDifference = (start, end) => {
 // Login attempt
 export const loginAttempt = async (username, password, rememberMe) => {
     try {
-        const response = await fetch(`${devUrl}/api/login`, {
+        const response = await fetch(`${devUrl}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -95,7 +95,7 @@ export const logout = () => {
 export const validateSession = async () => {
     try {
         const token = localStorage.getItem('adminToken'); // Get the token from local storage
-        const response = await fetch(`${devUrl}/api/validateToken`, {
+        const response = await fetch(`${devUrl}/auth/validateToken`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -134,7 +134,7 @@ export const getMeasurements = async params => {
 export const getAggregatedMeasurements = async params => {
     try {
         const query = params ? `?${new URLSearchParams(params)}` : ''; // Get the query parameters
-        const response = await fetch(`${devUrl}/api/aggregatedMeasurements${query}`); // Get the response
+        const response = await fetch(`${devUrl}/api/measurements/aggregated${query}`); // Get the response
         const data = await response.json(); // Get the data
         if (response.ok) { // Success
             return data;
@@ -150,7 +150,7 @@ export const getAggregatedMeasurements = async params => {
 // Get the last measurement
 export const getLastMeasurement = async () => {
     try {
-        const response = await fetch(`${devUrl}/api/lastMeasurement`); // Get the response
+        const response = await fetch(`${devUrl}/api/measurements/last`); // Get the response
         const data = await response.json(); // Get the data
         if (response.ok) { // Success
             return data;
