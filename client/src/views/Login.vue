@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
 import { setBusy, showMessageDialog } from '@/utils/utils.js';
-import { loginAttempt } from '@/utils/webRequests.js';
+import { login } from '@/utils/webRequests.js';
 
 // View model
 const viewModel = reactive({
@@ -17,7 +17,7 @@ const handleLoginPress = async () => {
     if (!username || !password) return; // If no username or password, exit
     try { // Try to log in
         setBusy(true); // Busy on
-        await loginAttempt(username, password, viewModel.rememberMe);
+        await login(username, password, viewModel.rememberMe);
         setBusy(false); // Busy off
         window.location.href = '/'; // Redirect
     } catch (error) {

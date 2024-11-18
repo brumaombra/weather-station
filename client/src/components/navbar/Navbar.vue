@@ -8,7 +8,7 @@ import ProfileAvatar from '@/components/navbar/ProfileAvatar.vue';
             <div class="me-5 lg:me-0 lg:hidden">
                 <div class="flex items-center">
                     <!-- Hamburger -->
-                    <button type="button" data-hs-overlay="#application-sidebar" class="py-1 px-3 flex justify-center items-center me-4 gap-x-1.5 text-xs rounded-lg border border-gray-200 bg-white text-gray-400 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-neutral-700 dark:text-neutral-200">
+                    <button type="button" data-hs-overlay="#application-sidebar" class="py-2 px-3 flex justify-center items-center me-4 gap-x-1.5 text-xs rounded-lg border border-gray-200 bg-white text-gray-400 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-neutral-700 dark:text-neutral-200">
                         <i class="fa-solid fa-bars text-base"></i>
                     </button>
 

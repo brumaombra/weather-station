@@ -7,7 +7,8 @@ export const formatTimestamp = timestamp => {
 // Timestamp formatter (If midnight, don't display the time)
 export const formatTimestampChart = timestamp => {
     const date = new Date(timestamp); // Create date object from timestamp
-    return date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0 ? date.toLocaleDateString() : date.toLocaleString(); // If midnight, format the date without the time
+    const isMidnightUTC = date.getUTCHours() === 0 && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0;
+    return isMidnightUTC ? date.toLocaleDateString() : date.toLocaleString(); // If midnight, format the date without the time
 };
 
 // Date formatter

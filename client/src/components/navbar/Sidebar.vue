@@ -11,22 +11,22 @@
         <nav class="hs-accordion-group p-6 w-full flex flex-col flex-wrap" data-hs-accordion-always-open>
             <ul class="space-y-1.5">
                 <li>
-					<router-link to="/dashboard/snapshot" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700">
+					<router-link to="/dashboard/snapshot" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700" data-hs-overlay="#application-sidebar">
                         <i class="fa-solid fa-camera text-base"></i>Snapshot
 					</router-link>
 				</li>
                 <li>
-					<router-link to="/dashboard/measurements" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700">
+					<router-link to="/dashboard/measurements" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700" data-hs-overlay="#application-sidebar">
 						<i class="fa-solid fa-table text-base"></i>Measurements
 					</router-link>
 				</li>
                 <li>
-					<router-link to="/dashboard/charts" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700">
+					<router-link to="/dashboard/charts" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700" data-hs-overlay="#application-sidebar">
 						<i class="fa-solid fa-chart-line text-base"></i>Charts
 					</router-link>
 				</li>
                 <li>
-					<router-link to="/dashboard/correlations" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700">
+					<router-link to="/dashboard/correlations" class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700" active-class="bg-gray-100 dark:bg-neutral-700" data-hs-overlay="#application-sidebar">
 						<i class="fa-solid fa-magnifying-glass-chart text-base"></i>Correlations
 					</router-link>
 				</li>

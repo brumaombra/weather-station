@@ -1,145 +1,110 @@
-import GlobalStore from '@/stores/global.js';
+import axios from 'axios';
 
 const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://station.bruma.cloud';
 
-// Login attempt
-export const loginAttempt = async (username, password, rememberMe) => {
+// Create axios instance
+const api = axios.create({
+    baseURL: serverUrl,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+
+// Login to the server
+export const login = async (username, password) => {
     try {
-        const response = await fetch(`${serverUrl}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+        const { data } = await api.post(`/auth/login`, { username, password }, { // Send the request
+            withCredentials: true // Send cookies with the request
         });
-        const data = await response.json(); // Get the data
-        if (response.ok) { // Success
-            if (rememberMe) localStorage.setItem('adminToken', data.token); // Save the token to local storage if needed
-            GlobalStore.adminToken = data.token; // Set the token in the global store
-            return data;
-        } else { // Error
-            throw new CustomError(data.message || 'Error while logging in');
-        }
+        return data;
     } catch (error) {
-        console.error(error); // Log the error
-        throw error.isCustom ? error : new CustomError('Error while logging in');
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while logging in');
     }
 };
 
 // Logout the user
-export const logout = () => {
-    localStorage.removeItem('adminToken'); // Remove the token from local storage
-    GlobalStore.adminToken = null; // Clear the token
+export const logout = async () => {
+    try {
+        const { data } = await api.post(`/auth/logout`, {}, {
+            withCredentials: true // Send cookies with the request
+        });
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while logging out');
+    }
 };
 
 // Validate the token
-export const validateSession = async () => {
+export const validateToken = async () => {
     try {
-        const token = localStorage.getItem('adminToken'); // Get the token from local storage
-        const response = await fetch(`${serverUrl}/auth/validateToken`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
+        const { data } = await api.get('/auth/validateToken', {
+            withCredentials: true // Send cookies with the request
         });
-        const data = await response.json(); // Get the data
-        if (response.ok) { // Success
-            GlobalStore.adminToken = token; // Set the token in the global store
-            return data;
-        } else { // Error
-            logout(); // Logout the user
-            throw new CustomError(data.message || 'Error while validating the token');
-        }
+        return data;
     } catch (error) {
-        console.error(error); // Log the error
-        throw error.isCustom ? error : new CustomError('Error while validating the token');
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while validating the token');
     }
 };
 
 // Get all the measurements
 export const getMeasurements = async params => {
     try {
-        const query = params ? `?${new URLSearchParams(params)}` : ''; // Get the query parameters
-        const response = await fetch(`${serverUrl}/api/measurements${query}`); // Get the response
-        const data = await response.json(); // Get the data
-        if (response.ok) { // Success
-            return data;
-        } else { // Error
-            throw new CustomError(data.message || 'Error while reading the measurements');
-        }
+        const { data } = await api.get('/api/measurements', { params });
+        return data;
     } catch (error) {
-        console.error(error); // Log the error
-        throw error.isCustom ? error : new CustomError('Error while reading the measurements');
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while reading the measurements');
     }
 };
 
 // Get all the aggregated measurements
 export const getAggregatedMeasurements = async params => {
     try {
-        const query = params ? `?${new URLSearchParams(params)}` : ''; // Get the query parameters
-        const response = await fetch(`${serverUrl}/api/measurements/aggregated${query}`); // Get the response
-        const data = await response.json(); // Get the data
-        if (response.ok) { // Success
-            return data;
-        } else { // Error
-            throw new CustomError(data.message || 'Error while reading the measurements');
-        }
+        const { data } = await api.get('/api/measurements/aggregated', { params });
+        return data;
     } catch (error) {
-        console.error(error); // Log the error
-        throw error.isCustom ? error : new CustomError('Error while reading the measurements');
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while reading the measurements');
     }
 };
 
 // Get the last measurement
 export const getLastMeasurement = async () => {
     try {
-        const response = await fetch(`${serverUrl}/api/measurements/last`); // Get the response
-        const data = await response.json(); // Get the data
-        if (response.ok) { // Success
-            return data;
-        } else { // Error
-            throw new CustomError(data.message || 'Error while reading the measurement');
-        }
+        const { data } = await api.get('/api/measurements/last');
+        return data;
     } catch (error) {
-        console.error(error); // Log the error
-        throw error.isCustom ? error : new CustomError('Error while reading the measurement');
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while reading the measurement');
     }
 };
 
 // Update a measurement
 export const updateMeasurement = async measurement => {
     try {
-        const token = GlobalStore.adminToken; // Get the token from the global store
-        const response = await fetch(`${serverUrl}/api/measurements/${measurement.id}`, { // Get the response
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify(measurement)
+        const { data } = await api.put(`/api/measurements/${measurement.id}`, measurement, {
+            withCredentials: true
         });
-        const data = await response.json(); // Get the data
-        if (response.ok) { // Success
-            return data;
-        } else { // Error
-            throw new CustomError(data.message || 'Error while updating the measurement');
-        }
+        return data;
     } catch (error) {
-        console.error(error); // Log the error
-        throw error.isCustom ? error : new CustomError('Error while updating the measurement');
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while updating the measurement');
     }
 };
 
 // Delete multiple measurements
 export const deleteMeasurements = async idList => {
     try {
-        const token = GlobalStore.adminToken; // Get the token from the global store
-        const response = await fetch(`${serverUrl}/api/measurements`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ idList: idList })
+        const { data } = await api.delete('/api/measurements', {
+            withCredentials: true,
+            data: { idList }
         });
-        const data = await response.json(); // Get the data
-        if (response.ok) { // Success
-            return data;
-        } else { // Error
-            throw new CustomError(data.message || 'Error while deleting the measurement');
-        }
+        return data;
     } catch (error) {
-        console.error(error); // Log the error
-        throw error.isCustom ? error : new CustomError('Error while deleting the measurement');
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while deleting the measurement');
     }
 };

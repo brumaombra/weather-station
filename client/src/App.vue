@@ -1,7 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import { setBusy } from './utils/utils.js';
-import { validateSession } from '@/utils/webRequests.js';
+import { validateToken } from '@/utils/webRequests.js';
 import MessageDialog from '@/components/MessageDialog.vue';
 import Busy from '@/components/Busy.vue';
 
@@ -11,7 +11,7 @@ const getToken = async () => {
 	if (!token) return; // If no token, exit
 	setBusy(true); // Busy on
 	try { // try to get the data
-		await validateSession(); // Validate the session
+		await validateToken(); // Validate the session
 		setBusy(false); // Busy off
 	} catch (error) {
 		setBusy(false); // Busy off
