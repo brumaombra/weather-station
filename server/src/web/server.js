@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import routes from './routes/index.js';
@@ -9,6 +10,7 @@ dotenv.config(); // Load the .env file
 const port = 3000;
 const app = express();
 app.use(express.json()); // Parse JSON bodies
+app.use(cookieParser()); // Parse cookies
 app.use(cors({ // Enable CORS
     origin: process.env.NODE_ENV === 'production' ? 'https://station.bruma.cloud' : 'http://localhost:5173',
     credentials: true

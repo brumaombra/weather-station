@@ -1,25 +1,29 @@
 <script setup>
+import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import { setBusy } from './utils/utils.js';
 import { validateToken } from '@/utils/webRequests.js';
 import MessageDialog from '@/components/MessageDialog.vue';
 import Busy from '@/components/Busy.vue';
+import GlobalStore from '@/stores/global.js';
 
-// Load the token from local storage
-const getToken = async () => {
-	const token = localStorage.getItem('adminToken');
-	if (!token) return; // If no token, exit
-	setBusy(true); // Busy on
-	try { // try to get the data
+// Validate the session
+const validateSession = async () => {
+	try {
+		setBusy(true); // Busy on
 		await validateToken(); // Validate the session
+		GlobalStore.loggedIn = true; // Set logged in
 		setBusy(false); // Busy off
 	} catch (error) {
 		setBusy(false); // Busy off
+		GlobalStore.loggedIn = false; // Set logged out
 	}
 };
 
-getToken(); // get the token
-
+// On component mounted
+onMounted(async () => {
+	await validateSession();
+});
 </script>
 
 <template>

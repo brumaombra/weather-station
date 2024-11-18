@@ -1,7 +1,8 @@
 import { reactive } from 'vue';
 
 export default reactive({
-    adminToken: "", // Admin token
+    // adminToken: "", // Admin token
+    loggedIn: false, // Logged in state
     busy: false, // Global busy state
     toast: { // Message toast data
         visible: false,

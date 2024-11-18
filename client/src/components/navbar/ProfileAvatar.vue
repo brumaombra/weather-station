@@ -1,13 +1,21 @@
 <script setup>
-import GlobalStore from '@/stores/global.js';
 import { setBusy } from '@/utils/utils';
 import { logout } from '@/utils/webRequests.js';
+import { showMessageDialog } from '@/utils/utils.js';
+import GlobalStore from '@/stores/global.js';
 
 // Handle logout
 const handleLogoutPress = async () => {
-    setBusy(true); // Busy on
-	await logout(); // Excecute logout
-    setBusy(false); // Busy off
+    try {
+        setBusy(true); // Busy on
+        await logout(); // Excecute logout
+        GlobalStore.loggedIn = false; // Set logged out
+        setBusy(false); // Busy off
+        window.location.href = '/'; // Redirect
+    } catch (error) {
+        setBusy(false); // Busy off
+        showMessageDialog(error.message || 'Error while logging out', 'error'); // Show dialog
+    }
 };
 </script>
 
@@ -19,7 +27,7 @@ const handleLogoutPress = async () => {
         </button>
 
         <!-- Dropdown (Logged in) -->
-        <div v-if="GlobalStore.adminToken" class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg p-2">
+        <div v-if="GlobalStore.loggedIn" class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg p-2">
             <div class="py-3 px-5 -m-2 bg-gray-100 rounded-t-lg">
                 <p class="text-sm text-gray-500">Signed in as</p>
                 <p class="text-sm font-medium text-gray-800">james@site.com</p>
@@ -32,7 +40,7 @@ const handleLogoutPress = async () => {
         </div>
 
         <!-- Dropdown (Not logged in) -->
-        <div v-if="!GlobalStore.adminToken" class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg p-2">
+        <div v-if="!GlobalStore.loggedIn" class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg p-2">
             <div class="py-2 first:pt-0 last:pb-0">                    
                 <router-link to="/login" class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 cursor-pointer">
                     <i class="fa-solid fa-right-to-bracket"></i>Login

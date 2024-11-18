@@ -6,7 +6,7 @@ const tokenSecretKey = process.env.TOKEN_SECRET || 'superSecretKey'; // Secret k
 
 // Middleware to verify the token
 export const verifyToken = (req, res, next) => {
-    const token = req.cookies.authToken; // Get the token from the httpOnly cookie
+    const token = req.cookies?.authToken; // Get the token from the httpOnly cookie
     if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
     try { // Try to verify the token

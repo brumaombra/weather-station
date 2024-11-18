@@ -1,4 +1,5 @@
 <script setup>
+import { nextTick, watch } from 'vue';
 import FilterModal from '@/components/measurements/FilterModal.vue';
 import EditModal from '@/components/measurements/EditModal.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
@@ -11,6 +12,14 @@ import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '
 // View model
 const viewModel = MeasurementsStore;
 
+// Add watcher for selectedElements (Workaround for multi delete button visibility)
+watch(() => viewModel.selectedElements, async () => {
+    await nextTick(); // Wait for the DOM to update
+    if (window.HSOverlay) {
+        window.HSOverlay.autoInit(); // Reinit the overlay
+    }
+});
+
 // Load the measurements
 const loadMeasurements = async () => {
     setBusy(true); // Busy on
@@ -21,9 +30,11 @@ const loadMeasurements = async () => {
         limit: viewModel.limit, // Extraction limit
         offset: viewModel.offset // Offset for pagination
     };
+    
     if (viewModel.startDate) params.startDate = viewModel.startDate; // Add start date filter
     if (viewModel.endDate) params.endDate = viewModel.endDate; // Add end date filter
-    try { // Try to get the measurements
+
+    try {
         const results = await getMeasurements(params); // Get the measurements
         viewModel.measurementsList = results; // Update the data
         handleTableSelectionChange(); // Check if selected
@@ -182,7 +193,7 @@ init(); // Call init function
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50 dark:bg-neutral-800">
                             <tr>
-                                <th v-if="GlobalStore.adminToken" scope="col" class="px-6 py-3 text-center">
+                                <th v-if="GlobalStore.loggedIn" scope="col" class="px-6 py-3 text-center">
                                     <input type="checkbox" @change="handleSelectDeselectAllPress()" class="shrink-0 w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center">
@@ -212,13 +223,13 @@ init(); // Call init function
                                 <th scope="col" class="px-6 py-3 text-center">
                                     <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">PM10</span>
                                 </th>
-                                <th v-if="GlobalStore.adminToken"></th>
-                                <th v-if="GlobalStore.adminToken"></th>
+                                <th v-if="GlobalStore.loggedIn"></th>
+                                <th v-if="GlobalStore.loggedIn"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <tr v-for="item in viewModel.measurementsList.results">
-                                <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
+                                <td v-if="GlobalStore.loggedIn" class="size-px whitespace-nowrap">
                                     <div class="ps-6 py-3">
                                         <input type="checkbox" v-model="item.selected" @change="handleTableSelectionChange()" class="shrink-0 w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
                                     </div>
@@ -310,12 +321,12 @@ init(); // Call init function
                                         </div>
                                     </div>
                                 </td>
-                                <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
+                                <td v-if="GlobalStore.loggedIn" class="size-px whitespace-nowrap">
                                     <div class="px-4 py-3 text-center">
                                         <i class="fa-regular fa-pen-to-square text-lg cursor-pointer text-gray-500" data-hs-overlay="#editModal" @click="saveItemReference(item)"></i>
                                     </div>
                                 </td>
-                                <td v-if="GlobalStore.adminToken" class="size-px whitespace-nowrap">
+                                <td v-if="GlobalStore.loggedIn" class="size-px whitespace-nowrap">
                                     <div class="px-4 py-3 text-center">
                                         <i class="fa-regular fa-trash-can text-lg cursor-pointer text-red-500" data-hs-overlay="#confirmDeleteModal" @click="saveItemReference(item)"></i>
                                     </div>
