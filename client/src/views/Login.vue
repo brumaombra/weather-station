@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, onMounted, computed } from 'vue';
 import { setBusy, showMessageDialog } from '@/utils/utils.js';
-import { login } from '@/utils/webRequests.js';
+import { login } from '@/utils/requests.js';
 import GlobalStore from '@/stores/global.js';
 
 // Validate the form

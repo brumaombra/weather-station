@@ -4,10 +4,7 @@ const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:300
 
 // Create axios instance
 const api = axios.create({
-    baseURL: serverUrl,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    baseURL: serverUrl
 });
 
 // Login to the server

@@ -11,7 +11,7 @@ import Pm25Pm10ScatterChart from '@/components/correlations/Pm25Pm10ScatterChart
 import PressGasScatterChart from '@/components/correlations/PressGasScatterChart.vue';
 import TempGasScatterChart from '@/components/correlations/TempGasScatterChart.vue';
 import { setBusy, showMessageDialog, getMaxAndMinFromDate } from '@/utils/utils.js';
-import { getMeasurements, getAggregatedMeasurements, getLastMeasurement } from '@/utils/webRequests.js';
+import { getMeasurements, getAggregatedMeasurements, getLastMeasurement } from '@/utils/requests.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model

@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import { setBusy } from './utils/utils.js';
-import { validateToken } from '@/utils/webRequests.js';
+import { validateToken } from '@/utils/requests.js';
 import MessageDialog from '@/components/MessageDialog.vue';
 import Busy from '@/components/Busy.vue';
 import GlobalStore from '@/stores/global.js';
