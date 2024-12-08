@@ -1,7 +1,9 @@
+import { promisify } from 'util';
 import aedes from 'aedes';
 import net from 'net';
 import bcrypt from 'bcrypt';
-import { addMeasurement, getMqttUser } from '../db/sql.js';
+import { getMqttUser } from '../db/auth.js';
+import { addMeasurement } from '../db/measurements.js';
 import { validateNewMeasurementData } from '../utils/utils.js';
 import { anomalyDetection, addAnomalyValues } from '../ml/anomalyDetection.js';
 
@@ -72,21 +74,12 @@ broker.on('publish', async (packet, client) => {
 // Start the MQTT broker
 export const startMqttBroker = async () => {
     try {
-        await new Promise((resolve, reject) => {
-            server.listen(port, async err => { // Start the server
-                if (err) { // Check for errors
-                    reject(err);
-                    return;
-                }
-
-                // Success
-                console.log(`MQTT broker listening on port ${port}`);
-                resolve(); // Resolve the promise
-            });
-        });
+        const listen = promisify(server.listen.bind(server));
+        await listen(port);
+        console.log(`MQTT broker listening on port ${port}`);
     } catch (error) {
         console.error('Error while starting the MQTT broker', error);
-        throw error; // Re-throw to allow handling by caller
+        throw error;
     }
 };
 

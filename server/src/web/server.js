@@ -1,3 +1,4 @@
+import { promisify } from 'util';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -37,18 +38,9 @@ app.get('*', (req, res) => {
 // Start the web server
 export const startWebServer = async () => {
     try {
-        await new Promise((resolve, reject) => {
-            app.listen(port, err => {
-                if (err) { // Check for errors
-                    reject(err); // Reject the promise if there is an error
-                    return;
-                }
-
-                // Success
-                console.log(`Web server listening on port ${port}`);
-                resolve(); // Resolve the promise
-            });
-        });
+        const listen = promisify(app.listen.bind(app));
+        await listen(port);
+        console.log(`Web server listening on port ${port}`);
     } catch (error) {
         console.error(`Error while starting the web server: ${error.message}`);
         throw error;

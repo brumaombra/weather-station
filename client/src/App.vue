@@ -5,6 +5,7 @@ import { setBusy } from './utils/utils.js';
 import { validateToken } from '@/utils/requests.js';
 import MessageDialog from '@/components/MessageDialog.vue';
 import Busy from '@/components/Busy.vue';
+import Chatbot from '@/components/chatbot/Chatbot.vue';
 import GlobalStore from '@/stores/global.js';
 
 // Validate the session
@@ -37,4 +38,7 @@ onMounted(async () => {
 
 	<!-- Busy -->
 	<Busy />
+
+	<!-- Chatbot -->
+	<!-- <Chatbot /> -->
 </template>

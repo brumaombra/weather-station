@@ -1,4 +1,4 @@
-import { getMeasurements, updateMeasurement } from '../db/sql.js';
+import { getMeasurements, updateMeasurement } from '../db/measurements.js';
 
 const measures = ['temperature', 'humidity', 'pressure', 'gas', 'pm1', 'pm25', 'pm10'];
 const measurementsStats = {}; // Mean and standard deviation of every measurement

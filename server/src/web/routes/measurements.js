@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getLastMeasurement } from '../../db/sql.js';
+import { getMeasurements, updateMeasurement, deleteMeasurements, addMeasurement, getAggregatedDailyMeasurements, getLastMeasurement } from '../../db/measurements.js';
 import { validateNewMeasurementData } from '../../utils/utils.js';
 import { verifyToken } from '../middleware/auth.js';
 

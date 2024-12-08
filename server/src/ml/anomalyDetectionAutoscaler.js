@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { getMeasurements, updateMeasurement } from '../db/sql.js';
+import { getMeasurements, updateMeasurement } from '../db/measurements.js';
 
 let trainedModel;
 

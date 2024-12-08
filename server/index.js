@@ -1,4 +1,4 @@
-import { initMySqlDatabase } from './src/db/sql.js';
+import { initMySqlDatabase } from './src/db/connection.js';
 import { startMqttBroker } from './src/mqtt/broker.js';
 import { startWebServer } from './src/web/server.js';
 

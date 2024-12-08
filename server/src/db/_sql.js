@@ -3,9 +3,9 @@ import { dateIsYesterday } from '../utils/utils.js';
 import dotenv from 'dotenv';
 dotenv.config(); // Load the .env file
 
+/*
 let knex; // Global variable for the Knex library
 const MAX_RETRY_ATTEMPTS = 5; // Maximum number of retry attempts for reconnection
-const tableNamesPrefix = 'weatherStation_'; // Prefix for the table names
 
 // Check the required environment variables
 const checkRequiredEnvVariables = () => {
@@ -87,7 +87,7 @@ const executeQueryWithReconnection = async (queryFunction, retryCount = 0) => {
 
 // Create the query to get the user from the database
 const createQueryGetUser = username => {
-    const query = knex(`${tableNamesPrefix}users`).where({ username }).first(); // Create the query to get the user
+    const query = knex(`weatherStation_users`).where({ username }).first(); // Create the query to get the user
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -107,7 +107,7 @@ export const getUser = async username => {
 
 // Create the query to get the MQTT user from the database
 const createQueryGetMqttUser = username => {
-    const query = knex(`${tableNamesPrefix}mqttUsers`).where({ username }).first(); // Create the query to get the user
+    const query = knex(`weatherStation_mqttUsers`).where({ username }).first(); // Create the query to get the user
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -124,10 +124,11 @@ export const getMqttUser = async username => {
         throw newError; // Throw the error
     }
 };
+*/
 
 // Create the query to get the measurements from the database
 const createQueryGetMeasurements = params => {
-    let query = knex(`${tableNamesPrefix}measurements`).select('*'); // Select all columns from the measurements table
+    let query = knex(`weatherStation_measurements`).select('*'); // Select all columns from the measurements table
     query = query.orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc'); // Add order filter
     if (params.limit) query = query.limit(params.limit); // Limit
     if (params.offset) query = query.offset(params.offset); // Offset
@@ -141,7 +142,7 @@ const createQueryGetMeasurements = params => {
 
 // Create the query to get the number of measurements from the database
 const createQueryGetMeasurementsCount = params => {
-    let query = knex(`${tableNamesPrefix}measurements`).count('id as count').first(); // Count the number of rows in the measurements table
+    let query = knex(`weatherStation_measurements`).count('id as count').first(); // Count the number of rows in the measurements table
     if (params.startDate) query = query.where('timestamp', '>=', new Date(params.startDate)); // Add start date
     if (params.endDate) query = query.where('timestamp', '<=', new Date(params.endDate)); // Add end date
     if (params.measurementType === 'ano') query = query.where('temperatureAnomaly', true).orWhere('humidityAnomaly', true).orWhere('pressureAnomaly', true).orWhere('gasAnomaly', true).orWhere('pm1Anomaly', true).orWhere('pm25Anomaly', true).orWhere('pm10Anomaly', true);
@@ -166,7 +167,7 @@ export const getMeasurements = async params => {
 
 // Create the query to get the aggregated measurements from the database
 const createQueryGetAggregatedDailyMeasurements = params => {
-    let query = knex(`${tableNamesPrefix}measurements`).select(knex.raw('DATE(timestamp) as date')); // Select the date column
+    let query = knex(`weatherStation_measurements`).select(knex.raw('DATE(timestamp) as date')); // Select the date column
     query = query.avg('temperature as temperatureAvg').min('temperature as temperatureMin').max('temperature as temperatureMax'); // Add temperature data
     query = query.avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax'); // Add humidity data
     query = query.avg('pressure as pressureAvg').min('pressure as pressureMin').max('pressure as pressureMax'); // Add pressure data
@@ -184,7 +185,7 @@ const createQueryGetAggregatedDailyMeasurements = params => {
 
 // Create the query to get the aggregated measurements from the database
 const createQueryGetAggregatedDailyMeasurementsSingle = params => {
-    let query = knex(`${tableNamesPrefix}measurements`).select('timestamp as date'); // Select the date column
+    let query = knex(`weatherStation_measurements`).select('timestamp as date'); // Select the date column
     query = query.select('temperature as temperatureAvg').select('temperature as temperatureMin').select('temperature as temperatureMax'); // Add temperature data
     query = query.select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax'); // Add humidity data
     query = query.select('pressure as pressureAvg').select('pressure as pressureMin').select('pressure as pressureMax'); // Add pressure data
@@ -218,7 +219,7 @@ export const getAggregatedDailyMeasurements = async params => {
 
 // Create the query to get the last measurement from the database
 const createQueryGetLastMeasurement = () => {
-    const query = knex(`${tableNamesPrefix}measurements`).select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
+    const query = knex(`weatherStation_measurements`).select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -226,7 +227,7 @@ const createQueryGetLastMeasurement = () => {
 // Create the query to get last week measurement from the database
 const createQueryGetLastWeekMeasurement = () => {
     const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Get the last week
-    let query = knex(`${tableNamesPrefix}measurements`).select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
+    let query = knex(`weatherStation_measurements`).select('*').orderBy('timestamp', 'desc').first(); // Extract the last element
     query = query.whereRaw('timestamp <= ?', [lastWeek]); // Add start date
     console.log(query.toString()); // Log the query
     return query;
@@ -247,7 +248,7 @@ export const getLastMeasurement = async () => {
 
 // Create the query to get the aggregated measurements from the database
 const createQueryUpdateMeasurements = (id, newData) => {
-    const query = knex(`${tableNamesPrefix}measurements`).where('id', id).update(newData); // Create the query
+    const query = knex(`weatherStation_measurements`).where('id', id).update(newData); // Create the query
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -266,7 +267,7 @@ export const updateMeasurement = async (id, newData) => {
 
 // Create the query to delete the measurement from the database
 const createQueryDeleteMeasurements = idList => {
-    const query = knex(`${tableNamesPrefix}measurements`).whereIn('id', idList).delete(); // Create the query
+    const query = knex(`weatherStation_measurements`).whereIn('id', idList).delete(); // Create the query
     console.log(query.toString()); // Log the query
     return query;
 };
@@ -285,7 +286,7 @@ export const deleteMeasurements = async idList => {
 
 // Create the query to add a measurement to the database
 const createQueryAddMeasurement = measurement => {
-    const query = knex(`${tableNamesPrefix}measurements`).insert(measurement); // Create the query
+    const query = knex(`weatherStation_measurements`).insert(measurement); // Create the query
     console.log(query.toString()); // Log the query
     return query;
 };

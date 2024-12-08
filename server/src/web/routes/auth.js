@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import bcrypt from 'bcrypt';
-import { getUser } from '../../db/sql.js';
+import { getUser } from '../../db/auth.js';
 import { verifyToken, setAuthTokenCookie } from '../middleware/auth.js';
 dotenv.config(); // Load the .env file
 
@@ -20,8 +20,9 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const user = await getUser(username); // Get the user from the database
-        if (!user) { // Check if the user exists
+        // Get the user from the database
+        const user = await getUser(username);
+        if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 

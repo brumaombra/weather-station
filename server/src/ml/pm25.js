@@ -1,5 +1,5 @@
 import { trainModelRegression, getPrediction } from "./ml.js";
-import { getMeasurements } from '../db/sql.js';
+import { getMeasurements } from '../db/measurements.js';
 
 let pm25PredictionModel = null;
 let pm25PredictionMean = null;
