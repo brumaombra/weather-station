@@ -40,5 +40,5 @@ onMounted(async () => {
 	<Busy />
 
 	<!-- Chatbot -->
-	<!-- <Chatbot /> -->
+	<Chatbot />
 </template>
