@@ -105,3 +105,14 @@ export const deleteMeasurements = async idList => {
         throw new Error(error.response?.data?.message || 'Error while deleting the measurement');
     }
 };
+
+// Call the chatbot API to get a response
+export const getChatbotResponse = async messages => {
+    try {
+        const { data } = await api.post('/api/chatbot', { messages });
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error(error.response?.data?.message || 'Error while getting the chatbot response');
+    }
+};
