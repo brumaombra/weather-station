@@ -10,7 +10,7 @@ import CurrentDataCards from '@/components/charts/CurrentDataCards.vue';
 import FilterModal from '@/components/charts/FilterModal.vue';
 import ChartsStore from '@/stores/charts.js';
 import { setBusy, showMessageDialog, getMaxAndMinFromDate } from '@/utils/utils.js';
-import { getAggregatedMeasurements, getLastMeasurement } from '@/utils/requests.js';
+import { getAggregatedMeasurements, getLastMeasurement } from '@/requests/measurements.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model

@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { getChatbotResponse } from '@/utils/requests.js';
+import { createQueryFromQuestion } from '@/requests/chatbot.js';
 import Chat from './Chat.vue';
 
 // Chat visibility
@@ -31,7 +31,7 @@ const callChatbot = async messages => {
         aiIsThinking.value = true; // Ai is thinking
 
         // Call the API
-        const response = await getChatbotResponse(messages); // Call the API
+        const response = await createQueryFromQuestion(messages); // Call the API
 
         // Create a new message
         const newMessage = {

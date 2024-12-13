@@ -105,3 +105,15 @@ export const checkDbConnection = async () => {
         throw error; // Throw the error
     }
 };
+
+// Execute a query
+export const executeRawQuery = async query => {
+    try {
+        const rawQuery = knex.raw(query); // Create a raw query
+        logQuery(rawQuery); // Log the query
+        return await executeQueryWithReconnection(rawQuery); // Execute the query
+    } catch (error) {
+        console.error('Error while executing the query', error);
+        throw error; // Throw the error
+    }
+};

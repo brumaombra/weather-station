@@ -67,7 +67,7 @@ const handleFormSubmit = event => {
                     <i class="fas fa-user fa-lg" v-else></i>
                 </div>
                 <p class="leading-relaxed flex-grow">
-                    <span class="block font-bold text-gray-700">Assistant</span>
+                    <span class="block font-bold text-gray-700">{{ message.type === 'assistant' ? 'Assistant' : 'You' }}</span>
                     {{ message.message }}
                 </p>
             </div>

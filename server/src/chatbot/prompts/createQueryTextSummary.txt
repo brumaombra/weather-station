@@ -1,0 +1,5 @@
+A user asked the following question pertaining to local database tables: {userQuestion}
+To answer the question, a dataframe was returned: {queryResult}
+
+In a few sentences, summarize the data in the table as it pertains to the original user question.
+Avoid qualifiers like "based on the data" and do not comment on the structure or metadata of the table itself.

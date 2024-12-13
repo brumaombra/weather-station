@@ -1,6 +1,6 @@
 <script setup>
 import { setBusy } from '@/utils/utils';
-import { logout } from '@/utils/requests.js';
+import { logout } from '@/requests/auth.js';
 import { showMessageDialog } from '@/utils/utils.js';
 import GlobalStore from '@/stores/global.js';
 

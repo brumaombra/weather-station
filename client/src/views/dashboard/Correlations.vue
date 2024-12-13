@@ -8,7 +8,7 @@ import HumPm1ScatterChart from '@/components/correlations/HumPm1ScatterChart.vue
 import FilterModal from '@/components/correlations/FilterModal.vue';
 import CorrelationsStore from '@/stores/correlations.js';
 import { setBusy, showMessageDialog, getMaxAndMinFromDate } from '@/utils/utils.js';
-import { getMeasurements } from '@/utils/requests.js';
+import { getMeasurements } from '@/requests/measurements.js';
 import { formatJsDateToIsoStringDate } from '@/utils/formatter.js';
 
 // View model

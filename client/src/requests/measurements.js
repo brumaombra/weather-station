@@ -1,50 +1,4 @@
-import axios from 'axios';
-
-const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://station.bruma.cloud';
-
-// Create axios instance
-const api = axios.create({
-    baseURL: serverUrl
-});
-
-// Login to the server
-export const login = async (username, password) => {
-    try {
-        const { data } = await api.post(`/auth/login`, { username, password }, { // Send the request
-            withCredentials: true // Send cookies with the request
-        });
-        return data;
-    } catch (error) {
-        console.error(error);
-        throw new Error(error.response?.data?.message || 'Error while logging in');
-    }
-};
-
-// Logout the user
-export const logout = async () => {
-    try {
-        const { data } = await api.post(`/auth/logout`, {}, {
-            withCredentials: true // Send cookies with the request
-        });
-        return data;
-    } catch (error) {
-        console.error(error);
-        throw new Error(error.response?.data?.message || 'Error while logging out');
-    }
-};
-
-// Validate the token
-export const validateToken = async () => {
-    try {
-        const { data } = await api.get('/auth/validateToken', {
-            withCredentials: true // Send cookies with the request
-        });
-        return data;
-    } catch (error) {
-        console.error(error);
-        throw new Error(error.response?.data?.message || 'Error while validating the token');
-    }
-};
+import { api } from './main.js';
 
 // Get all the measurements
 export const getMeasurements = async params => {
@@ -103,16 +57,5 @@ export const deleteMeasurements = async idList => {
     } catch (error) {
         console.error(error);
         throw new Error(error.response?.data?.message || 'Error while deleting the measurement');
-    }
-};
-
-// Call the chatbot API to get a response
-export const getChatbotResponse = async messages => {
-    try {
-        const { data } = await api.post('/api/chatbot', { messages });
-        return data;
-    } catch (error) {
-        console.error(error);
-        throw new Error(error.response?.data?.message || 'Error while getting the chatbot response');
     }
 };
