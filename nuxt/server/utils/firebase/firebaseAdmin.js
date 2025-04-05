@@ -1,6 +1,4 @@
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import fs from 'node:fs/promises';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
@@ -9,20 +7,20 @@ let app = null;
 // Initialize Firebase
 export const initFirebase = async () => {
     try {
-        // Import the Firebase JSON file
-        const __dirname = dirname(fileURLToPath(import.meta.url));
-        const serviceAccountPath = join(__dirname, '../../server/utils/firebase/firebaseServiceAccount.json');
-        const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-
-        /* Import the Firebase JSON file
-        const { default: firebaseServiceAccount } = await import('./firebaseServiceAccount.json', { assert: { type: 'json' } });
-        if (!firebaseServiceAccount) {
-            throw new Error('Firebase service account JSON file not found');
+        // Check if the Firebase JSON file exists
+        const filePath = './firebaseServiceAccount.json';
+        try {
+            await fs.access(filePath);
+        } catch {
+            console.warn('Firebase service account JSON file not found. Skipping Firebase initialization.');
+            return null; // Skip initialization
         }
-        */
+
+        // Import the Firebase JSON file
+        const { default: firebaseServiceAccount } = await import(filePath, { assert: { type: 'json' } });
 
         // Initialize Firebase
-        app = initializeApp({ credential: cert(serviceAccount) });
+        app = initializeApp({ credential: cert(firebaseServiceAccount) });
         console.log('Firebase initialized successfully');
         return app;
     } catch (error) {
