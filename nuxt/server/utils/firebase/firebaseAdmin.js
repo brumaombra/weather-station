@@ -1,3 +1,6 @@
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
@@ -7,13 +10,19 @@ let app = null;
 export const initFirebase = async () => {
     try {
         // Import the Firebase JSON file
+        const __dirname = dirname(fileURLToPath(import.meta.url));
+        const serviceAccountPath = join(__dirname, '../../server/utils/firebase/firebaseServiceAccount.json');
+        const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+
+        /* Import the Firebase JSON file
         const { default: firebaseServiceAccount } = await import('./firebaseServiceAccount.json', { assert: { type: 'json' } });
         if (!firebaseServiceAccount) {
             throw new Error('Firebase service account JSON file not found');
         }
+        */
 
         // Initialize Firebase
-        app = initializeApp({ credential: cert(firebaseServiceAccount) });
+        app = initializeApp({ credential: cert(serviceAccount) });
         console.log('Firebase initialized successfully');
         return app;
     } catch (error) {
