@@ -1,0 +1,6 @@
+This project is deployed on Aruba Cloud. Some reminders and tips for Aruba Cloud:
+
+- Choose a VPS that supports IPv4.
+- Install NVM to manage the latest version of Node.js.
+- Open the necessary ports on the server using 'sudo ufw allow [PORT]' (e.g. 'sudo ufw allow 3000').
+- Manage all the Node applications with PM2.

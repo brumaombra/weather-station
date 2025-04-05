@@ -1,0 +1,60 @@
+name: Build and Deploy App 🚀
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build and Deploy ⚡
+    runs-on: ubuntu-latest
+    env: # Environment variables
+      BUILDTIME: 'true'
+
+      # MySQL
+      MYSQL_IP: ${{ secrets.MYSQL_IP }}
+      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+    steps:
+      # Checkout code
+      - name: Checkout 📦
+        uses: actions/checkout@v4
+
+      # Use Node.JS
+      - name: Use Node.JS 💚
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+      
+      # Install dependencies
+      - name: Install dependencies 📥
+        run: npm install
+        working-directory: nuxt/
+      
+      # Build Nuxt 3 project
+      - name: Build Nuxt 3 project 🛠️
+        run: npm run build
+        working-directory: nuxt/
+
+      # Delete the node_modules folder
+      - name: Delete node_modules folder 🗑️
+        run: rm -rf .output/server/node_modules
+        working-directory: nuxt/
+
+      # Upload files via FTP
+      - name: Deploy app via FTP 🌐
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: nuxt/.output/ # Local project directory
+          server-dir: /var/www/weather-station/ # Server project directory
+          protocol: ftp # Protocol
+          exclude: | # Exclude files
+            **/.git*
+            **/.env
+            **/node_modules/
+            **/ecosystem.config.cjs
