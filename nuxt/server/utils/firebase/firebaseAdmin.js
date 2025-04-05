@@ -1,12 +1,18 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import firebaseServiceAccount from './firebaseServiceAccount.json' assert { type: 'json' };
 
 let app = null;
 
 // Initialize Firebase
 export const initFirebase = async () => {
     try {
+        // Import the Firebase JSON file
+        const { default: firebaseServiceAccount } = await import('./firebaseServiceAccount.json', { assert: { type: 'json' } });
+        if (!firebaseServiceAccount) {
+            throw new Error('Firebase service account JSON file not found');
+        }
+
+        // Initialize Firebase
         app = initializeApp({ credential: cert(firebaseServiceAccount) });
         console.log('Firebase initialized successfully');
         return app;
