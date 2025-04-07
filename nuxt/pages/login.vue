@@ -1,10 +1,7 @@
 <script setup>
 import { onMounted, computed, ref } from 'vue';
 import { setBusy, showMessageDialog } from '~/composables/useUtils.js';
-import { useGlobalStore } from '~/composables/stores/useGlobalStore.js';
-import { emailPasswordLogin, getCurrentUser } from '~/composables/api/useFirebase.js';
-
-const globalStore = useGlobalStore();
+import { emailPasswordLogin, getCurrentUser, googleLogin } from '~/composables/api/useFirebase.js';
 
 const username = ref('');
 const password = ref('');
@@ -28,6 +25,19 @@ const handleLoginPress = async () => {
         // Reset form fields
         username.value = '';
         password.value = '';
+    }
+};
+
+// Handle Google login button press
+const handleGoogleLogin = async () => {
+    try {
+        setBusy(true);
+        await googleLogin();
+        navigateTo('/'); // Redirect after login
+        setBusy(false);
+    } catch (error) {
+        setBusy(false);
+        showMessageDialog(error.message || 'Error while logging in with Google', 'error');
     }
 };
 
@@ -82,6 +92,13 @@ onMounted(async () => {
                                         <button type="submit" :disabled="!validateForm" class="mt-2 w-full py-3 px-4 inline-flex justify-center items-center cursor-pointer gap-x-2 text-sm font-extrabold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">Login</button>
                                     </div>
                                 </form>
+
+                                <!-- Google Login button -->
+                                <div class="mt-4">
+                                    <button @click="handleGoogleLogin" class="w-full py-3 px-4 inline-flex justify-center items-center cursor-pointer gap-x-2 text-sm font-extrabold rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 dark:bg-neutral-900 dark:border-neutral-500 dark:text-neutral-400 dark:hover:bg-neutral-800">
+                                        <i class="fa-brands fa-google me-2"></i>Login with Google
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

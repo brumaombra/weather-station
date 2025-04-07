@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useGlobalStore } from '~/composables/stores/useGlobalStore.js';
 
 let app = null;
@@ -83,6 +83,35 @@ export const emailPasswordLogin = async (email, password) => {
         } else {
             throw new Error('An unknown error occurred. Please try again.');
         }
+    }
+};
+
+// Login the user with Google
+export const googleLogin = async () => {
+    try {
+        const globalStore = useGlobalStore();
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+
+        // Sign in with Google
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        // Get Firebase token
+        const token = await user.getIdToken();
+
+        // Store token in a cookie
+        await useFetch('/api/auth/set-cookie', {
+            method: 'POST',
+            body: { token }
+        });
+
+        // Update global store
+        globalStore.value.user = user;
+        return user;
+    } catch (error) {
+        console.error('Error during Google login:', error);
+        throw new Error('Failed to log in with Google. Please try again.');
     }
 };
 
