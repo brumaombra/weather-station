@@ -24,6 +24,12 @@ export default defineNuxtConfig({
         }
     },
 
+    app: {
+        head: {
+            title: 'Weather Station'
+        }
+    },
+
     css: ['~/assets/css/main.css'],
 
     vite: {
