@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useGlobalStore } from '~/composables/stores/useGlobalStore.js';
-import { logout, getCurrentUser } from '~/composables/api/useAuth.js';
+import { logout, getCurrentUser } from '~/composables/api/useFirebase.js';
 
 const globalStore = useGlobalStore();
 const isDropdownOpen = ref(false);

@@ -2,7 +2,7 @@
 import { onMounted, computed, ref } from 'vue';
 import { setBusy, showMessageDialog } from '~/composables/useUtils.js';
 import { useGlobalStore } from '~/composables/stores/useGlobalStore.js';
-import { emailPasswordLogin, getCurrentUser } from "~/composables/api/useAuth.js";
+import { emailPasswordLogin, getCurrentUser } from '~/composables/api/useFirebase.js';
 
 const globalStore = useGlobalStore();
 
@@ -19,7 +19,7 @@ const handleLoginPress = async () => {
     try {
         setBusy(true);
         await emailPasswordLogin(username.value, password.value);
-        navigateTo("/"); // Redirect after login
+        navigateTo('/'); // Redirect after login
         setBusy(false);
     } catch (error) {
         setBusy(false);
@@ -35,7 +35,7 @@ const handleLoginPress = async () => {
 onMounted(async () => {
     const user = await getCurrentUser(); // Get current user
     if (user) {
-        navigateTo("/"); // Redirect to home if already logged in
+        navigateTo('/'); // Redirect to home if already logged in
     }
 });
 </script>
