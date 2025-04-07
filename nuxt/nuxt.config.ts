@@ -12,6 +12,9 @@ export default defineNuxtConfig({
         mysqlDatabase: process.env.MYSQL_DATABASE || '',
         logQueries: process.env.LOG_QUERIES || '',
 
+        // Auth token
+        authToken: process.env.AUTH_TOKEN || '',
+
         // Public runtime config
         public: {
             nodeEnv: process.env.NODE_ENV || 'development',

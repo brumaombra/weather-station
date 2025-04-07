@@ -4,16 +4,26 @@ import { validateNewMeasurementData } from '../../utils/utils.js';
 
 export default defineEventHandler(async event => {
     try {
+        // Check for the authentication token in the headers
+        const runtimeConfig = useRuntimeConfig();
+        const authHeader = event.node.req.headers['authorization'];
+        if (!authHeader || authHeader !== `Bearer ${runtimeConfig.authToken}`) {
+            throw createError({
+                statusCode: 401,
+                statusMessage: 'Unauthorized access'
+            });
+        }
+
         // Get the measurement from the request body
         const newMeasurement = await readBody(event);
 
         // Validate the data
         const validData = validateNewMeasurementData(newMeasurement);
         if (!validData) {
-            return {
+            throw createError({
                 statusCode: 400,
-                body: { message: 'Invalid data' }
-            };
+                statusMessage: 'Invalid data'
+            });
         }
 
         // Add the measurement to the database
@@ -21,9 +31,9 @@ export default defineEventHandler(async event => {
         return result;
     } catch (error) {
         console.error('Error while adding the measurement:', error);
-        return {
+        throw createError({
             statusCode: 500,
-            body: { message: 'Internal Server Error' }
-        };
+            statusMessage: 'Internal Server Error'
+        });
     }
 });
