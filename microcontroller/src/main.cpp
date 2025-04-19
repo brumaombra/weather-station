@@ -60,6 +60,5 @@ void setup() {
 // Loop
 void loop() {
     readAndPublishReadings(); // Read and publish the data to the server
-    // enterDeepSleep(); // Enter deep sleep
-    delay(10000);
+    enterDeepSleep(); // Enter deep sleep
 }

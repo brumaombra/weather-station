@@ -15,7 +15,7 @@
 #define AUTH_TOKEN "0123456789"
 
 // Device settings
-#define READING_INTERVAL 60 // Reading interval in seconds
+#define READING_INTERVAL 60 * 15 // Reading interval in seconds
 
 // Sensor pin definitions
 #define PMS_RX_PIN 16 // PMS7003 RX pin
