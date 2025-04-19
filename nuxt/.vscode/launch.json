@@ -5,10 +5,23 @@
             "type": "node",
             "request": "launch",
             "name": "Debug Nuxt",
-            "runtimeExecutable": "npm",
+            "runtimeExecutable": "npx",
             "runtimeArgs": [
-                "run",
+                "nuxt",
                 "dev"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Nuxt (with Network)",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "nuxt",
+                "dev",
+                "--host"
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal"
