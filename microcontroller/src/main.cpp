@@ -8,15 +8,6 @@
 // Define setupDone variable that's declared as extern in config.h
 RTC_DATA_ATTR bool setupDone = false;
 
-// Sensor data
-float temperature = 0;
-float humidity = 0;
-float pressure = 0;
-float gas = 0;
-float pm1 = 0;
-float pm25 = 0;
-float pm10 = 0;
-
 // Initialize the serial
 bool initSerial() {
     Serial.begin(115200); // Start the serial
@@ -34,6 +25,15 @@ void enterDeepSleep() {
 
 // Read and publish the sensor readings to the server
 void readAndPublishReadings() {
+    // Local sensor data variables
+    float temperature = 0;
+    float humidity = 0;
+    float pressure = 0;
+    float gas = 0;
+    float pm1 = 0;
+    float pm25 = 0;
+    float pm10 = 0;
+    
     // Read sensor data
     readPms(pm1, pm25, pm10);
     readBme(temperature, humidity, pressure, gas);
