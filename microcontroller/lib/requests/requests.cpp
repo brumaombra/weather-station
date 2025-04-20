@@ -60,6 +60,7 @@ bool sendHttpPostRequest(const char* json) {
     HTTPClient http;
     http.begin(SERVER_ENDPOINT);
     http.addHeader("Content-Type", "application/json");
+    http.setTimeout(15000); // Increase timeout to 15 seconds
     
     // Add authorization header with the token if present
     if (strlen(AUTH_TOKEN) > 0) {
@@ -75,7 +76,24 @@ bool sendHttpPostRequest(const char* json) {
         http.end();
         return true;
     } else {
-        if (DEV_MODE) Serial.printf("Error code: %d\n", httpResponseCode);
+        // Provide more detailed error information
+        if (DEV_MODE) {
+            Serial.printf("HTTP Error: %d - ", httpResponseCode);
+            switch (httpResponseCode) {
+                case -1: Serial.println("CONNECTION REFUSED"); break;
+                case -2: Serial.println("SEND HEADER FAILED"); break;
+                case -3: Serial.println("SEND PAYLOAD FAILED"); break;
+                case -4: Serial.println("NOT CONNECTED"); break;
+                case -5: Serial.println("CONNECTION LOST"); break;
+                case -6: Serial.println("NO STREAM"); break;
+                case -7: Serial.println("NO HTTP SERVER"); break;
+                case -8: Serial.println("TOO LESS RAM"); break;
+                case -9: Serial.println("ENCODING"); break;
+                case -10: Serial.println("STREAM WRITE"); break;
+                case -11: Serial.println("READ TIMEOUT"); break;
+                default: Serial.println("UNKNOWN ERROR");
+            }
+        }
         http.end();
         return false;
     }

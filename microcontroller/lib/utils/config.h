@@ -4,15 +4,15 @@
 #include <Arduino.h>
 
 // Development mode flag
-#define DEV_MODE true
+#define DEV_MODE false
 
 // WiFi settings
-#define WIFI_SSID "EOLO-Bettola"
-#define WIFI_PASSWORD "jfJ8c24LM"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 // Server settings
-#define SERVER_ENDPOINT "https://station.brumaombra.com/api/measurements"
-#define AUTH_TOKEN "123456789"
+#define SERVER_ENDPOINT ""
+#define AUTH_TOKEN ""
 
 // Device settings
 #define READING_INTERVAL 60 * 15 // Reading interval in seconds
