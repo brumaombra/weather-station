@@ -1,4 +1,5 @@
 <script setup>
+import { limitDecimalNumbers } from '~/composables/useUtils.js';
 import SingleMeasurementCard from '~/components/charts/SingleMeasurementCard.vue';
 
 // Props
@@ -15,48 +16,48 @@ const props = defineProps({
 			:value="props.lastMeasurement?.temperature"
 			unit="°C"
 			icon="fa-solid fa-temperature-half"
-			:percentageDifference="props.lastMeasurement?.percentages?.temperature" />
+			:percentageDifference="limitDecimalNumbers(props.lastMeasurement.percentages?.temperature, 2)" />
 
 		<!-- Humidity card -->
 		<SingleMeasurementCard title="Humidity"
 			:value="props.lastMeasurement?.humidity"
 			unit="%"
 			icon="fa-solid fa-droplet"
-			:percentageDifference="props.lastMeasurement?.percentages?.humidity" />
+			:percentageDifference="limitDecimalNumbers(props.lastMeasurement.percentages?.humidity, 2)" />
 
 		<!-- Pressure card -->
 		<SingleMeasurementCard title="Pressure"
 			:value="props.lastMeasurement?.pressure"
 			unit="hPa"
 			icon="fa-solid fa-gauge-high"
-			:percentageDifference="props.lastMeasurement?.percentages?.pressure" />
+			:percentageDifference="limitDecimalNumbers(props.lastMeasurement.percentages?.pressure, 2)" />
 		
 		<!-- Gas card -->
 		<SingleMeasurementCard title="Gas"
 			:value="props.lastMeasurement?.gas"
 			unit="kOhm"
 			icon="fa-solid fa-smog"
-			:percentageDifference="props.lastMeasurement?.percentages?.gas" />
+			:percentageDifference="limitDecimalNumbers(props.lastMeasurement.percentages?.gas, 2)" />
 
 		<!-- PM1 card -->
 		<SingleMeasurementCard title="PM1"
 			:value="props.lastMeasurement?.pm1"
 			unit="µg/m³"
 			icon="fa-solid fa-hill-rockslide"
-			:percentageDifference="props.lastMeasurement?.percentages?.pm1" />
+			:percentageDifference="limitDecimalNumbers(props.lastMeasurement.percentages?.pm1, 2)" />
 
 		<!-- PM2.5 card -->
 		<SingleMeasurementCard title="PM2.5"
 			:value="props.lastMeasurement?.pm25"
 			unit="µg/m³"
 			icon="fa-solid fa-hill-rockslide"
-			:percentageDifference="props.lastMeasurement?.percentages?.pm25" />
+			:percentageDifference="limitDecimalNumbers(props.lastMeasurement.percentages?.pm25, 2)" />
 
 		<!-- PM10 card -->
 		<SingleMeasurementCard title="PM10"
 			:value="props.lastMeasurement?.pm10"
 			unit="µg/m³"
 			icon="fa-solid fa-hill-rockslide"
-			:percentageDifference="props.lastMeasurement?.percentages?.pm10" />
+			:percentageDifference="limitDecimalNumbers(props.lastMeasurement.percentages?.pm10, 2)" />
 	</div>
 </template>

@@ -11,7 +11,7 @@ const emit = defineEmits(['close']);
 
 // Routes list
 const navigationItems = [{
-    path: '/dashboard/snapshot',
+    path: '/dashboard',
     label: 'Snapshot',
     icon: 'fa-solid fa-camera'
 }, {

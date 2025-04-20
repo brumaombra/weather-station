@@ -62,7 +62,7 @@ export const getPercentageDifference = (start, end) => {
     if (typeof start !== 'number' || typeof end !== 'number') return 0; // If no data, exit
     let percentageDifference = 100 * Math.abs((start - end) / ((start + end) / 2));
     if (start > end) percentageDifference = 0 - percentageDifference;
-    return percentageDifference.toFixed(0); // Return the percentage difference
+    return limitDecimalNumbers(percentageDifference, 2); // Limit the decimal numbers to 2
 };
 
 // Get last week date
@@ -71,4 +71,11 @@ export const getLastWeekDate = () => {
     pastDate.setDate(pastDate.getDate() - 7);
     const startDate = getMaxAndMinFromDate(pastDate).minDate;
     return formatJsDateToIsoStringDate(startDate, true);
+};
+
+// Limit decimal numbers
+export const limitDecimalNumbers = (number, decimalPlaces = 2) => {
+    if (typeof number !== 'number') return 0; // If no data, exit
+    const factor = Math.pow(10, decimalPlaces);
+    return Math.round(number * factor) / factor; // Return the number with limited decimal places
 };

@@ -26,15 +26,25 @@ const props = defineProps({
                 </div>
 
                 <!-- Value and percentage difference -->
-                <div class="mt-1 flex items-center gap-x-2">
+                <div class="mt-1 flex items-center gap-x-3">
                     <h3 class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">{{ formatUnitNumber(props.value, 1) }} <span class="text-sm font-light">{{ props.unit }}</span></h3>
-                    <span v-if="percentageDifference < 0" class="inline-flex items-center gap-x-1 py-0.5 px-2 rounded-full bg-red-100 text-red-900 dark:bg-red-800 dark:text-red-100">
+                    
+                    <!-- Less than 0 -->
+                    <span v-if="percentageDifference < 0" class="inline-flex items-center gap-x-1 py-1 px-3 rounded-full bg-red-100 text-red-900 dark:bg-red-800 dark:text-red-100">
                         <i class="fa-solid fa-arrow-trend-down text-xs"></i>
                         <span class="inline-block text-xs font-medium">{{ Math.abs(percentageDifference) }} %</span>
                     </span>
-                    <span v-else class="inline-flex items-center gap-x-1 py-0.5 px-2 rounded-full bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100">
+
+                    <!-- Greater than 0 -->
+                    <span v-else-if="percentageDifference > 0" class="inline-flex items-center gap-x-1 py-1 px-3 rounded-full bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100">
                         <i class="fa-solid fa-arrow-trend-up text-xs"></i>
                         <span class="inline-block text-xs font-medium">{{ Math.abs(percentageDifference) }} %</span>
+                    </span>
+
+                    <!-- Equal to 0 -->
+                    <span v-else class="inline-flex items-center gap-x-1 py-1 px-3 rounded-full bg-gray-100 text-gray-900 dark:bg-neutral-700 dark:text-neutral-200">
+                        <i class="fa-solid fa-minus text-xs"></i>
+                        <span class="inline-block text-xs font-medium">UNCH</span>
                     </span>
                 </div>
             </div>

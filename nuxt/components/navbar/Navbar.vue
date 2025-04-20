@@ -16,7 +16,7 @@ const toggleSidebar = () => {
         <Sidebar :is-open="isSidebarOpen" @close="isSidebarOpen = false" />
 
         <!-- Navbar -->
-        <header class="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white/80 backdrop-blur-xl border-b border-gray-200 py-2.5 sm:py-4 lg:ps-64 dark:bg-neutral-900/80 dark:border-neutral-700">
+        <header class="fixed top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white/80 backdrop-blur-xl border-b border-gray-200 py-2.5 sm:py-4 lg:ps-64 dark:bg-neutral-900/80 dark:border-neutral-700 z-30">
             <nav class="flex basis-full items-center w-full mx-auto px-4 sm:px-6">
                 <!-- Mobile section -->
                 <div class="me-5 lg:me-0 lg:hidden">
@@ -32,5 +32,8 @@ const toggleSidebar = () => {
                 </div>
             </nav>
         </header>
+
+        <!-- Padding to prevent content from going under the navbar -->
+        <div class="pt-[53px] sm:pt-[65px]"></div>
     </div>
 </template>
