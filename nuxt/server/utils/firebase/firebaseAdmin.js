@@ -1,13 +1,13 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import firebaseServiceAccount from './firebaseServiceAccount.json';
+// import firebaseServiceAccount from './firebaseServiceAccount.json';
 
 let app = null;
 
 // Initialize Firebase
 export const initFirebase = async () => {
     try {
-        app = initializeApp({ credential: cert(firebaseServiceAccount) });
+        // app = initializeApp({ credential: cert(firebaseServiceAccount) });
         console.log('Firebase initialized successfully');
         return app;
     } catch (error) {
