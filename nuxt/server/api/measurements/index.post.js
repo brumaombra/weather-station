@@ -20,6 +20,7 @@ export default defineEventHandler(async event => {
         const runtimeConfig = useRuntimeConfig();
         const authHeader = event.node.req.headers['authorization'];
         console.log('Authorization header:', authHeader);
+        console.log('Runtime config auth token:', runtimeConfig.authToken);
         if (!authHeader || authHeader !== `Bearer ${runtimeConfig.authToken}`) {
             throw createError({
                 statusCode: 401,
