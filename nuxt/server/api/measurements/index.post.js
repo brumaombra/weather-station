@@ -3,6 +3,18 @@ import { addMeasurement } from '../../db/measurements.js';
 import { validateNewMeasurementData } from '../../utils/utils.js';
 
 export default defineEventHandler(async event => {
+    // Set CORS headers
+    event.node.res.setHeader('Access-Control-Allow-Origin', '*');
+    event.node.res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    event.node.res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    // Handle preflight OPTIONS request
+    if (event.node.req.method === 'OPTIONS') {
+        event.node.res.statusCode = 204;
+        event.node.res.end();
+        return;
+    }
+
     try {
         // Check for the authentication token in the headers
         const runtimeConfig = useRuntimeConfig();
