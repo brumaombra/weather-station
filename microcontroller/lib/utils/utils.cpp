@@ -20,8 +20,8 @@ void blinkLed(int times, int delayMs) {
     // Blink the specified number of times
     for (int i = 0; i < times; i++) {
         digitalWrite(LED_PIN, HIGH); // Turn on LED
-        delay(delayMs);              // Wait
-        digitalWrite(LED_PIN, LOW);  // Turn off LED
-        delay(delayMs);              // Wait before next blink
+        delay(delayMs); // Wait
+        digitalWrite(LED_PIN, LOW); // Turn off LED
+        delay(delayMs); // Wait before next blink
     }
 }
