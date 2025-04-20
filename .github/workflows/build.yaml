@@ -11,6 +11,9 @@ jobs:
     env: # Environment variables
       BUILDTIME: 'true'
 
+      # Auth token
+      AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+
       # MySQL
       MYSQL_IP: ${{ secrets.MYSQL_IP }}
       MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
