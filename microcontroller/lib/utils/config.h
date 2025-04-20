@@ -7,12 +7,12 @@
 #define DEV_MODE true
 
 // WiFi settings
-#define WIFI_SSID ""
-#define WIFI_PASSWORD ""
+#define WIFI_SSID "EOLO-Bettola"
+#define WIFI_PASSWORD "jfJ8c24LM"
 
 // Server settings
-#define SERVER_ENDPOINT ""
-#define AUTH_TOKEN ""
+#define SERVER_ENDPOINT "https://station.brumaombra.com/api/measurements"
+#define AUTH_TOKEN "123456789"
 
 // Device settings
 #define READING_INTERVAL 60 * 15 // Reading interval in seconds
