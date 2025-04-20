@@ -25,7 +25,7 @@ const handleLogoutPress = async () => {
 
 // On component mounted
 onMounted(async () => {
-    globalStore.value.user = await getCurrentUser(); // Get current user
+    // globalStore.value.user = await getCurrentUser(); // Get current user
 });
 </script>
 
