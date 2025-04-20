@@ -1,5 +1,6 @@
 #include "requests.h"
 #include "../utils/config.h"
+#include "../utils/utils.h"
 
 // Connect to Wi-Fi
 bool connectToWifi() {
@@ -86,5 +87,9 @@ bool publishReadings(float temperature, float humidity, float pressure, float ga
     const bool jsonParsed = createJsonMeasurements(json, sizeof(json), temperature, humidity, pressure, gas, pm1, pm25, pm10);
     if (!jsonParsed) return false;
     const bool dataPublished = sendHttpPostRequest(json);
+    if (dataPublished) {
+        blinkLed(); // Blink LED on successful data publish
+    }
+    
     return dataPublished;
 }

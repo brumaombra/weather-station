@@ -21,6 +21,9 @@
 #define PMS_RX_PIN 16 // PMS7003 RX pin
 #define PMS_TX_PIN 17 // PMS7003 TX pin
 
+// LED pin definition
+#define LED_PIN 2 // ESP32 onboard LED
+
 // Declare as extern to avoid multiple definition errors
 extern RTC_DATA_ATTR bool setupDone;
 
