@@ -1,5 +1,4 @@
 import { initMySqlDatabase } from '~/server/db/connection.js';
-import { initFirebase } from '~/server/utils/firebase/firebaseAdmin.js';
 
 // Init function
 export default defineNitroPlugin(async () => {
@@ -17,7 +16,6 @@ export default defineNitroPlugin(async () => {
 const initServices = async () => {
     try {
         await initMySqlDatabase(); // Initialize the MySQL database
-        await initFirebase(); // Initialize Firebase
     } catch (error) {
         console.error('Error initializing services:', error);
         throw error;

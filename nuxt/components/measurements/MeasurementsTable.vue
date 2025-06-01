@@ -1,30 +1,14 @@
 <script setup>
-import { nextTick, watch, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useMeasurementsStore } from '~/composables/stores/useMeasurementsStore.js';
-import { useGlobalStore } from '~/composables/stores/useGlobalStore.js';
 import { setBusy, showMessageDialog, getMaxAndMinFromDate, CustomError } from '~/composables/useUtils.js';
-import { getMeasurements, deleteMeasurements, updateMeasurement } from '~/composables/api/useMeasurements.js';
+import { getMeasurements } from '~/composables/api/useMeasurements.js';
 import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import FilterModal from '~/components/FilterModal.vue';
-import EditModal from '~/components/measurements/EditModal.vue';
-import ConfirmDialog from '~/components/ConfirmDialog.vue';
 import CustomButton from '~/components/CustomButton.vue';
 
-// Data
 const viewModel = useMeasurementsStore();
-const globalStore = useGlobalStore();
 const filterModalOpen = ref(false);
-const confirmDeleteModalOpen = ref(false);
-const confirmMassDeleteModalOpen = ref(false);
-const editModalOpen = ref(false);
-
-// Add watcher for selectedElements (Workaround for multi delete button visibility)
-watch(() => viewModel.value.selectedElements, async () => {
-    await nextTick(); // Wait for the DOM to update
-    if (window.HSOverlay) {
-        window.HSOverlay.autoInit(); // Reinit the overlay
-    }
-});
 
 // Load the measurements
 const loadMeasurements = async () => {
@@ -43,7 +27,6 @@ const loadMeasurements = async () => {
         setBusy(true); // Busy on
         const results = await getMeasurements(params); // Get the measurements
         viewModel.value.measurementsList = results; // Update the data
-        handleTableSelectionChange(); // Check if selected
     } catch (error) {
         const customError = error.isCustom ? error.message : 'Error while loading the measurements';
         showMessageDialog(customError, 'error'); // Show toast
@@ -56,23 +39,6 @@ const loadMeasurements = async () => {
 // Open filter modal button pressed
 const handleOpenFilterModalPress = () => {
     filterModalOpen.value = true; // Open the modal
-};
-
-// Open edit modal button pressed
-const handleOpenEditModalPress = selectedItem => {
-    viewModel.value.tempMeasurement = selectedItem;
-    editModalOpen.value = true;
-};
-
-// Open delete modal button pressed
-const handleOpenConfirmDeleteModalPress = selectedItem => {
-    viewModel.value.tempMeasurement = selectedItem;
-    confirmDeleteModalOpen.value = true;
-};
-
-// Open mass delete modal button pressed
-const handleOpenConfirmMassDeleteModalPress = () => {
-    confirmMassDeleteModalOpen.value = true;
 };
 
 // The filter dialog button "apply"
@@ -88,80 +54,9 @@ const handleApplyFilterPress = async filters => {
     await loadMeasurements(); // Load measurements
 };
 
-// Select all table items
-const handleSelectDeselectAllPress = () => {
-    viewModel.value.selectedAll = !viewModel.value.selectedAll; // Change true/false
-    viewModel.value.measurementsList.results.forEach(item => item.selected = viewModel.value.selectedAll);
-    handleTableSelectionChange(); // Check if selected
-};
-
-// Table selection change event
-const handleTableSelectionChange = () => {
-    const selectedElements = viewModel.value.measurementsList.results.filter(item => item.selected); // Get the selected items
-    viewModel.value.selectedElements = selectedElements; // If items selected, display mass delete button
-};
-
-// Open a dialog
-const saveItemReference = measurement => {
-    if (measurement) Object.assign(viewModel.value.tempMeasurement, { ...measurement }); // Save the element
-};
-
-// Edit the measurement
-const handleSaveEditPress = async updatedMeasurement => {
-    const newData = { ...updatedMeasurement };
-    delete newData.timestamp; // Remove timestamp
-    delete newData.selected; // Remove selected flag
-
-    try {
-        setBusy(true); // Busy on
-        await updateMeasurement(newData); // Update the data
-        showMessageDialog('Changes successfully saved!', 'success'); // Show toast
-        await loadMeasurements(); // Load the measurements
-    } catch (error) {
-        const customError = error.isCustom ? error.message : 'Error while saving the changes';
-        showMessageDialog(customError, 'error'); // Show toast
-        throw error.isCustom ? error : new CustomError(customError); // Throw the error
-    } finally {
-        setBusy(false); // Busy off
-    }
-};
-
-// Delete the measurement
-const handleDeleteItemPress = async () => {
-    try {
-        setBusy(true); // Busy on
-        await deleteMeasurements([viewModel.value.tempMeasurement.id]);
-        showMessageDialog('Measurement deleted successfully!', 'success'); // Show toast
-        await loadMeasurements(); // Load the measurements
-    } catch (error) {
-        const customError = error.isCustom ? error.message : 'Error while deleting the measurement';
-        showMessageDialog(customError, 'error'); // Show toast
-        throw error.isCustom ? error : new CustomError(customError); // Throw the error
-    } finally {
-        setBusy(false); // Busy off
-    }
-};
-
 // Reset button pressed
 const handleRefreshPress = async () => {
     await loadMeasurements(); // Load the measurements
-};
-
-// Delete selected button pressed
-const handleMassDeletePress = async () => {
-    try {
-        setBusy(true); // Busy on
-        const selectedIds = viewModel.value.measurementsList.results.filter(item => item.selected).map(item => item.id); // Get the selected IDs
-        const results = await deleteMeasurements(selectedIds); // Call mass delete
-        showMessageDialog(`${results} measurements deleted successfully!`, 'success'); // Show toast
-        await loadMeasurements(); // Load the measurements
-    } catch (error) {
-        const customError = error.isCustom ? error.message : 'Error while deleting the measurements';
-        showMessageDialog(customError, 'error'); // Show toast
-        throw error.isCustom ? error : new CustomError(customError); // Throw the error
-    } finally {
-        setBusy(false); // Busy off
-    }
 };
 
 // Go to previous page
@@ -214,7 +109,6 @@ onMounted(async () => {
                         <!-- Buttons -->
                         <div>
                             <div class="inline-flex gap-x-2">
-                                <CustomButton type="secondary" :text="`Delete ${viewModel.selectedElements.length} items`" icon="fa-solid fa-trash-can" v-if="viewModel.selectedElements.length > 0" @click="handleOpenConfirmMassDeleteModalPress" />
                                 <CustomButton type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
                                 <CustomButton type="primary" text="Refresh" icon="fa-solid fa-arrows-rotate" @click="handleRefreshPress" />
                             </div>
@@ -225,9 +119,6 @@ onMounted(async () => {
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50 dark:bg-neutral-800">
                             <tr>
-                                <th v-if="globalStore.user" scope="col" class="px-6 py-3 text-center">
-                                    <input type="checkbox" @change="handleSelectDeselectAllPress" class="relative h-4 w-4 cursor-pointer rounded border-gray-300 bg-white transition-all checked:border-blue-600 checked:bg-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:ring-offset-2 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 dark:border-gray-600 dark:bg-neutral-700 dark:checked:border-blue-500 dark:checked:bg-blue-500 dark:focus:ring-blue-600 dark:focus:ring-offset-neutral-800">
-                                </th>
                                 <th scope="col" class="px-6 py-3 text-center">
                                     <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">ID</span>
                                 </th>
@@ -255,17 +146,10 @@ onMounted(async () => {
                                 <th scope="col" class="px-6 py-3 text-center">
                                     <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">PM10</span>
                                 </th>
-                                <th v-if="globalStore.user"></th>
-                                <th v-if="globalStore.user"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <tr v-for="item in viewModel.measurementsList.results">
-                                <td v-if="globalStore.user" class="size-px whitespace-nowrap">
-                                    <div class="ps-6 py-3">
-                                        <input type="checkbox" v-model="item.selected" @change="handleTableSelectionChange" class="shrink-0 w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
-                                    </div>
-                                </td>
                                 <td class="size-px whitespace-nowrap">
                                     <div class="px-6 py-3 text-center">
                                         <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ item.id }}</span>
@@ -353,16 +237,6 @@ onMounted(async () => {
                                         </div>
                                     </div>
                                 </td>
-                                <td v-if="globalStore.user" class="size-px whitespace-nowrap">
-                                    <div class="px-4 py-3 text-center">
-                                        <i class="fa-regular fa-pen-to-square text-lg cursor-pointer text-gray-500" @click="handleOpenEditModalPress(item)"></i>
-                                    </div>
-                                </td>
-                                <td v-if="globalStore.user" class="size-px whitespace-nowrap">
-                                    <div class="px-4 py-3 text-center">
-                                        <i class="fa-regular fa-trash-can text-lg cursor-pointer text-red-500" @click="handleOpenConfirmDeleteModalPress(item)"></i>
-                                    </div>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -387,31 +261,5 @@ onMounted(async () => {
     </div>
 
     <!-- Filter modal -->
-    <FilterModal :visible="filterModalOpen"
-        @update:visible="filterModalOpen = $event"
-        :filters="viewModel.filters"
-        @apply="handleApplyFilterPress"
-        :startDateVisible="true"
-        :endDateVisible="true"
-        :orderByVisible="true"
-        :orderDirectionVisible="true"
-        :measurementTypeVisible="true" />
-
-    <!-- Edit modal -->
-    <EditModal :visible="editModalOpen"
-        @update:visible="editModalOpen = $event"
-        :inputs="viewModel.tempMeasurement"
-        @save="handleSaveEditPress" />
-
-    <!-- Confirm delete modal -->
-    <ConfirmDialog :visible="confirmDeleteModalOpen"
-        @update:visible="confirmDeleteModalOpen = $event"
-        message="Delete the measurement?"
-        @confirm="handleDeleteItemPress" />
-
-    <!-- Confirm mass delete modal -->
-    <ConfirmDialog :visible="confirmMassDeleteModalOpen"
-        @update:visible="confirmMassDeleteModalOpen = $event"
-        message="Delete the selected measurements?"
-        @confirm="handleMassDeletePress" />
+    <FilterModal :visible="filterModalOpen" @update:visible="filterModalOpen = $event" :filters="viewModel.filters" @apply="handleApplyFilterPress" :startDateVisible="true" :endDateVisible="true" :orderByVisible="true" :orderDirectionVisible="true" :measurementTypeVisible="true" />
 </template>
