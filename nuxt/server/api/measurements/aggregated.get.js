@@ -1,4 +1,4 @@
-import { getAggregatedDailyMeasurements } from '../../db/measurements.js';
+import { getAggregatedDailyMeasurements } from '~/server/db/measurements.js';
 
 export default defineEventHandler(async event => {
     try {

@@ -1,60 +1,56 @@
 <script setup>
 import { onMounted, watch, reactive } from 'vue';
-import { formatTimestampChart } from '~/utils/formatter.js';
 import { getPercentageDifference, cloneObject } from '~/composables/useUtils.js';
 import LineChartOptions from '~/utils/chartConfigs/lineChart.js';
 import ChartCard from '~/components/ChartCard.vue';
 
 // Props
 const props = defineProps({
-    measurementsList: { type: Array, default: [] }
+    measurementsList: { type: Array, default: () => [] }
 });
 
-// Chart data
 const options = reactive(cloneObject(LineChartOptions));
-let percentage = 0; // Percentage difference
+let percentageDifference = 0;
 
 // Create the chart
 const createChart = () => {
-    const measurements = props.measurementsList || []; // Measurements list
-    if (measurements.length === 0) return; // Exit if empty
-    const labels = measurements.map(item => formatTimestampChart(item.date)); // Label
-    const average = measurements.map(item => item.gasAvg); // Average
-    const max = measurements.map(item => item.gasMax); // Max
-    const min = measurements.map(item => item.gasMin); // Mix
+    const measurements = props.measurementsList;
+    if (!measurements.length) return;
+
+    // Prepare data for the chart
+    const labels = [], average = [], max = [], min = [];
+    for (const measurement of measurements) {
+        labels.push(measurement.date);
+        average.push(measurement.gasAvg);
+        max.push(measurement.gasMax);
+        min.push(measurement.gasMin);
+    }
 
     // Set chart data
     options.xaxis.categories = labels;
-    options.series = [{
-        name: 'Average',
-        data: average
-    }, {
-        name: 'Max',
-        data: max
-    }, {
-        name: 'Min',
-        data: min
-    }];
+    options.series = [
+        { name: 'Average', data: average },
+        { name: 'Max', data: max },
+        { name: 'Min', data: min }
+    ];
 
-    // Calculate the difference
-    percentage = getPercentageDifference(measurements[0]?.gasAvg, measurements[measurements.length - 1]?.gasAvg);
+    // Calculate the percentage difference
+    percentageDifference = getPercentageDifference(measurements[0]?.gasAvg, measurements.at(-1)?.gasAvg);
 };
 
-// On mounted event
+// On component mounted
 onMounted(() => {
-    createChart(); // Create the chart
+    createChart();
 });
 
-// Watch the property for changes
-watch(() => props.measurementsList, () => {
-    createChart(); // Create the chart
-});
+// Watch for changes in the measurements list
+watch(() => props.measurementsList, createChart);
 </script>
 
 <template>
     <ChartCard
         title="Gas"
-        :percentage="percentage"
+        :percentage="percentageDifference"
         :measurements="props.measurementsList"
         chart-type="line"
         :chartSeries="options.series"

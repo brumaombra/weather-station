@@ -1,4 +1,4 @@
-import { getMeasurements } from '../../db/measurements.js';
+import { getMeasurements } from '~/server/db/measurements.js';
 
 export default defineEventHandler(async event => {
     try {

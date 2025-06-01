@@ -5,3 +5,42 @@
 body {
     font-family: "Mulish", sans-serif;
 }
+
+/* ---------------------------------- Charts ---------------------------------- */
+
+.apexcharts-legend-marker {
+    margin-right: 5px !important;
+    border-radius: 10px;
+    overflow: hidden;
+    border-color: #FFF;
+}
+
+.apexcharts-tooltip {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    padding: 8px !important;
+}
+
+.apexcharts-tooltip-title {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    padding: 6px 8px !important;
+    margin-bottom: 4px;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+}
+
+.apexcharts-tooltip-text-y-label {
+    color: #9ca3af !important;
+    font-size: 12px !important;
+    margin-right: 4px !important;
+}
+
+.apexcharts-tooltip-text-y-value {
+    color: #1e293b !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}

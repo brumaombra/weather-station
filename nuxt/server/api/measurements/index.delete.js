@@ -1,6 +1,6 @@
 import { readBody } from 'h3';
-import { deleteMeasurements } from '../../db/measurements.js';
-import { checkFirebaseSession } from '../../utils/firebase/firebaseAdmin.js';
+import { deleteMeasurements } from '~/server/db/measurements.js';
+import { checkFirebaseSession } from '~/server/utils/firebase/firebaseAdmin.js';
 
 export default defineEventHandler(async event => {
     try {

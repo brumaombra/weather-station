@@ -1,7 +1,7 @@
 import { readBody } from 'h3';
-import { updateMeasurement } from '../../db/measurements.js';
-import { validateNewMeasurementData } from '../../utils/utils.js';
-import { checkFirebaseSession } from '../../utils/firebase/firebaseAdmin.js';
+import { updateMeasurement } from '~/server/db/measurements.js';
+import { validateNewMeasurementData } from '~/server/utils/utils.js';
+import { checkFirebaseSession } from '~/server/utils/firebase/firebaseAdmin.js';
 
 export default defineEventHandler(async event => {
     try {
