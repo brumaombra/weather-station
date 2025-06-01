@@ -6,10 +6,7 @@ import { getMeasurements, getLastMeasurement, getAggregatedMeasurements } from '
 import { formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import CurrentDataCards from '~/components/charts/CurrentDataCards.vue';
 import MeasurementsTable from '~/components/snapshot/MeasurementsTable.vue';
-import TemperatureLineChart from '~/components/charts/TemperatureLineChart.vue';
-import HumidityLineChart from '~/components/charts/HumidityLineChart.vue';
-import PressureLineChart from '~/components/charts/PressureLineChart.vue';
-import GasLineChart from '~/components/charts/GasLineChart.vue';
+import LineChartCard from '~/components/charts/LineChartCard.vue';
 import TempHumScatterChart from '~/components/correlations/TempHumScatterChart.vue';
 import Pm25Pm10ScatterChart from '~/components/correlations/Pm25Pm10ScatterChart.vue';
 import PressGasScatterChart from '~/components/correlations/PressGasScatterChart.vue';
@@ -118,16 +115,32 @@ onMounted(async () => {
             <h5 class="font-bold mb-3 dark:text-neutral-200">Charts</h5>
             <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
                 <!-- Temperature chart -->
-                <TemperatureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                    title="Temperature"
+                    avgKey="temperatureAvg"
+                    maxKey="temperatureMax"
+                    minKey="temperatureMin" />
 
                 <!-- Humidity chart -->
-                <HumidityLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                    title="Humidity"
+                    avgKey="humidityAvg"
+                    maxKey="humidityMax"
+                    minKey="humidityMin" />
 
                 <!-- Pressure chart -->
-                <PressureLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                    title="Pressure"
+                    avgKey="pressureAvg"
+                    maxKey="pressureMax"
+                    minKey="pressureMin" />
 
                 <!-- Gas chart -->
-                <GasLineChart :measurementsList="viewModel.aggregatedMeasurementsList?.results" />
+                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                    title="Gas"
+                    avgKey="gasAvg"
+                    maxKey="gasMax"
+                    minKey="gasMin" />
             </div>
         </div>
 

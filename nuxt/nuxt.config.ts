@@ -33,6 +33,10 @@ export default defineNuxtConfig({
         }
     },
 
+    routeRules: {
+        '/**': { ssr: true, prerender: true }
+    },
+
     css: ['~/assets/css/main.css'],
 
     vite: {
