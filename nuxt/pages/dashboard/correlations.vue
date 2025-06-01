@@ -1,16 +1,11 @@
 <script setup>
 import { onMounted } from 'vue';
-import { useCorrelationsStore } from '~/composables/stores/useCorrelationsStore.js';
-import TempHumScatterChart from '~/components/correlations/TempHumScatterChart.vue';
-import Pm25Pm10ScatterChart from '~/components/correlations/Pm25Pm10ScatterChart.vue';
-import PressGasScatterChart from '~/components/correlations/PressGasScatterChart.vue';
-import TempGasScatterChart from '~/components/correlations/TempGasScatterChart.vue';
-import TempPm1ScatterChart from '~/components/correlations/TempPm1ScatterChart.vue';
-import HumPm1ScatterChart from '~/components/correlations/HumPm1ScatterChart.vue';
-import FilterModal from '~/components/FilterModal.vue';
 import { setBusy, showMessageDialog, getMaxAndMinFromDate } from '~/composables/useUtils.js';
 import { getMeasurements } from '~/composables/api/useMeasurements.js';
 import { formatJsDateToIsoStringDate } from '~/utils/formatter.js';
+import { useCorrelationsStore } from '~/composables/stores/useCorrelationsStore.js';
+import ScatterChartCard from '~/components/correlations/ScatterChartCard.vue';
+import FilterModal from '~/components/FilterModal.vue';
 
 // View model
 const viewModel = useCorrelationsStore();
@@ -127,25 +122,40 @@ onMounted(async () => {
             <h5 class="font-bold mb-3 dark:text-neutral-200">Charts</h5>
             <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
                 <!-- Temperature/PM1 chart -->
-                <TempPm1ScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Temperature/PM1"
+                    xKey="temperature"
+                    yKey="pm1" />
 
                 <!-- Temperature/humidity chart -->
-                <TempHumScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Temperature/Humidity"
+                    xKey="temperature"
+                    yKey="humidity" />
 
                 <!-- PM2.5/PM10 chart -->
-                <Pm25Pm10ScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="PM2.5/PM10"
+                    xKey="pm25"
+                    yKey="pm10" />
 
                 <!-- Pressure/Gas chart -->
-                <PressGasScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Pressure/Gas"
+                    xKey="pressure"
+                    yKey="gas" />
 
                 <!-- Temperature/Gas chart -->
-                <TempGasScatterChart :measurementsList="viewModel.measurementsList?.results" />
-
-                <!-- Temperature/PM1 chart -->
-                <TempPm1ScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Temperature/Gas"
+                    xKey="temperature"
+                    yKey="gas" />
 
                 <!-- Humidity/PM1 chart -->
-                <HumPm1ScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Humidity/PM1"
+                    xKey="humidity"
+                    yKey="pm1" />
             </div>
         </div>
 
