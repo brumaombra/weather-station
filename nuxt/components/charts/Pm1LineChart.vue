@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, watch, reactive } from 'vue';
+import { computed } from 'vue';
 import { getPercentageDifference, cloneObject } from '~/composables/useUtils.js';
 import LineChartOptions from '~/utils/chartConfigs/lineChart.js';
 import ChartCard from '~/components/ChartCard.vue';
@@ -9,13 +9,11 @@ const props = defineProps({
     measurementsList: { type: Array, default: () => [] }
 });
 
-const options = reactive(cloneObject(LineChartOptions));
-let percentageDifference = 0;
-
-// Create the chart
-const createChart = () => {
+// Computed chart options and series
+const chartOptions = computed(() => {
+    const options = cloneObject(LineChartOptions);
     const measurements = props.measurementsList;
-    if (!measurements.length) return;
+    if (!measurements.length) return options;
 
     // Prepare data for the chart
     const labels = [], average = [], max = [], min = [];
@@ -34,26 +32,18 @@ const createChart = () => {
         { name: 'Min', data: min }
     ];
 
-    // Calculate the percentage difference
-    percentageDifference = getPercentageDifference(measurements[0]?.gasAvg, measurements.at(-1)?.gasAvg);
-};
-
-// On component mounted
-onMounted(() => {
-    createChart();
+    // Return the options
+    return options;
 });
 
-// Watch for changes in the measurements list
-watch(() => props.measurementsList, createChart);
+// Computed percentage difference
+const percentageDifference = computed(() => {
+    const measurements = props.measurementsList;
+    if (!measurements.length) return 0;
+    return getPercentageDifference(measurements[0]?.pm1Avg, measurements.at(-1)?.pm1Avg);
+});
 </script>
 
 <template>
-    <ChartCard
-        title="PM1"
-        :percentage="percentageDifference"
-        :measurements="props.measurementsList"
-        chart-type="line"
-        :chartSeries="options.series"
-        :chartOptions="options"
-    />
+    <ChartCard title="PM1" :percentage="percentageDifference" :measurements="props.measurementsList" chart-type="line" :chartSeries="chartOptions.series" :chart-options="chartOptions" />
 </template>

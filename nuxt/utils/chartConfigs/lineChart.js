@@ -81,5 +81,19 @@ export default {
         labels: {
             colors: '#374151'
         }
-    }
+    }, responsive: [{
+        breakpoint: 640,
+        options: {
+            chart: {
+                height: 300
+            }, labels: {
+                offsetX: -2
+            }, yaxis: {
+                decimalsInFloat: 1,
+                labels: {
+                    align: 'left'
+                }
+            }
+        }
+    }]
 };
