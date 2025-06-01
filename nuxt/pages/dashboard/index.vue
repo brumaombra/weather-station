@@ -7,10 +7,7 @@ import { formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import CurrentDataCards from '~/components/charts/CurrentDataCards.vue';
 import MeasurementsTable from '~/components/snapshot/MeasurementsTable.vue';
 import LineChartCard from '~/components/charts/LineChartCard.vue';
-import TempHumScatterChart from '~/components/correlations/TempHumScatterChart.vue';
-import Pm25Pm10ScatterChart from '~/components/correlations/Pm25Pm10ScatterChart.vue';
-import PressGasScatterChart from '~/components/correlations/PressGasScatterChart.vue';
-import TempGasScatterChart from '~/components/correlations/TempGasScatterChart.vue';
+import ScatterChartCard from '~/components/correlations/ScatterChartCard.vue';
 
 // View model
 const viewModel = useSnapshotStore();
@@ -149,16 +146,28 @@ onMounted(async () => {
             <h5 class="font-bold mb-3 dark:text-neutral-200">Correlations</h5>
             <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
                 <!-- Temperature/humidity chart -->
-                <TempHumScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Temperature/Humidity"
+                    xKey="temperature"
+                    yKey="humidity" />
 
                 <!-- PM2.5/PM10 chart -->
-                <Pm25Pm10ScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="PM2.5/PM10"
+                    xKey="pm25"
+                    yKey="pm10" />
 
                 <!-- Pressure/Gas chart -->
-                <PressGasScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Pressure/Gas"
+                    xKey="pressure"
+                    yKey="gas" />
 
                 <!-- Temperature/Gas chart -->
-                <TempGasScatterChart :measurementsList="viewModel.measurementsList?.results" />
+                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                    title="Temperature/Gas"
+                    xKey="temperature"
+                    yKey="gas" />
             </div>
         </div>
     </NuxtLayout>
