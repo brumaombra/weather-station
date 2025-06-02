@@ -89,170 +89,212 @@ onMounted(async () => {
 
 <template>
     <!-- Table card -->
-    <div class="flex flex-col">
-        <div class="-m-1.5 overflow-x-auto">
-            <div class="p-1.5 min-w-full inline-block align-middle">
-                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-neutral-800 dark:border-neutral-500">
-                    <!-- Header -->
-                    <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200">
-                        <!-- Title -->
-                        <div class="flex items-center">
-                            <div class="mr-5">
-                                <i class="fa-solid fa-table text-xl dark:text-neutral-200"></i>
+    <div class="flex flex-col custom-box-shadow-2 rounded-2xl border border-gray-200/50 backdrop-blur-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <div class="min-w-full inline-block align-middle">
+                <!-- Header -->
+                <div class="px-8 py-6 border-b border-gray-100/80 dark:border-neutral-700/50 bg-white">
+                    <!-- Title Section -->
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                        <div class="flex items-center gap-5">
+                            <!-- Icon -->
+                            <div class="relative">
+                                <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-25"></div>
+                                <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/25">
+                                    <i class="fa-solid fa-table text-xl text-white drop-shadow-sm"></i>
+                                </div>
                             </div>
-                            <div>
-                                <h2 class="text-xl font-bold text-gray-800 dark:text-neutral-200">Measurements</h2>
-                                <p class="text-sm text-gray-600 dark:text-neutral-200">The list of all the measurements taken by the station</p>
+
+                            <!-- Title -->
+                            <div class="flex-1">
+                                <h2 class="text-2xl font-bold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-neutral-200 dark:to-white bg-clip-text text-transparent tracking-tight">
+                                    Measurements
+                                </h2>
+                                <div class="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mt-2 mb-1"></div>
+                                <p class="text-sm text-gray-600 dark:text-neutral-400 font-medium">The complete list of environmental measurements taken by the station</p>
                             </div>
                         </div>
 
-                        <!-- Buttons -->
-                        <div>
-                            <div class="inline-flex gap-x-2">
-                                <Button type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
+                        <!-- Actions -->
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center gap-3">
+                                <Button type="secondary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
                                 <Button type="primary" text="Refresh" icon="fa-solid fa-arrows-rotate" @click="handleRefreshPress" />
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Table -->
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50 dark:bg-neutral-800">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">ID</span>
+                <!-- Empty State -->
+                <div v-if="!viewModel.measurementsList?.results?.length" class="px-8 py-16 text-center">
+                    <div class="max-w-md mx-auto">
+                        <div class="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-neutral-700 dark:to-neutral-800 rounded-2xl mx-auto mb-6">
+                            <i class="fa-solid fa-database text-2xl text-gray-400 dark:text-neutral-500"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-neutral-100 mb-2">No measurements found</h3>
+                        <p class="text-sm text-gray-500 dark:text-neutral-400 mb-6">There are no measurements to display at the moment. Try adjusting your filters or check back later.</p>
+                        <Button type="primary" text="Refresh" icon="fa-solid fa-arrows-rotate" @click="handleRefreshPress" />
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div v-else class="">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 dark:border-neutral-700">
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">ID</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">Timestamp</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">Timestamp</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">Temperature</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">Temperature</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">Humidity</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">Humidity</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">Pressure</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">Pressure</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">Gas</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">Gas</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">PM1</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">PM1</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">PM2.5</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">PM2.5</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">PM10</span>
+                                <th scope="col" class="px-6 py-5 text-center">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-neutral-300">PM10</span>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <tr v-for="item in viewModel.measurementsList.results">
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ item.id }}</span>
+                        <tbody class="divide-y divide-gray-50 dark:divide-neutral-700/50">
+                            <tr v-for="item in viewModel.measurementsList.results" :key="item.id" class="group bg-white hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/30 dark:hover:from-neutral-800/50 dark:hover:to-neutral-700/30 transition-all duration-200">
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 text-xs font-bold text-blue-700 dark:text-blue-300 group-hover:scale-105 transition-transform duration-200">
+                                            {{ item.id }}
+                                        </span>
                                     </div>
                                 </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <span class="text-sm text-gray-500 dark:text-neutral-200">{{ formatTimestamp(item.timestamp) }}</span>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="text-sm font-medium text-gray-700 dark:text-neutral-200">
+                                        {{ formatTimestamp(item.timestamp) }}
                                     </div>
                                 </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <div v-if="!item.temperatureAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                                                {{ formatUnitNumber(item.temperature, 1) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">°C</span>
                                         </div>
-                                        <div v-if="item.temperatureAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.temperature, 1) }} <span class="font-thin text-xs">°C</span></span>
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <div v-if="!item.humidityAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
-                                        </div>
-                                        <div v-if="item.humidityAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.humidity, 1) }} <span class="font-thin text-xs">%</span></span>
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        <div v-if="item.temperatureAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <div v-if="!item.pressureAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pressure, 1) }} <span class="font-thin text-xs">hPa</span></span>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                                                {{ formatUnitNumber(item.humidity, 1) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">%</span>
                                         </div>
-                                        <div v-if="item.pressureAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pressure, 1) }} <span class="font-thin text-xs">hPa</span></span>
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <div v-if="!item.gasAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.gas, 1) }} <span class="font-thin text-xs">kOhm</span></span>
-                                        </div>
-                                        <div v-if="item.gasAnomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.gas, 1) }} <span class="font-thin text-xs">kOhm</span></span>
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        <div v-if="item.humidityAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <div v-if="!item.pm1Anomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                                                {{ formatUnitNumber(item.pressure, 1) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">hPa</span>
                                         </div>
-                                        <div v-if="item.pm1Anomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm1, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <div v-if="!item.pm25Anomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
-                                        </div>
-                                        <div v-if="item.pm25Anomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm25, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        <div v-if="item.pressureAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3 text-center">
-                                        <div v-if="!item.pm10Anomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                                                {{ formatUnitNumber(item.gas, 1) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">kOhm</span>
                                         </div>
-                                        <div v-if="item.pm10Anomaly">
-                                            <span class="text-sm text-gray-500 dark:text-neutral-200 font-bold">{{ formatUnitNumber(item.pm10, 0) }} <span class="font-thin text-xs">µg/m³</span></span>
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 ms-2" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        <div v-if="item.gasAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                                                {{ formatUnitNumber(item.pm1, 0) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">µg/m³</span>
+                                        </div>
+                                        <div v-if="item.pm1Anomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                                                {{ formatUnitNumber(item.pm25, 0) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">µg/m³</span>
+                                        </div>
+                                        <div v-if="item.pm25Anomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-sm font-bold text-gray-900 dark:text-neutral-100">
+                                                {{ formatUnitNumber(item.pm10, 0) }}
+                                            </span>
+                                            <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">µg/m³</span>
+                                        </div>
+                                        <div v-if="item.pm10Anomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
 
-                    <!-- Footer -->
-                    <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-neutral-200">
-                                <span class="font-bold text-gray-800 dark:text-neutral-200">{{ viewModel.measurementsList.count }}</span> results
+                <!-- Footer -->
+                <div class="px-8 py-6 bg-white border-t border-gray-100/80 dark:border-neutral-700/50">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg">
+                                <i class="fa-solid fa-chart-bar text-blue-600 dark:text-blue-400 text-sm"></i>
+                            </div>
+                            <p class="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                                <span class="font-bold text-gray-900 dark:text-neutral-100">{{ viewModel.measurementsList.count }}</span> total measurements
                             </p>
                         </div>
-                        <div>
-                            <div class="inline-flex gap-x-2">
-                                <Button type="secondary" text="Prev" icon="fa-solid fa-chevron-left" :disabled="viewModel.offset === 0" @click="previousPagePress" />
-                                <Button type="secondary" text="Next" icon-end="fa-solid fa-chevron-right" :disabled="viewModel.measurementsList?.results?.length < viewModel.limit" @click="nextPagePress" />
-                            </div>
+                        <div class="flex items-center gap-3">
+                            <Button type="secondary" text="Previous" icon="fa-solid fa-chevron-left" :disabled="viewModel.offset === 0" @click="previousPagePress" />
+                            <Button type="secondary" text="Next" icon-end="fa-solid fa-chevron-right" :disabled="viewModel.measurementsList?.results?.length < viewModel.limit" @click="nextPagePress" />
                         </div>
                     </div>
                 </div>
