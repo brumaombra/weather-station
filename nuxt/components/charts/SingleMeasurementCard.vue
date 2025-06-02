@@ -1,6 +1,6 @@
 <script setup>
 import { formatUnitNumber } from '~/utils/formatter.js';
-import Card from '~/components/Card.vue';
+import Card from '~/components/ui/Card.vue';
 import PercentageChange from '~/components/ui/PercentageChange.vue';
 
 // Props

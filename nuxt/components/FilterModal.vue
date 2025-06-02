@@ -1,6 +1,6 @@
 <script setup>
 import Button from '~/components/ui/Button.vue';
-import CustomModal from '~/components/CustomModal.vue';
+import Modal from '~/components/ui/Modal.vue';
 import Select from '~/components/ui/Select.vue';
 import Input from '~/components/ui/Input.vue';
 
@@ -33,7 +33,7 @@ const handleApplyPress = () => {
 </script>
 
 <template>
-    <CustomModal :visible="props.visible" title="Filter" icon="fa-solid fa-filter">
+    <Modal :visible="props.visible" title="Filter" icon="fa-solid fa-filter">
         <!-- Body -->
         <template #body>
             <div>
@@ -92,5 +92,5 @@ const handleApplyPress = () => {
             <Button type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleClosePress" />
             <Button type="primary" text="Apply" icon="fa-solid fa-check" @click="handleApplyPress" />
         </template>
-    </CustomModal>
+    </Modal>
 </template>

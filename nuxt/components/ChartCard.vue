@@ -1,6 +1,6 @@
 <script setup>
 import { defineAsyncComponent } from 'vue';
-import Card from '~/components/Card.vue';
+import Card from '~/components/ui/Card.vue';
 import PercentageChange from '~/components/ui/PercentageChange.vue';
 
 // Lazy load VueApexCharts component only on client-side

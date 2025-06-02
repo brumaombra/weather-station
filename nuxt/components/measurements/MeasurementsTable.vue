@@ -6,6 +6,7 @@ import { getMeasurements } from '~/composables/api/useMeasurements.js';
 import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import FilterModal from '~/components/FilterModal.vue';
 import Button from '~/components/ui/Button.vue';
+import AnomalyAlert from '~/components/measurements/AnomalyAlert.vue';
 
 const viewModel = useMeasurementsStore();
 const filterModalOpen = ref(false);
@@ -193,9 +194,7 @@ onMounted(async () => {
                                             </span>
                                             <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">°C</span>
                                         </div>
-                                        <div v-if="item.temperatureAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
+                                        <AnomalyAlert :show="item.temperatureAnomaly" />
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -206,9 +205,7 @@ onMounted(async () => {
                                             </span>
                                             <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">%</span>
                                         </div>
-                                        <div v-if="item.humidityAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
+                                        <AnomalyAlert :show="item.humidityAnomaly" />
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -219,9 +216,7 @@ onMounted(async () => {
                                             </span>
                                             <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">hPa</span>
                                         </div>
-                                        <div v-if="item.pressureAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
+                                        <AnomalyAlert :show="item.pressureAnomaly" />
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -232,9 +227,7 @@ onMounted(async () => {
                                             </span>
                                             <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">kOhm</span>
                                         </div>
-                                        <div v-if="item.gasAnomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
+                                        <AnomalyAlert :show="item.gasAnomaly" />
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -245,9 +238,7 @@ onMounted(async () => {
                                             </span>
                                             <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">µg/m³</span>
                                         </div>
-                                        <div v-if="item.pm1Anomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
+                                        <AnomalyAlert :show="item.pm1Anomaly" />
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -258,9 +249,7 @@ onMounted(async () => {
                                             </span>
                                             <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">µg/m³</span>
                                         </div>
-                                        <div v-if="item.pm25Anomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
+                                        <AnomalyAlert :show="item.pm25Anomaly" />
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -271,9 +260,7 @@ onMounted(async () => {
                                             </span>
                                             <span class="text-xs text-gray-500 dark:text-neutral-400 font-medium">µg/m³</span>
                                         </div>
-                                        <div v-if="item.pm10Anomaly" class="flex items-center justify-center w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-xs" title="Anomalous value, 2 standard deviations from the norm"></i>
-                                        </div>
+                                        <AnomalyAlert :show="item.pm10Anomaly" />
                                     </div>
                                 </td>
                             </tr>
