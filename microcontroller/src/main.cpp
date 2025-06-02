@@ -59,10 +59,6 @@ void setup() {
 
 // Loop
 void loop() {
-    uint32_t startTime = millis();
     readAndPublishReadings(); // Read and publish the data to the server
-    uint32_t elapsed = (millis() - startTime) / 1000; // In seconds
-    uint32_t sleepTime = (elapsed < READING_INTERVAL) ? (READING_INTERVAL - elapsed) : 1; // Sleep at least 1s
-    if (DEV_MODE) Serial.printf("Elapsed: %lu s, sleeping for: %lu s\n", elapsed, sleepTime);
-    enterDeepSleep(sleepTime); // Enter deep sleep for the remaining interval
+    enterDeepSleep(DEEP_SLEEP_DURATION); // Always sleep for the full interval
 }
