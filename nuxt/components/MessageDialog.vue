@@ -1,5 +1,5 @@
 <script setup>
-import CustomButton from '~/components/ui/CustomButton.vue';
+import Button from '~/components/ui/Button.vue';
 
 // Props
 const props = defineProps({
@@ -44,7 +44,7 @@ const handleCloseDialog = () => {
 
                 <!-- Footer -->
                 <div class="flex justify-end items-center gap-x-2 py-3 px-4 bg-gray-50">
-                    <CustomButton type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleCloseDialog" />
+                    <Button type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleCloseDialog" />
                 </div>
             </div>
         </div>

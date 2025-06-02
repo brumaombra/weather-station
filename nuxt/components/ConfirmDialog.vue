@@ -1,5 +1,5 @@
 <script setup>
-import CustomButton from '~/components/ui/CustomButton.vue';
+import Button from '~/components/ui/Button.vue';
 import CustomModal from '~/components/CustomModal.vue';
 
 // Props
@@ -33,8 +33,8 @@ const handleConfirmPress = () => {
 
         <!-- Footer -->
         <template #footer>
-            <CustomButton type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleClosePress" />
-            <CustomButton type="primary" text="Confirm" icon="fa-solid fa-check" @click="handleConfirmPress" />
+            <Button type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleClosePress" />
+            <Button type="primary" text="Confirm" icon="fa-solid fa-check" @click="handleConfirmPress" />
         </template>
     </CustomModal>
 </template>

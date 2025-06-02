@@ -8,6 +8,8 @@ import CurrentDataCards from '~/components/charts/CurrentDataCards.vue';
 import MeasurementsTable from '~/components/measurements/MeasurementsTable.vue';
 import LineChartCard from '~/components/charts/LineChartCard.vue';
 import ScatterChartCard from '~/components/correlations/ScatterChartCard.vue';
+import SectionTitle from '~/components/ui/SectionTitle.vue';
+import PageHeader from '~/components/ui/PageHeader.vue';
 
 // View model
 const viewModel = useSnapshotStore();
@@ -88,88 +90,55 @@ onMounted(async () => {
 
 <template>
     <NuxtLayout name="dashboard">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-5">
-            <div>
-                <h2 class="font-bold text-2xl dark:text-neutral-200">Snapshot<i class="fa-solid fa-camera text-xl ms-3"></i></h2>
-            </div>
-        </div>
+        <div class="space-y-8">
+            <!-- Header -->
+            <PageHeader title="Snapshot" icon="fa-solid fa-camera" />
 
-        <!-- Main content -->
-        <div class="space-y-8 md:space-y-10">
             <!-- Real-time data cards -->
             <div>
-                <h5 class="font-bold mb-3 dark:text-neutral-200">Real-time data</h5>
+                <SectionTitle title="Real-time data" />
                 <CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
             </div>
 
             <!-- Measurements table -->
             <div>
-                <h5 class="font-bold mb-3 dark:text-neutral-200">Measurements list</h5>
+                <SectionTitle title="Measurements list" />
                 <MeasurementsTable />
             </div>
 
             <!-- Charts -->
             <div>
-                <h5 class="font-bold mb-3 dark:text-neutral-200">Charts</h5>
+                <SectionTitle title="Charts" />
                 <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
                     <!-- Temperature chart -->
-                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                        title="Temperature"
-                        avgKey="temperatureAvg"
-                        maxKey="temperatureMax"
-                        minKey="temperatureMin" />
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results" title="Temperature" avgKey="temperatureAvg" maxKey="temperatureMax" minKey="temperatureMin" />
 
                     <!-- Humidity chart -->
-                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                        title="Humidity"
-                        avgKey="humidityAvg"
-                        maxKey="humidityMax"
-                        minKey="humidityMin" />
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results" title="Humidity" avgKey="humidityAvg" maxKey="humidityMax" minKey="humidityMin" />
 
                     <!-- Pressure chart -->
-                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                        title="Pressure"
-                        avgKey="pressureAvg"
-                        maxKey="pressureMax"
-                        minKey="pressureMin" />
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results" title="Pressure" avgKey="pressureAvg" maxKey="pressureMax" minKey="pressureMin" />
 
                     <!-- Gas chart -->
-                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                        title="Gas"
-                        avgKey="gasAvg"
-                        maxKey="gasMax"
-                        minKey="gasMin" />
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results" title="Gas" avgKey="gasAvg" maxKey="gasMax" minKey="gasMin" />
                 </div>
             </div>
 
             <!-- Correlations -->
             <div>
-                <h5 class="font-bold mb-3 dark:text-neutral-200">Correlations</h5>
+                <SectionTitle title="Correlations" />
                 <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
                     <!-- Temperature/humidity chart -->
-                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                        title="Temperature/Humidity"
-                        xKey="temperature"
-                        yKey="humidity" />
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results" title="Temperature/Humidity" xKey="temperature" yKey="humidity" />
 
                     <!-- PM2.5/PM10 chart -->
-                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                        title="PM2.5/PM10"
-                        xKey="pm25"
-                        yKey="pm10" />
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results" title="PM2.5/PM10" xKey="pm25" yKey="pm10" />
 
                     <!-- Pressure/Gas chart -->
-                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                        title="Pressure/Gas"
-                        xKey="pressure"
-                        yKey="gas" />
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results" title="Pressure/Gas" xKey="pressure" yKey="gas" />
 
                     <!-- Temperature/Gas chart -->
-                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                        title="Temperature/Gas"
-                        xKey="temperature"
-                        yKey="gas" />
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results" title="Temperature/Gas" xKey="temperature" yKey="gas" />
                 </div>
             </div>
         </div>

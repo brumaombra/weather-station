@@ -5,7 +5,7 @@ import { setBusy, showMessageDialog, getMaxAndMinFromDate, CustomError } from '~
 import { getMeasurements } from '~/composables/api/useMeasurements.js';
 import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import FilterModal from '~/components/FilterModal.vue';
-import CustomButton from '~/components/ui/CustomButton.vue';
+import Button from '~/components/ui/Button.vue';
 
 const viewModel = useMeasurementsStore();
 const filterModalOpen = ref(false);
@@ -109,8 +109,8 @@ onMounted(async () => {
                         <!-- Buttons -->
                         <div>
                             <div class="inline-flex gap-x-2">
-                                <CustomButton type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
-                                <CustomButton type="primary" text="Refresh" icon="fa-solid fa-arrows-rotate" @click="handleRefreshPress" />
+                                <Button type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
+                                <Button type="primary" text="Refresh" icon="fa-solid fa-arrows-rotate" @click="handleRefreshPress" />
                             </div>
                         </div>
                     </div>
@@ -250,8 +250,8 @@ onMounted(async () => {
                         </div>
                         <div>
                             <div class="inline-flex gap-x-2">
-                                <CustomButton type="secondary" text="Prev" icon="fa-solid fa-chevron-left" :disabled="viewModel.offset === 0" @click="previousPagePress" />
-                                <CustomButton type="secondary" text="Next" icon-end="fa-solid fa-chevron-right" :disabled="viewModel.measurementsList?.results?.length < viewModel.limit" @click="nextPagePress" />
+                                <Button type="secondary" text="Prev" icon="fa-solid fa-chevron-left" :disabled="viewModel.offset === 0" @click="previousPagePress" />
+                                <Button type="secondary" text="Next" icon-end="fa-solid fa-chevron-right" :disabled="viewModel.measurementsList?.results?.length < viewModel.limit" @click="nextPagePress" />
                             </div>
                         </div>
                     </div>

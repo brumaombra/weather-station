@@ -7,8 +7,8 @@ import FilterModal from '~/components/FilterModal.vue';
 import { setBusy, showMessageDialog, getMaxAndMinFromDate } from '~/composables/useUtils.js';
 import { getAggregatedMeasurements, getLastMeasurement } from '~/composables/api/useMeasurements.js';
 import { formatJsDateToIsoStringDate } from '~/utils/formatter.js';
-import CustomButton from '~/components/ui/CustomButton.vue';
-import CustomSelect from '~/components/ui/CustomSelect.vue';
+import Button from '~/components/ui/Button.vue';
+import Select from '~/components/ui/Select.vue';
 
 // View model
 const viewModel = useChartsStore(); // Use the store
@@ -129,15 +129,15 @@ onMounted(async () => {
             <!-- Right -->
             <div class="flex items-center">
                 <!-- Filter button -->
-                <CustomButton type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
+                <Button type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
 
                 <!-- Periods select -->
-                <CustomSelect v-model="viewModel.periodSelect" @change="handlePeriodChange" class="ms-2">
+                <Select v-model="viewModel.periodSelect" @change="handlePeriodChange" class="ms-2">
                     <option value="D">Last day</option>
                     <option value="W">Last week</option>
                     <option value="M">Last month</option>
                     <option value="Y">Last year</option>
-                </CustomSelect>
+                </Select>
             </div>
         </div>
 
