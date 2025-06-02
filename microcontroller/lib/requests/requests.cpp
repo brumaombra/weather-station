@@ -63,7 +63,7 @@ bool sendHttpPostRequest(const char* json) {
     
     // Add authorization header with the token if present
     if (strlen(AUTH_TOKEN) > 0) {
-        char authHeader[100];
+        char authHeader[256];
         sprintf(authHeader, "Bearer %s", AUTH_TOKEN);
         http.addHeader("Authorization", authHeader);
     }

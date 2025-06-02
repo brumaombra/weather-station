@@ -61,7 +61,7 @@ bool readBme(float &temperature, float &humidity, float &pressure, float &gas) {
 bool readPms(float &pm1, float &pm25, float &pm10) {
     if (DEV_MODE) Serial.println("PMS sensor waking up...");
     pms.wakeUp(); // Wake up the sensor
-    delay(secondsToMilliseconds(30)); // Wait for the sensor to wake up
+    delay(secondsToMilliseconds(PMS_SENSOR_WAKE_UP_TIME)); // Wait for the sensor to wake up
     if (DEV_MODE) Serial.println("PMS sensor awake");
 
     // Read the data

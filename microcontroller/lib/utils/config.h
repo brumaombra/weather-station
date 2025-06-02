@@ -7,15 +7,16 @@
 #define DEV_MODE true
 
 // WiFi settings
-#define WIFI_SSID "EOLO-Bettola"
-#define WIFI_PASSWORD "jfJ8c24LM"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 // Server settings
 #define SERVER_ENDPOINT "https://station.brumaombra.com/api/measurements"
-#define AUTH_TOKEN "123456789"
+#define AUTH_TOKEN ""
 
 // Device settings
 #define READING_INTERVAL 60 * 15 // Reading interval in seconds
+#define PMS_SENSOR_WAKE_UP_TIME 30 // PMS sensor wake-up time in seconds
 
 // Sensor pin definitions
 #define PMS_RX_PIN 16 // PMS7003 RX pin
