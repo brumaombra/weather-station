@@ -10,8 +10,8 @@ const props = defineProps({
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-5">
         <div class="flex items-center gap-5">
             <!-- Icon -->
-            <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition-opacity duration-300"></div>
+            <div class="relative">
+                <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-25"></div>
                 <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/25">
                     <i :class="[props.icon, 'text-xl text-white drop-shadow-sm']"></i>
                 </div>

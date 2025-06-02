@@ -14,6 +14,11 @@ body {
     box-shadow: rgba(149, 157, 165, 0.2) 0px 6px 24px;
 }
 
+.custom-box-shadow-3 {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+
 /* ---------------------------------- Charts ---------------------------------- */
 
 .apexcharts-legend-marker {
