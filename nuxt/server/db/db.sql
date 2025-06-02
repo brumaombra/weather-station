@@ -1,5 +1,5 @@
 -- Table for the measurements
-CREATE TABLE weatherStation_measurements (
+CREATE TABLE measurements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     temperature FLOAT NOT NULL,
     humidity FLOAT NOT NULL,
