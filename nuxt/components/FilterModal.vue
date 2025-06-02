@@ -1,8 +1,8 @@
 <script setup>
-import CustomButton from '~/components/CustomButton.vue';
-import CustomModal from '~/components/CustomModal.vue';
-import CustomSelect from '~/components/CustomSelect.vue';
-import CustomInput from '~/components/CustomInput.vue';
+import Button from '~/components/ui/Button.vue';
+import Modal from '~/components/ui/Modal.vue';
+import Select from '~/components/ui/Select.vue';
+import Input from '~/components/ui/Input.vue';
 
 // Props
 const props = defineProps({
@@ -33,7 +33,7 @@ const handleApplyPress = () => {
 </script>
 
 <template>
-    <CustomModal :visible="props.visible" title="Filter" icon="fa-solid fa-filter">
+    <Modal :visible="props.visible" title="Filter" icon="fa-solid fa-filter">
         <!-- Body -->
         <template #body>
             <div>
@@ -41,19 +41,19 @@ const handleApplyPress = () => {
                     <!-- Start date -->
                     <div v-if="props.startDateVisible">
                         <label class="block mb-2 text-sm font-medium dark:text-neutral-200">Start date</label>
-                        <CustomInput v-model="props.filters.startDate" type="date" />
+                        <Input v-model="props.filters.startDate" type="date" />
                     </div>
 
                     <!-- End date -->
                     <div v-if="props.endDateVisible">
                         <label class="block mb-2 text-sm font-medium dark:text-neutral-200">End date</label>
-                        <CustomInput v-model="props.filters.endDate" type="date" />
+                        <Input v-model="props.filters.endDate" type="date" />
                     </div>
 
                     <!-- Order by -->
                     <div v-if="props.orderByVisible">
                         <label class="block mb-2 text-sm font-medium dark:text-neutral-200">Order by</label>
-                        <CustomSelect v-model="props.filters.orderBy">
+                        <Select v-model="props.filters.orderBy">
                             <option value="timestamp">Timestamp</option>
                             <option value="temperature">Temperature</option>
                             <option value="humidity">Humidity</option>
@@ -62,26 +62,26 @@ const handleApplyPress = () => {
                             <option value="pm1">PM1</option>
                             <option value="pm25">PM2.5</option>
                             <option value="pm10">PM10</option>
-                        </CustomSelect>
+                        </Select>
                     </div>
 
                     <!-- Order direction -->
                     <div v-if="props.orderDirectionVisible">
                         <label class="block mb-2 text-sm font-medium dark:text-neutral-200">Order direction</label>
-                        <CustomSelect v-model="props.filters.orderDirection">
+                        <Select v-model="props.filters.orderDirection">
                             <option value="asc">Ascending</option>
                             <option value="desc">Descending</option>
-                        </CustomSelect>
+                        </Select>
                     </div>
 
                     <!-- Measurements type -->
                     <div v-if="props.measurementTypeVisible">
                         <label class="block mb-2 text-sm font-medium dark:text-neutral-200">Measurements type</label>
-                        <CustomSelect v-model="props.filters.measurementType">
+                        <Select v-model="props.filters.measurementType">
                             <option value="all">All</option>
                             <option value="ano">Anomalous</option>
                             <option value="nor">Normal</option>
-                        </CustomSelect>
+                        </Select>
                     </div>
                 </form>
             </div>
@@ -89,8 +89,8 @@ const handleApplyPress = () => {
 
         <!-- Footer -->
         <template #footer>
-            <CustomButton type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleClosePress" />
-            <CustomButton type="primary" text="Apply" icon="fa-solid fa-check" @click="handleApplyPress" />
+            <Button type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleClosePress" />
+            <Button type="primary" text="Apply" icon="fa-solid fa-check" @click="handleApplyPress" />
         </template>
-    </CustomModal>
+    </Modal>
 </template>

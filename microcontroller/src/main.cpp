@@ -15,10 +15,10 @@ bool initSerial() {
     return true;
 }
 
-// Enter deep sleep
-void enterDeepSleep() {
-    esp_sleep_enable_timer_wakeup(secondsToMicroseconds(READING_INTERVAL)); // Set sleep time in microseconds
-    if (DEV_MODE) Serial.println("Entering deep sleep..."); // Print a message
+// Enter deep sleep for a custom duration (in seconds)
+void enterDeepSleep(uint32_t sleepSeconds) {
+    esp_sleep_enable_timer_wakeup(secondsToMicroseconds(sleepSeconds));
+    if (DEV_MODE) Serial.printf("Entering deep sleep for %lu seconds...\n", sleepSeconds); // Print a message
     if (DEV_MODE) Serial.flush(); // Wait for the serial buffer to be empty
     esp_deep_sleep_start(); // Enter deep sleep
 }
@@ -60,5 +60,5 @@ void setup() {
 // Loop
 void loop() {
     readAndPublishReadings(); // Read and publish the data to the server
-    enterDeepSleep(); // Enter deep sleep
+    enterDeepSleep(DEEP_SLEEP_DURATION); // Always sleep for the full interval
 }

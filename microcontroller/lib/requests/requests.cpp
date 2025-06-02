@@ -4,26 +4,37 @@
 
 // Connect to Wi-Fi
 bool connectToWifi() {
+    const uint32_t MAX_CONNECT_TIME_MS = 20000; // 20 seconds max per attempt
+
+    // Check if Wi-Fi credentials are set
     if (strlen(WIFI_SSID) == 0 || strlen(WIFI_PASSWORD) == 0) {
         if (DEV_MODE) Serial.println("SSID or Password is empty");
-        while (1) delay(1000); // Block the program
+        return false;
     }
 
-    // Begin connecting to Wi-Fi
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    if (DEV_MODE) Serial.print("Connecting to Wi-Fi");
-    
-    while (WiFi.status() != WL_CONNECTED) {
-        if (DEV_MODE) Serial.print(".");
-        delay(500);
-    }
+    // If already connected, return true
+    while (true) {
+        WiFi.begin(WIFI_SSID, WIFI_PASSWORD); // Start Wi-Fi connection
+        if (DEV_MODE) Serial.print("Connecting to Wi-Fi");
+        uint32_t startTime = millis();
+        while (WiFi.status() != WL_CONNECTED && (millis() - startTime) < MAX_CONNECT_TIME_MS) {
+            if (DEV_MODE) Serial.print(".");
+            delay(500);
+        }
 
-    if (DEV_MODE) {
-        Serial.print(" Connected with IP: ");
-        Serial.println(WiFi.localIP());
+        // Check if connected
+        if (WiFi.status() == WL_CONNECTED) {
+            if (DEV_MODE) {
+                Serial.print(" Connected with IP: ");
+                Serial.println(WiFi.localIP());
+            }
+            return true;
+        } else {
+            if (DEV_MODE) Serial.println("\nWi-Fi connection attempt failed, retrying...");
+            WiFi.disconnect(true);
+            delay(1000); // Wait before retry
+        }
     }
-
-    return true;
 }
 
 // Check if the WiFi is still connected
@@ -64,7 +75,7 @@ bool sendHttpPostRequest(const char* json) {
     
     // Add authorization header with the token if present
     if (strlen(AUTH_TOKEN) > 0) {
-        char authHeader[100];
+        char authHeader[256];
         sprintf(authHeader, "Bearer %s", AUTH_TOKEN);
         http.addHeader("Authorization", authHeader);
     }

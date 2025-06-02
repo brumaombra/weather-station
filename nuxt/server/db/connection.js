@@ -29,7 +29,8 @@ export const initMySqlDatabase = async () => {
                 user: runtimeConfig.mysqlUser,
                 password: runtimeConfig.mysqlPassword,
                 database: runtimeConfig.mysqlDatabase,
-                typeCast: typeCast // Format the values after reading them from the database
+                typeCast: typeCast, // Format the values after reading them from the database
+                timezone: 'Z' // UTC (Z represents UTC in ISO 8601)
             }, pool: {
                 min: 0, // Minimum number of connections
                 max: 7, // Maximum number of connections
@@ -59,6 +60,10 @@ const typeCast = (field, next) => {
 
 // Get the Knex object
 export const getKnex = () => {
+    if (!knex) {
+        throw new Error('Database connection not initialized. Call initMySqlDatabase() first.');
+    }
+
     return knex;
 };
 

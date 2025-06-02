@@ -1,6 +1,6 @@
 <script setup>
-import CustomButton from '~/components/CustomButton.vue';
-import CustomModal from '~/components/CustomModal.vue';
+import Button from '~/components/ui/Button.vue';
+import Modal from '~/components/ui/Modal.vue';
 
 // Props
 const props = defineProps({
@@ -25,7 +25,7 @@ const handleConfirmPress = () => {
 </script>
 
 <template>
-    <CustomModal :visible="props.visible" :title="props.title" icon="fa-solid fa-circle-question">
+    <Modal :visible="props.visible" :title="props.title" icon="fa-solid fa-circle-question">
         <!-- Body -->
         <template #body>
             <p>{{ props.message }}</p>
@@ -33,8 +33,8 @@ const handleConfirmPress = () => {
 
         <!-- Footer -->
         <template #footer>
-            <CustomButton type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleClosePress" />
-            <CustomButton type="primary" text="Confirm" icon="fa-solid fa-check" @click="handleConfirmPress" />
+            <Button type="secondary" text="Cancel" icon="fa-solid fa-times" @click="handleClosePress" />
+            <Button type="primary" text="Confirm" icon="fa-solid fa-check" @click="handleConfirmPress" />
         </template>
-    </CustomModal>
+    </Modal>
 </template>

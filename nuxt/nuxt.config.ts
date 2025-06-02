@@ -17,13 +17,7 @@ export default defineNuxtConfig({
 
         // Public runtime config
         public: {
-            nodeEnv: process.env.NODE_ENV || 'development',
-            buildtime: process.env.BUILDTIME || 'false',
-
-            // Firebase
-            firebaseApiKey: process.env.FIREBASE_API_KEY || '',
-            firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
-            firebaseProjectId: process.env.FIREBASE_PROJECT_ID || ''
+            nuxtEnvironment: process.env.NUXT_ENVIRONMENT || 'development'
         }
     },
 
@@ -31,6 +25,10 @@ export default defineNuxtConfig({
         head: {
             title: 'Weather Station'
         }
+    },
+
+    routeRules: {
+        '/**': { ssr: true, prerender: true }
     },
 
     css: ['~/assets/css/main.css'],

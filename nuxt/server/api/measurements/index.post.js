@@ -1,6 +1,6 @@
 import { readBody } from 'h3';
-import { addMeasurement } from '../../db/measurements.js';
-import { validateNewMeasurementData } from '../../utils/utils.js';
+import { addMeasurement } from '~/server/db/measurements.js';
+import { validateNewMeasurementData } from '~/server/utils/utils.js';
 
 export default defineEventHandler(async event => {
     // Set CORS headers

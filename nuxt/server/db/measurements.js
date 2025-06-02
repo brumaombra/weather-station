@@ -1,5 +1,5 @@
-import { getKnex, logQuery, executeQueryWithReconnection } from './connection.js';
-import { dateIsYesterday, getPercentageDifference } from '../utils/utils.js';
+import { getKnex, logQuery, executeQueryWithReconnection } from '~/server/db/connection.js';
+import { dateIsYesterday, getPercentageDifference } from '~/server/utils/utils.js';
 
 const knex = getKnex();
 
@@ -9,7 +9,7 @@ export const getMeasurements = async params => {
         if (!params) params = {};
 
         // Results query
-        const resultsQuery = knex(`weatherStation_measurements`).select('*').orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc');
+        const resultsQuery = knex(`measurements`).select('*').orderBy(params.orderField || 'timestamp', params.orderDirection || 'desc');
         if (params.limit) resultsQuery.limit(params.limit);
         if (params.offset) resultsQuery.offset(params.offset);
         if (params.startDate) resultsQuery.where('timestamp', '>=', new Date(params.startDate));
@@ -19,7 +19,7 @@ export const getMeasurements = async params => {
         logQuery(resultsQuery);
 
         // Count query
-        const countQuery = knex(`weatherStation_measurements`).count('id as count').first();
+        const countQuery = knex(`measurements`).count('id as count').first();
         if (params.startDate) countQuery.where('timestamp', '>=', new Date(params.startDate));
         if (params.endDate) countQuery.where('timestamp', '<=', new Date(params.endDate));
         if (params.measurementType === 'ano') countQuery.where('temperatureAnomaly', true).orWhere('humidityAnomaly', true).orWhere('pressureAnomaly', true).orWhere('gasAnomaly', true).orWhere('pm1Anomaly', true).orWhere('pm25Anomaly', true).orWhere('pm10Anomaly', true);
@@ -44,37 +44,41 @@ export const getMeasurements = async params => {
 // Get aggregated daily measurements
 export const getAggregatedDailyMeasurements = async params => {
     try {
-        // Normal query
-        const normalQuery = knex(`weatherStation_measurements`)
-            .select(knex.raw('DATE(timestamp) as date'))
-            .avg('temperature as temperatureAvg').min('temperature as temperatureMin').max('temperature as temperatureMax')
-            .avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax')
-            .avg('pressure as pressureAvg').min('pressure as pressureMin').max('pressure as pressureMax')
-            .avg('gas as gasAvg').min('gas as gasMin').max('gas as gasMax')
-            .avg('pm1 as pm1Avg').min('pm1 as pm1Min').max('pm1 as pm1Max')
-            .avg('pm25 as pm25Avg').min('pm25 as pm25Min').max('pm25 as pm25Max')
-            .avg('pm10 as pm10Avg').min('pm10 as pm10Min').max('pm10 as pm10Max')
-            .groupByRaw('DATE(timestamp)')
-            .orderBy('date', 'asc');
-        if (params.startDate) normalQuery.whereRaw('timestamp >= ?', [new Date(params.startDate)]);
-        if (params.endDate) normalQuery.whereRaw('timestamp <= ?', [new Date(params.endDate)]);
-
-        // Yesterday query
-        const yesterdayQuery = knex(`weatherStation_measurements`).select('timestamp as date')
-            .select('temperature as temperatureAvg').select('temperature as temperatureMin').select('temperature as temperatureMax')
-            .select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax')
-            .select('pressure as pressureAvg').select('pressure as pressureMin').select('pressure as pressureMax')
-            .select('gas as gasAvg').select('gas as gasMin').select('gas as gasMax')
-            .select('pm1 as pm1Avg').select('pm1 as pm1Min').select('pm1 as pm1Max')
-            .select('pm25 as pm25Avg').select('pm25 as pm25Min').select('pm25 as pm25Max')
-            .select('pm10 as pm10Avg').select('pm10 as pm10Min').select('pm10 as pm10Max')
-            .orderBy('date', 'asc');
-        if (params.startDate) yesterdayQuery.whereRaw('timestamp >= ?', [new Date(params.startDate)]);
-        if (params.endDate) yesterdayQuery.whereRaw('timestamp <= ?', [new Date(params.endDate)]);
-
         // Get the right query
         const startDate = new Date(params.startDate); // Get the start date
-        const query = dateIsYesterday(startDate) ? yesterdayQuery : normalQuery;
+        const isYesterday = dateIsYesterday(startDate);
+
+        // Use the standard or aggregated query based on the date
+        let query = null;
+        if (isYesterday) {
+            query = knex(`measurements`).select('timestamp as date')
+                .select('temperature as temperatureAvg').select('temperature as temperatureMin').select('temperature as temperatureMax')
+                .select('humidity as humidityAvg').select('humidity as humidityMin').select('humidity as humidityMax')
+                .select('pressure as pressureAvg').select('pressure as pressureMin').select('pressure as pressureMax')
+                .select('gas as gasAvg').select('gas as gasMin').select('gas as gasMax')
+                .select('pm1 as pm1Avg').select('pm1 as pm1Min').select('pm1 as pm1Max')
+                .select('pm25 as pm25Avg').select('pm25 as pm25Min').select('pm25 as pm25Max')
+                .select('pm10 as pm10Avg').select('pm10 as pm10Min').select('pm10 as pm10Max')
+                .orderBy('date', 'asc');
+            if (params.startDate) query.whereRaw('timestamp >= ?', [new Date(params.startDate)]);
+            if (params.endDate) query.whereRaw('timestamp <= ?', [new Date(params.endDate)]);
+        } else {
+            query = knex(`measurements`)
+                .select(knex.raw('DATE(timestamp) as date'))
+                .avg('temperature as temperatureAvg').min('temperature as temperatureMin').max('temperature as temperatureMax')
+                .avg('humidity as humidityAvg').min('humidity as humidityMin').max('humidity as humidityMax')
+                .avg('pressure as pressureAvg').min('pressure as pressureMin').max('pressure as pressureMax')
+                .avg('gas as gasAvg').min('gas as gasMin').max('gas as gasMax')
+                .avg('pm1 as pm1Avg').min('pm1 as pm1Min').max('pm1 as pm1Max')
+                .avg('pm25 as pm25Avg').min('pm25 as pm25Min').max('pm25 as pm25Max')
+                .avg('pm10 as pm10Avg').min('pm10 as pm10Min').max('pm10 as pm10Max')
+                .groupByRaw('DATE(timestamp)')
+                .orderBy('date', 'asc');
+            if (params.startDate) query.whereRaw('timestamp >= ?', [new Date(params.startDate)]);
+            if (params.endDate) query.whereRaw('timestamp <= ?', [new Date(params.endDate)]);
+        }
+
+        // Log the query
         logQuery(query);
 
         // Execute the query
@@ -93,8 +97,8 @@ export const getLastMeasurement = async () => {
         const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
         // Last measurement and last week measurement queries
-        const lastMeasurementQuery = knex(`weatherStation_measurements`).select('*').orderBy('timestamp', 'desc').first();
-        const lastWeekMeasurementQuery = knex(`weatherStation_measurements`).select('*').where('timestamp', '<=', lastWeek).orderBy('timestamp', 'desc').first();
+        const lastMeasurementQuery = knex(`measurements`).select('*').orderBy('timestamp', 'desc').first();
+        const lastWeekMeasurementQuery = knex(`measurements`).select('*').where('timestamp', '<=', lastWeek).orderBy('timestamp', 'desc').first();
 
         // Execute the queries in parallel
         const [lastMeasurement, lastWeekMeasurement] = await Promise.all([
@@ -131,7 +135,7 @@ export const updateMeasurement = async (id, newData) => {
         }
 
         // Create the query
-        const query = knex(`weatherStation_measurements`).where({ id }).update(newData);
+        const query = knex(`measurements`).where({ id }).update(newData);
         logQuery(query);
 
         // Execute the query
@@ -152,7 +156,7 @@ export const deleteMeasurements = async idList => {
         }
 
         // Create the query
-        const query = knex(`weatherStation_measurements`).whereIn('id', idList).delete();
+        const query = knex(`measurements`).whereIn('id', idList).delete();
         logQuery(query);
 
         // Execute the query
@@ -173,7 +177,7 @@ export const addMeasurement = async measurement => {
         }
 
         // Create the query
-        const query = knex(`weatherStation_measurements`).insert(measurement);
+        const query = knex(`measurements`).insert(measurement);
         logQuery(query);
 
         // Execute the query
