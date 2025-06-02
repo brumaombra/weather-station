@@ -11,19 +11,19 @@ const emit = defineEmits(['close']);
 
 // Routes list
 const navigationItems = [{
-    path: '/dashboard',
+    path: '/',
     label: 'Snapshot',
     icon: 'fa-solid fa-camera'
 }, {
-    path: '/dashboard/measurements',
+    path: '/measurements',
     label: 'Measurements',
     icon: 'fa-solid fa-table'
 }, {
-    path: '/dashboard/charts',
+    path: '/charts',
     label: 'Charts',
     icon: 'fa-solid fa-chart-line'
 }, {
-    path: '/dashboard/correlations',
+    path: '/correlations',
     label: 'Correlations',
     icon: 'fa-solid fa-magnifying-glass-chart'
 }];

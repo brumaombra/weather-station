@@ -10,7 +10,7 @@ const VueApexCharts = defineAsyncComponent(() =>
 // Props
 const props = defineProps({
     title: { type: String, default: '' },
-    percentage: { type: Number, default: 0 },
+    percentage: { type: Number, default: null },
     measurements: { type: Array, default: () => [] },
     chartType: { type: String, default: 'line' },
     chartSeries: { type: Array, default: () => [] },
@@ -25,7 +25,7 @@ const props = defineProps({
             <div>
                 <h2 class="text-sm text-gray-500 dark:text-neutral-200">{{ props.title }}</h2>
             </div>
-            <div>
+            <div v-if="props.percentage !== null">
                 <!-- Greater than 0 -->
                 <span v-if="props.percentage > 0" class="py-[5px] px-[8px] inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100">
                     <i class="fa-solid fa-arrow-up"></i>{{ Math.abs(props.percentage) }} %
