@@ -9,6 +9,8 @@ import { getAggregatedMeasurements, getLastMeasurement } from '~/composables/api
 import { formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import Button from '~/components/ui/Button.vue';
 import Select from '~/components/ui/Select.vue';
+import SectionTitle from '~/components/ui/SectionTitle.vue';
+import PageHeader from '~/components/ui/PageHeader.vue';
 
 // View model
 const viewModel = useChartsStore(); // Use the store
@@ -119,86 +121,84 @@ onMounted(async () => {
 
 <template>
     <NuxtLayout name="dashboard">
-        <!-- Header -->
-        <div class="md:flex justify-between items-center mb-5">
-            <!-- Left -->
-            <div class="mb-3 md:mb-0">
-                <h2 class="font-bold text-2xl dark:text-neutral-200">Charts<i class="fa-solid fa-chart-line text-xl ms-3"></i></h2>
+        <div class="space-y-8">
+            <!-- Header -->
+            <PageHeader title="Charts" icon="fa-solid fa-chart-line">
+                <template #actions>
+                    <div class="flex items-center gap-2">
+                        <!-- Filter button -->
+                        <Button type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
+
+                        <!-- Periods select -->
+                        <Select v-model="viewModel.periodSelect" @change="handlePeriodChange">
+                            <option value="D">Last day</option>
+                            <option value="W">Last week</option>
+                            <option value="M">Last month</option>
+                            <option value="Y">Last year</option>
+                        </Select>
+                    </div>
+                </template>
+            </PageHeader>
+
+            <!-- Real-time data cards -->
+            <div>
+                <SectionTitle title="Real-time data" />
+                <CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
             </div>
 
-            <!-- Right -->
-            <div class="flex items-center">
-                <!-- Filter button -->
-                <Button type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
+            <!-- Charts -->
+            <div>
+                <SectionTitle title="Charts" />
+                <div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- Temperature chart -->
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                        title="Temperature"
+                        avgKey="temperatureAvg"
+                        maxKey="temperatureMax"
+                        minKey="temperatureMin" />
 
-                <!-- Periods select -->
-                <Select v-model="viewModel.periodSelect" @change="handlePeriodChange" class="ms-2">
-                    <option value="D">Last day</option>
-                    <option value="W">Last week</option>
-                    <option value="M">Last month</option>
-                    <option value="Y">Last year</option>
-                </Select>
-            </div>
-        </div>
+                    <!-- Humidity chart -->
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                        title="Humidity"
+                        avgKey="humidityAvg"
+                        maxKey="humidityMax"
+                        minKey="humidityMin" />
 
-        <!-- Real-time data cards -->
-        <div class="mb-6">
-            <h5 class="font-bold mb-3 dark:text-neutral-200">Real-time data</h5>
-            <CurrentDataCards :lastMeasurement="viewModel.lastMeasurement" />
-        </div>
+                    <!-- Pressure chart -->
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                        title="Pressure"
+                        avgKey="pressureAvg"
+                        maxKey="pressureMax"
+                        minKey="pressureMin" />
 
-        <!-- Charts -->
-        <div>
-            <h5 class="font-bold mb-3 dark:text-neutral-200">Charts</h5>
-            <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
-                <!-- Temperature chart -->
-                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                    title="Temperature"
-                    avgKey="temperatureAvg"
-                    maxKey="temperatureMax"
-                    minKey="temperatureMin" />
+                    <!-- Gas chart -->
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                        title="Gas"
+                        avgKey="gasAvg"
+                        maxKey="gasMax"
+                        minKey="gasMin" />
 
-                <!-- Humidity chart -->
-                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                    title="Humidity"
-                    avgKey="humidityAvg"
-                    maxKey="humidityMax"
-                    minKey="humidityMin" />
+                    <!-- PM1 chart -->
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                        title="PM1"
+                        avgKey="pm1Avg"
+                        maxKey="pm1Max"
+                        minKey="pm1Min" />
 
-                <!-- Pressure chart -->
-                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                    title="Pressure"
-                    avgKey="pressureAvg"
-                    maxKey="pressureMax"
-                    minKey="pressureMin" />
+                    <!-- PM2.5 chart -->
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                        title="PM2.5"
+                        avgKey="pm25Avg"
+                        maxKey="pm25Max"
+                        minKey="pm25Min" />
 
-                <!-- Gas chart -->
-                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                    title="Gas"
-                    avgKey="gasAvg"
-                    maxKey="gasMax"
-                    minKey="gasMin" />
-
-                <!-- PM1 chart -->
-                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                    title="PM1"
-                    avgKey="pm1Avg"
-                    maxKey="pm1Max"
-                    minKey="pm1Min" />
-
-                <!-- PM2.5 chart -->
-                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                    title="PM2.5"
-                    avgKey="pm25Avg"
-                    maxKey="pm25Max"
-                    minKey="pm25Min" />
-
-                <!-- PM10 chart -->
-                <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
-                    title="PM10"
-                    avgKey="pm10Avg"
-                    maxKey="pm10Max"
-                    minKey="pm10Min" />
+                    <!-- PM10 chart -->
+                    <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results"
+                        title="PM10"
+                        avgKey="pm10Avg"
+                        maxKey="pm10Max"
+                        minKey="pm10Min" />
+                </div>
             </div>
         </div>
 

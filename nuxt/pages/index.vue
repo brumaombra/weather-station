@@ -109,7 +109,7 @@ onMounted(async () => {
             <!-- Charts -->
             <div>
                 <SectionTitle title="Charts" />
-                <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
+                <div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
                     <!-- Temperature chart -->
                     <LineChartCard :measurementsList="viewModel.aggregatedMeasurementsList?.results" title="Temperature" avgKey="temperatureAvg" maxKey="temperatureMax" minKey="temperatureMin" />
 
@@ -127,7 +127,7 @@ onMounted(async () => {
             <!-- Correlations -->
             <div>
                 <SectionTitle title="Correlations" />
-                <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
+                <div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
                     <!-- Temperature/humidity chart -->
                     <ScatterChartCard :measurementsList="viewModel.measurementsList?.results" title="Temperature/Humidity" xKey="temperature" yKey="humidity" />
 

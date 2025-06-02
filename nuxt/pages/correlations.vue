@@ -8,6 +8,8 @@ import ScatterChartCard from '~/components/correlations/ScatterChartCard.vue';
 import FilterModal from '~/components/FilterModal.vue';
 import Button from '~/components/ui/Button.vue';
 import Select from '~/components/ui/Select.vue';
+import SectionTitle from '~/components/ui/SectionTitle.vue';
+import PageHeader from '~/components/ui/PageHeader.vue';
 
 // View model
 const viewModel = useCorrelationsStore();
@@ -97,67 +99,65 @@ onMounted(async () => {
 
 <template>
     <NuxtLayout name="dashboard">
-        <!-- Header -->
-        <div class="md:flex justify-between items-center mb-5">
-            <!-- Left -->
-            <div class="mb-3 md:mb-0">
-                <h2 class="font-bold text-2xl dark:text-neutral-200">Correlations<i class="fa-solid fa-magnifying-glass-chart text-xl ms-3"></i></h2>
-            </div>
+        <div class="space-y-8">
+            <!-- Header -->
+            <PageHeader title="Correlations" icon="fa-solid fa-magnifying-glass-chart">
+                <template #actions>
+                    <div class="flex items-center gap-2">
+                        <!-- Filter button -->
+                        <Button type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
 
-            <!-- Right -->
-            <div class="flex items-center">
-                <!-- Filter button -->
-                <Button type="primary" text="Filter" icon="fa-solid fa-filter" @click="handleOpenFilterModalPress" />
+                        <!-- Periods select -->
+                        <Select v-model="viewModel.periodSelect" @change="handlePeriodChange">
+                            <option value="D">Last day</option>
+                            <option value="W">Last week</option>
+                            <option value="M">Last month</option>
+                            <option value="Y">Last year</option>
+                        </Select>
+                    </div>
+                </template>
+            </PageHeader>
 
-                <!-- Periods select -->
-                <Select v-model="viewModel.periodSelect" @change="handlePeriodChange" class="ms-2">
-                    <option value="D">Last day</option>
-                    <option value="W">Last week</option>
-                    <option value="M">Last month</option>
-                    <option value="Y">Last year</option>
-                </Select>
-            </div>
-        </div>
+            <!-- Charts -->
+            <div>
+                <SectionTitle title="Scatter Plot Analysis" />
+                <div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- Temperature/PM1 chart -->
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                        title="Temperature/PM1"
+                        xKey="temperature"
+                        yKey="pm1" />
 
-        <!-- Charts -->
-        <div>
-            <h5 class="font-bold mb-3 dark:text-neutral-200">Charts</h5>
-            <div class="grid lg:grid-cols-2 gap-4 sm:gap-4">
-                <!-- Temperature/PM1 chart -->
-                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                    title="Temperature/PM1"
-                    xKey="temperature"
-                    yKey="pm1" />
+                    <!-- Temperature/humidity chart -->
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                        title="Temperature/Humidity"
+                        xKey="temperature"
+                        yKey="humidity" />
 
-                <!-- Temperature/humidity chart -->
-                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                    title="Temperature/Humidity"
-                    xKey="temperature"
-                    yKey="humidity" />
+                    <!-- PM2.5/PM10 chart -->
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                        title="PM2.5/PM10"
+                        xKey="pm25"
+                        yKey="pm10" />
 
-                <!-- PM2.5/PM10 chart -->
-                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                    title="PM2.5/PM10"
-                    xKey="pm25"
-                    yKey="pm10" />
+                    <!-- Pressure/Gas chart -->
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                        title="Pressure/Gas"
+                        xKey="pressure"
+                        yKey="gas" />
 
-                <!-- Pressure/Gas chart -->
-                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                    title="Pressure/Gas"
-                    xKey="pressure"
-                    yKey="gas" />
+                    <!-- Temperature/Gas chart -->
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                        title="Temperature/Gas"
+                        xKey="temperature"
+                        yKey="gas" />
 
-                <!-- Temperature/Gas chart -->
-                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                    title="Temperature/Gas"
-                    xKey="temperature"
-                    yKey="gas" />
-
-                <!-- Humidity/PM1 chart -->
-                <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
-                    title="Humidity/PM1"
-                    xKey="humidity"
-                    yKey="pm1" />
+                    <!-- Humidity/PM1 chart -->
+                    <ScatterChartCard :measurementsList="viewModel.measurementsList?.results"
+                        title="Humidity/PM1"
+                        xKey="humidity"
+                        yKey="pm1" />
+                </div>
             </div>
         </div>
 
