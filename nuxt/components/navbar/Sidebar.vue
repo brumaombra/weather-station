@@ -65,14 +65,6 @@ watch(() => useRoute().path, () => {
                         </li>
                     </ul>
                 </nav>
-
-                <!-- Bottom section
-                <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-neutral-700">
-                    <div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors">
-                        <i class="fa-solid fa-gear text-gray-500 dark:text-neutral-400"></i>
-                        <span class="text-sm font-medium text-gray-700 dark:text-neutral-300">Settings</span>
-                    </div>
-                </div> -->
             </div>
         </aside>
     </div>

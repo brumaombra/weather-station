@@ -5,7 +5,7 @@ import { setBusy, showMessageDialog, getMaxAndMinFromDate, CustomError } from '~
 import { getMeasurements } from '~/composables/api/useMeasurements.js';
 import { formatUnitNumber, formatTimestamp, formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import FilterModal from '~/components/FilterModal.vue';
-import CustomButton from '~/components/CustomButton.vue';
+import CustomButton from '~/components/ui/CustomButton.vue';
 
 const viewModel = useMeasurementsStore();
 const filterModalOpen = ref(false);

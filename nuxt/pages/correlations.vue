@@ -6,6 +6,8 @@ import { formatJsDateToIsoStringDate } from '~/utils/formatter.js';
 import { useCorrelationsStore } from '~/composables/stores/useCorrelationsStore.js';
 import ScatterChartCard from '~/components/correlations/ScatterChartCard.vue';
 import FilterModal from '~/components/FilterModal.vue';
+import CustomButton from '~/components/ui/CustomButton.vue';
+import CustomSelect from '~/components/ui/CustomSelect.vue';
 
 // View model
 const viewModel = useCorrelationsStore();

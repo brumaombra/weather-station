@@ -1,5 +1,5 @@
 <script setup>
-import CustomButton from '~/components/CustomButton.vue';
+import CustomButton from '~/components/ui/CustomButton.vue';
 import CustomModal from '~/components/CustomModal.vue';
 
 // Props

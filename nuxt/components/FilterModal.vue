@@ -1,8 +1,8 @@
 <script setup>
-import CustomButton from '~/components/CustomButton.vue';
+import CustomButton from '~/components/ui/CustomButton.vue';
 import CustomModal from '~/components/CustomModal.vue';
-import CustomSelect from '~/components/CustomSelect.vue';
-import CustomInput from '~/components/CustomInput.vue';
+import CustomSelect from '~/components/ui/CustomSelect.vue';
+import CustomInput from '~/components/ui/CustomInput.vue';
 
 // Props
 const props = defineProps({

@@ -7,6 +7,8 @@ import FilterModal from '~/components/FilterModal.vue';
 import { setBusy, showMessageDialog, getMaxAndMinFromDate } from '~/composables/useUtils.js';
 import { getAggregatedMeasurements, getLastMeasurement } from '~/composables/api/useMeasurements.js';
 import { formatJsDateToIsoStringDate } from '~/utils/formatter.js';
+import CustomButton from '~/components/ui/CustomButton.vue';
+import CustomSelect from '~/components/ui/CustomSelect.vue';
 
 // View model
 const viewModel = useChartsStore(); // Use the store
