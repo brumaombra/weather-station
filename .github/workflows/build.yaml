@@ -67,7 +67,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             
             echo "✅ Install Nuxt dependencies on server..."
-            cd /var/www/weather-station_tmp/
+            cd /var/www/weather-station_tmp/server/
             npm install
 
             echo "🔄 Sync files with rsync..."
