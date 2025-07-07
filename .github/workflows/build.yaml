@@ -62,6 +62,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "🔄 Starting zero-downtime deploy..."
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            
             echo "✅ Install Nuxt dependencies on server..."
             cd /var/www/weather-station_tmp/
             npm install
