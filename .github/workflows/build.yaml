@@ -71,7 +71,7 @@ jobs:
             npm install
 
             echo "🔄 Sync files with rsync..."
-            rsync -a --delete /var/www/weather-station_tmp/ /var/www/weather-station/
+            rsync -a --delete --exclude 'ecosystem.config.cjs' /var/www/weather-station_tmp/ /var/www/weather-station/
 
             echo "🔁 Restart PM2 app..."
             pm2 restart station
