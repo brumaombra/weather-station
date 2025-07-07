@@ -46,15 +46,30 @@ jobs:
         run: rm -rf .output/server/node_modules
         working-directory: nuxt/
 
+      # Upload build to server via SCP
+      - name: Upload build to server via SCP 🚀
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: nuxt/.output/ # Local project directory
+          target: /var/www/weather-station_tmp/ # Server project directory
+          strip_components: 1
+      
       # Send build files to server via Rsync
       - name: Rsync files to VPS 🔁
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+          echo "$SSH_PRIVATE_KEY" > id_rsa
           chmod 600 id_rsa
-          rsync -az --delete -e "ssh -i id_rsa -o StrictHostKeyChecking=no" nuxt/.output/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER }}:/var/www/weather-station_tmp/
-          rm -rf id_rsa
+
+          rsync -az --delete -e "ssh -i id_rsa -o StrictHostKeyChecking=no" nuxt/.output/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/weather-station_tmp/
+
+          rm id_rsa
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       
-      # SSH into server and perform deploy
+      # Run SSH commands to deploy the app
       - name: SSH Deploy Script 🧠
         uses: appleboy/ssh-action@v1
         with:
@@ -62,14 +77,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "✅ Install Nuxt dependencies on server..."
-            cd /var/www/weather-station_tmp/
-            npm install
-
             echo "🔄 Sync files with rsync..."
             rsync -a --delete /var/www/weather-station_tmp/ /var/www/weather-station/
 
-            echo "🔁 Restart PM2 app..."
+            echo "🔁 Reload PM2 app..."
             pm2 restart station
 
             echo "📂 Remove temporary directory..."
